@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.nunnerycode:facecore-gradle-all:0.0.2"
+    compile "org.nunnerycode:facecore-gradle-all:0.0.3-SNAPSHOT"
 }
 
 processResources {
