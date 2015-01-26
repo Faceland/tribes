@@ -1,0 +1,4 @@
+name: @NAME@
+version: @VERSION@
+main: me.topplethenun.tribes.TribesPlugin
+depend: [facecore]
