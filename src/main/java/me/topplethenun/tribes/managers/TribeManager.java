@@ -2,6 +2,7 @@ package me.topplethenun.tribes.managers;
 
 import com.google.common.base.Preconditions;
 import me.topplethenun.tribes.data.Tribe;
+import org.nunnerycode.kern.shade.google.common.base.Optional;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -49,9 +50,9 @@ public class TribeManager {
         return new HashSet<>(tribeMap.values());
     }
 
-    public Tribe getTribe(UUID uuid) {
-        Preconditions.checkState(hasTribe(uuid));
-        return tribeMap.get(uuid);
+    public Optional<Tribe> getTribe(UUID uuid) {
+        Preconditions.checkNotNull(uuid);
+        return tribeMap.containsKey(uuid) ? Optional.of(tribeMap.get(uuid)) : Optional.<Tribe>absent();
     }
 
 }
