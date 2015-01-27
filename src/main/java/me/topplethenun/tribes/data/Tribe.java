@@ -113,6 +113,15 @@ public final class Tribe {
         public List<Permission> getPermissions() {
             return permissions;
         }
+
+        public Rank fromString(String s) {
+            for (Rank rank : values()) {
+                if (rank.name().equals(s)) {
+                    return rank;
+                }
+            }
+            return GUEST;
+        }
     }
 
 }
