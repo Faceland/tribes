@@ -27,6 +27,7 @@ import org.nunnerycode.facecore.configuration.VersionedSmartConfiguration;
 import org.nunnerycode.facecore.configuration.VersionedSmartYamlConfiguration;
 import org.nunnerycode.facecore.logging.PluginLogger;
 import org.nunnerycode.facecore.plugin.FacePlugin;
+import org.nunnerycode.kern.shade.google.common.base.Optional;
 
 import java.io.File;
 
@@ -62,6 +63,19 @@ public class TribesPlugin extends FacePlugin {
         memberManager = new MemberManager();
         tribeManager = new TribeManager();
 
+        loadData();
+
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+                debug("saving and loading data");
+                saveData();
+                loadData();
+            }
+        }, 20L * 600, 20L * 600);
+    }
+
+    private void loadData() {
         for (Cell cell : dataStorage.loadCells()) {
             cellManager.placeCell(cell.getLocation(), cell);
         }
@@ -71,16 +85,32 @@ public class TribesPlugin extends FacePlugin {
         for (Tribe tribe : dataStorage.loadTribes()) {
             tribeManager.addTribe(tribe);
         }
-        debug("cells loaded: " + cellManager.getCells().size(), "members loaded: " + memberManager.getMembers().size
-                (), "tribes loaded: " + tribeManager.getTribes().size());
+        debug("cells loaded: " + cellManager.getCells().size(),
+                "members loaded: " + memberManager.getMembers().size(),
+                "tribes loaded: " + tribeManager.getTribes().size());
+        for (Member member : memberManager.getMembers()) {
+            if (member.getTribe() == null) {
+                continue;
+            }
+            Optional<Tribe> tribeOptional = tribeManager.getTribe(member.getTribe());
+            if (tribeOptional.isPresent()) {
+                tribeOptional.get().setRank(member.getUniqueId(), member.getRank());
+            } else {
+                member.setRank(Tribe.Rank.GUEST);
+            }
+        }
     }
 
     @Override
     public void disable() {
+        saveData();
+        dataStorage.shutdown();
+    }
+
+    private void saveData() {
         dataStorage.saveCells(cellManager.getCells());
         dataStorage.saveMembers(memberManager.getMembers());
         dataStorage.saveTribes(tribeManager.getTribes());
-        dataStorage.shutdown();
     }
 
     public static TribesPlugin getInstance() {
