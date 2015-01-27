@@ -19,10 +19,10 @@ import me.topplethenun.tribes.data.Cell;
 import me.topplethenun.tribes.data.Member;
 import me.topplethenun.tribes.data.Tribe;
 import me.topplethenun.tribes.math.Vec2;
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationVersion;
 import org.nunnerycode.facecore.database.MySqlDatabasePool;
 import org.nunnerycode.facecore.logging.PluginLogger;
-import org.nunnerycode.kern.flywaydb.core.Flyway;
-import org.nunnerycode.kern.flywaydb.core.api.MigrationVersion;
 import org.nunnerycode.kern.io.CloseableRegistry;
 import org.nunnerycode.kern.shade.google.common.base.Preconditions;
 
