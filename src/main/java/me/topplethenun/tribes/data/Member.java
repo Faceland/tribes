@@ -21,6 +21,7 @@ public final class Member {
     private final UUID uniqueId;
     private UUID tribe;
     private int score;
+    private Tribe.Rank rank;
 
     public Member(UUID uuid) {
         this.uniqueId = uuid;
@@ -44,6 +45,14 @@ public final class Member {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public Tribe.Rank getRank() {
+        return rank;
+    }
+
+    public void setRank(Tribe.Rank rank) {
+        this.rank = rank;
     }
 
 }
