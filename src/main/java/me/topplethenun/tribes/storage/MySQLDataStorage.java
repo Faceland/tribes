@@ -25,6 +25,7 @@ import org.nunnerycode.kern.io.CloseableRegistry;
 import org.nunnerycode.kern.shade.google.common.base.Preconditions;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -150,16 +151,18 @@ public final class MySQLDataStorage implements DataStorage {
                 statement.setInt(2, vec.getX());
                 statement.setInt(3, vec.getZ());
                 ResultSet rs = registry.register(statement.executeQuery());
-                String worldName = rs.getString("world");
-                int x = rs.getInt("x");
-                int z = rs.getInt("z");
-                Vec2 vec2 = Vec2.fromCoordinates(worldName, x, z);
-                String ownerString = rs.getString("owner");
-                if (ownerString == null) {
-                    cells.add(new Cell(vec2));
-                } else {
-                    UUID owner = UUID.fromString(ownerString);
-                    cells.add(new Cell(vec2, owner));
+                while (rs.next()) {
+                    String worldName = rs.getString("world");
+                    int x = rs.getInt("x");
+                    int z = rs.getInt("z");
+                    Vec2 vec2 = Vec2.fromCoordinates(worldName, x, z);
+                    String ownerString = rs.getString("owner");
+                    if (ownerString == null) {
+                        cells.add(new Cell(vec2));
+                    } else {
+                        UUID owner = UUID.fromString(ownerString);
+                        cells.add(new Cell(vec2, owner));
+                    }
                 }
             }
         } catch (Exception e) {
@@ -210,6 +213,7 @@ public final class MySQLDataStorage implements DataStorage {
                 Member member = new Member(UUID.fromString(resultSet.getString("id")));
                 member.setScore(resultSet.getInt("score"));
                 member.setTribe(UUID.fromString(resultSet.getString("tribe")));
+                member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
                 members.add(member);
             }
         } catch (SQLException e) {
@@ -232,10 +236,13 @@ public final class MySQLDataStorage implements DataStorage {
             for (UUID uuid : uuids) {
                 statement.setString(1, uuid.toString());
                 ResultSet resultSet = registry.register(statement.executeQuery());
-                Member member = new Member(UUID.fromString(resultSet.getString("id")));
-                member.setScore(resultSet.getInt("score"));
-                member.setTribe(UUID.fromString(resultSet.getString("tribe")));
-                members.add(member);
+                while (resultSet.next()) {
+                    Member member = new Member(UUID.fromString(resultSet.getString("id")));
+                    member.setScore(resultSet.getInt("score"));
+                    member.setTribe(UUID.fromString(resultSet.getString("tribe")));
+                    member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
+                    members.add(member);
+                }
             }
         } catch (Exception e) {
             pluginLogger.log("unable to load members: " + e.getMessage());
@@ -254,7 +261,7 @@ public final class MySQLDataStorage implements DataStorage {
     public void saveMembers(Iterable<Member> memberIterable) {
         Preconditions.checkNotNull(memberIterable, "memberIterable cannot be null");
         CloseableRegistry registry = new CloseableRegistry();
-        String query = "REPLACE INTO tr_members (id, score, tribe) VALUES (?,?,?)";
+        String query = "REPLACE INTO tr_members (id, score, tribe, rank) VALUES (?,?,?,?)";
         try {
             Connection connection = registry.register(connectionPool.getConnection());
             PreparedStatement statement = registry.register(connection.prepareStatement(query));
@@ -266,6 +273,7 @@ public final class MySQLDataStorage implements DataStorage {
                 } else {
                     statement.setString(3, member.getTribe().toString());
                 }
+                statement.setString(4, member.getRank().name());
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -277,22 +285,78 @@ public final class MySQLDataStorage implements DataStorage {
 
     @Override
     public Set<Tribe> loadTribes() {
-        return null;
+        Set<Tribe> tribes = new HashSet<>();
+        String query = "SELECT * FROM tr_tribes";
+        CloseableRegistry registry = new CloseableRegistry();
+        try {
+            Connection connection = registry.register(connectionPool.getConnection());
+            Statement statement = registry.register(connection.createStatement());
+            ResultSet resultSet = registry.register(statement.executeQuery(query));
+            while (resultSet.next()) {
+                Tribe tribe = new Tribe(UUID.fromString(resultSet.getString("id")));
+                tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
+                tribes.add(tribe);
+            }
+        } catch (SQLException e) {
+            pluginLogger.log("unable to load tribes: " + e.getMessage());
+        } finally {
+            registry.closeQuietly();
+        }
+        return tribes;
     }
 
     @Override
     public Set<Tribe> loadTribes(Iterable<UUID> uuids) {
-        return null;
+        Set<Tribe> tribes = new HashSet<>();
+        String query = "SELECT * FROM tr_tribes WHERE id=?";
+        CloseableRegistry registry = new CloseableRegistry();
+        try {
+            Connection connection = registry.register(connectionPool.getConnection());
+            PreparedStatement statement = registry.register(connection.prepareStatement(query));
+            for (UUID uuid : uuids) {
+                statement.setString(1, uuid.toString());
+                ResultSet resultSet = registry.register(statement.executeQuery());
+                while (resultSet.next()) {
+                    Tribe tribe = new Tribe(UUID.fromString(resultSet.getString("id")));
+                    tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
+                    tribes.add(tribe);
+                }
+            }
+        } catch (SQLException e) {
+            pluginLogger.log("unable to load tribes: " + e.getMessage());
+        } finally {
+            registry.closeQuietly();
+        }
+        return tribes;
     }
 
     @Override
     public Set<Tribe> loadTribes(UUID... uuids) {
-        return null;
+        return loadTribes(Arrays.asList(uuids));
     }
 
     @Override
     public void saveTribes(Iterable<Tribe> tribeIterable) {
-
+        Preconditions.checkNotNull(tribeIterable);
+        String query = "REPLACE INTO tr_tribes (id, owner) VALUES (?,?)";
+        CloseableRegistry registry = new CloseableRegistry();
+        try {
+            Connection connection = registry.register(connectionPool.getConnection());
+            PreparedStatement statement = registry.register(connection.prepareStatement(query));
+            for (Tribe tribe : tribeIterable) {
+                statement.setString(1, tribe.getUniqueId().toString());
+                if (tribe.getOwner() == null) {
+                    statement.setNull(2, Types.VARCHAR);
+                } else {
+                    statement.setString(2, tribe.getOwner().toString());
+                }
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            pluginLogger.log("unable to save tribes: " + e.getMessage());
+        } finally {
+            registry.closeQuietly();
+        }
     }
 
     private String getConnectionURI() {
