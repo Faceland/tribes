@@ -19,8 +19,6 @@ import me.topplethenun.tribes.data.Cell;
 import me.topplethenun.tribes.data.Member;
 import me.topplethenun.tribes.data.Tribe;
 import me.topplethenun.tribes.math.Vec2;
-import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.MigrationVersion;
 import org.nunnerycode.facecore.database.MySqlDatabasePool;
 import org.nunnerycode.facecore.logging.PluginLogger;
 import org.nunnerycode.kern.io.CloseableRegistry;
@@ -36,6 +34,12 @@ import java.util.logging.Level;
 
 public final class MySQLDataStorage implements DataStorage {
 
+    private static final String TR_CELLS_CREATE = "CREATE TABLE IF NOT EXISTS tr_cells (world VARCHAR(60) NOT NULL," +
+            "x INT NOT NULL, z INT NOT NULL, owner VARCHAR(60), PRIMARY KEY (world, x, z))";
+    private static final String TR_MEMBERS_CREATE = "CREATE TABLE IF NOT EXISTS tr_members (id VARCHAR(60) PRIMARY " +
+            "KEY, tribe VARCHAR(60), rank VARCHAR(20))";
+    private static final String TR_TRIBES_CREATE = "CREATE TABLE IF NOT EXISTS tr_tribes (id VARCHAR(60) PRIMARY " +
+            "KEY, owner VARCHAR(60) NOT NULL)";
     private final PluginLogger pluginLogger;
     private boolean initialized;
     private TribesPlugin plugin;
@@ -51,31 +55,10 @@ public final class MySQLDataStorage implements DataStorage {
         CloseableRegistry registry = new CloseableRegistry();
         Connection connection = registry.register(connectionPool.getConnection());
 
-        boolean tablesExist = false;
-        boolean hasMigrations = false;
-        try {
-            tablesExist = tryQuery(connection, "SELECT * FROM tr_cells LIMIT 1");
-            hasMigrations = tryQuery(connection, "SELECT * FROM tr_migrations LIMIT 1");
-        } finally {
-            registry.closeQuietly();
-        }
-
-        Flyway flyway = new Flyway();
-        if (!hasMigrations) {
-            flyway.setInitOnMigrate(true);
-            if (tablesExist) {
-                flyway.setInitVersion(MigrationVersion.fromVersion("1"));
-            } else {
-                flyway.setInitVersion(MigrationVersion.fromVersion("0"));
-            }
-        }
-        flyway.setClassLoader(getClass().getClassLoader());
-        flyway.setLocations("db/migration/mysql");
-        flyway.setDataSource(getConnectionURI(), plugin.getSettings().getString("db.username"), plugin.getSettings()
-                .getString("db.password"));
-        flyway.setTable("tr_migrations");
-        flyway.setValidateOnMigrate(false);
-        flyway.migrate();
+        Statement statement = registry.register(connection.createStatement());
+        statement.executeUpdate(TR_CELLS_CREATE);
+        statement.executeUpdate(TR_MEMBERS_CREATE);
+        statement.executeUpdate(TR_TRIBES_CREATE);
 
         registry.closeQuietly();
     }

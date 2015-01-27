@@ -16,12 +16,8 @@ package me.topplethenun.tribes;
 
 import me.topplethenun.tribes.data.Cell;
 import me.topplethenun.tribes.managers.CellManager;
-import me.topplethenun.tribes.math.Vec2;
 import me.topplethenun.tribes.storage.DataStorage;
 import me.topplethenun.tribes.storage.MySQLDataStorage;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.nunnerycode.facecore.configuration.MasterConfiguration;
 import org.nunnerycode.facecore.configuration.VersionedSmartConfiguration;
 import org.nunnerycode.facecore.configuration.VersionedSmartYamlConfiguration;
@@ -29,7 +25,6 @@ import org.nunnerycode.facecore.logging.PluginLogger;
 import org.nunnerycode.facecore.plugin.FacePlugin;
 
 import java.io.File;
-import java.util.UUID;
 
 public class TribesPlugin extends FacePlugin {
 
@@ -63,24 +58,6 @@ public class TribesPlugin extends FacePlugin {
             cellManager.placeCell(cell.getLocation(), cell);
         }
         debug("cells loaded: " + cellManager.getCells().size());
-
-        getServer().getPluginManager().registerEvents(new Listener() {
-            @EventHandler
-            public void onPlayerMoveEvent(PlayerMoveEvent event) {
-                if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockY() == event
-                        .getTo().getBlockY() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
-                    return;
-                }
-                Vec2 vec = Vec2.fromChunk(event.getTo().getChunk());
-                Cell cell = cellManager.getCell(vec).or(new Cell(vec));
-                if (cell.getOwner() != null) {
-                    event.getPlayer().sendMessage(cell.toString());
-                } else {
-                    cell.setOwner(UUID.randomUUID());
-                    event.getPlayer().sendMessage("new cell, making owner");
-                }
-            }
-        }, this);
     }
 
     @Override
