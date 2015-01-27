@@ -15,7 +15,9 @@
 package me.topplethenun.tribes;
 
 import me.topplethenun.tribes.data.Cell;
+import me.topplethenun.tribes.data.Member;
 import me.topplethenun.tribes.managers.CellManager;
+import me.topplethenun.tribes.managers.MemberManager;
 import me.topplethenun.tribes.storage.DataStorage;
 import me.topplethenun.tribes.storage.MySQLDataStorage;
 import org.nunnerycode.facecore.configuration.MasterConfiguration;
@@ -31,6 +33,7 @@ public class TribesPlugin extends FacePlugin {
     private static TribesPlugin INSTANCE;
     private DataStorage dataStorage;
     private CellManager cellManager;
+    private MemberManager memberManager;
     private PluginLogger debugPrinter;
     private MasterConfiguration settings;
 
@@ -53,9 +56,13 @@ public class TribesPlugin extends FacePlugin {
         dataStorage.initialize();
 
         cellManager = new CellManager();
+        memberManager = new MemberManager();
 
         for (Cell cell : dataStorage.loadCells()) {
             cellManager.placeCell(cell.getLocation(), cell);
+        }
+        for (Member member : dataStorage.loadMembers()) {
+            memberManager.addMember(member);
         }
         debug("cells loaded: " + cellManager.getCells().size());
     }
@@ -63,6 +70,7 @@ public class TribesPlugin extends FacePlugin {
     @Override
     public void disable() {
         dataStorage.saveCells(cellManager.getCells());
+        dataStorage.saveMembers(memberManager.getMembers());
         dataStorage.shutdown();
     }
 
