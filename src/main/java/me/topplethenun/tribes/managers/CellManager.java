@@ -34,11 +34,7 @@ public class CellManager {
 
     public Optional<Cell> getCell(Vec2 vec2) {
         Preconditions.checkNotNull(vec2, "vec2 cannot be null");
-        Optional<Cell> optional = Optional.absent();
-        if (!cellMap.containsKey(vec2)) {
-            return optional;
-        }
-        return Optional.of(cellMap.get(vec2));
+        return !cellMap.containsKey(vec2) ? Optional.<Cell>absent() : Optional.of(cellMap.get(vec2));
     }
 
     public void placeCell(Vec2 vec2, Cell cell) {
