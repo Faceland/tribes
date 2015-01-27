@@ -114,7 +114,7 @@ public final class Tribe {
             return permissions;
         }
 
-        public Rank fromString(String s) {
+        public static Rank fromString(String s) {
             for (Rank rank : values()) {
                 if (rank.name().equals(s)) {
                     return rank;
