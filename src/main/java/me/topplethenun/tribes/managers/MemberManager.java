@@ -2,6 +2,7 @@ package me.topplethenun.tribes.managers;
 
 import com.google.common.base.Preconditions;
 import me.topplethenun.tribes.data.Member;
+import org.nunnerycode.kern.shade.google.common.base.Optional;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -47,6 +48,11 @@ public class MemberManager {
 
     public Set<Member> getMembers() {
         return new HashSet<>(memberMap.values());
+    }
+
+    public Optional<Member> getMember(UUID uuid) {
+        Preconditions.checkNotNull(uuid);
+        return memberMap.containsKey(uuid) ? Optional.of(memberMap.get(uuid)) : Optional.<Member>absent();
     }
 
 }
