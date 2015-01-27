@@ -79,6 +79,7 @@ public class TribesPlugin extends FacePlugin {
     public void disable() {
         dataStorage.saveCells(cellManager.getCells());
         dataStorage.saveMembers(memberManager.getMembers());
+        dataStorage.saveTribes(tribeManager.getTribes());
         dataStorage.shutdown();
     }
 
