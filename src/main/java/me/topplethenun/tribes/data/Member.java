@@ -20,6 +20,7 @@ public final class Member {
 
     private final UUID uniqueId;
     private UUID tribe;
+    private int score;
 
     public Member(UUID uuid) {
         this.uniqueId = uuid;
@@ -35,6 +36,14 @@ public final class Member {
 
     public void setTribe(UUID tribe) {
         this.tribe = tribe;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
 }
