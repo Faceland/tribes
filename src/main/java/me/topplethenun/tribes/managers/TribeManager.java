@@ -49,4 +49,9 @@ public class TribeManager {
         return new HashSet<>(tribeMap.values());
     }
 
+    public Tribe getTribe(UUID uuid) {
+        Preconditions.checkState(hasTribe(uuid));
+        return tribeMap.get(uuid);
+    }
+
 }
