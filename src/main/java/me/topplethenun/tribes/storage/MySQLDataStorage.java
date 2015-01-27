@@ -199,22 +199,80 @@ public final class MySQLDataStorage implements DataStorage {
 
     @Override
     public Set<Member> loadMembers() {
-        return null;
+        Set<Member> members = new HashSet<>();
+        String query = "SELECT * FROM tr_members";
+        CloseableRegistry registry = new CloseableRegistry();
+        try {
+            Connection connection = registry.register(connectionPool.getConnection());
+            Statement statement = registry.register(connection.createStatement());
+            ResultSet resultSet = registry.register(statement.executeQuery(query));
+            while (resultSet.next()) {
+                Member member = new Member(UUID.fromString(resultSet.getString("id")));
+                member.setScore(resultSet.getInt("score"));
+                member.setTribe(UUID.fromString(resultSet.getString("tribe")));
+                members.add(member);
+            }
+        } catch (SQLException e) {
+            pluginLogger.log("unable to load members:" + e.getMessage());
+        } finally {
+            registry.closeQuietly();
+        }
+        return members;
     }
 
     @Override
     public Set<Member> loadMembers(Iterable<UUID> uuids) {
-        return null;
+        Set<Member> members = new HashSet<>();
+        Preconditions.checkState(initialized, "must be initialized");
+        String query = "SELECT * FROM tr_members WHERE id=?";
+        CloseableRegistry registry = new CloseableRegistry();
+        try {
+            Connection c = registry.register(connectionPool.getConnection());
+            PreparedStatement statement = registry.register(c.prepareStatement(query));
+            for (UUID uuid : uuids) {
+                statement.setString(1, uuid.toString());
+                ResultSet resultSet = registry.register(statement.executeQuery());
+                Member member = new Member(UUID.fromString(resultSet.getString("id")));
+                member.setScore(resultSet.getInt("score"));
+                member.setTribe(UUID.fromString(resultSet.getString("tribe")));
+                members.add(member);
+            }
+        } catch (Exception e) {
+            pluginLogger.log("unable to load members: " + e.getMessage());
+        } finally {
+            registry.closeQuietly();
+        }
+        return members;
     }
 
     @Override
     public Set<Member> loadMembers(UUID... uuids) {
-        return null;
+        return loadMembers(Arrays.asList(uuids));
     }
 
     @Override
     public void saveMembers(Iterable<Member> memberIterable) {
-
+        Preconditions.checkNotNull(memberIterable, "memberIterable cannot be null");
+        CloseableRegistry registry = new CloseableRegistry();
+        String query = "REPLACE INTO tr_members (id, score, tribe) VALUES (?,?,?)";
+        try {
+            Connection connection = registry.register(connectionPool.getConnection());
+            PreparedStatement statement = registry.register(connection.prepareStatement(query));
+            for (Member member : memberIterable) {
+                statement.setString(1, member.getUniqueId().toString());
+                statement.setInt(2, member.getScore());
+                if (member.getTribe() == null) {
+                    statement.setNull(3, Types.VARCHAR);
+                } else {
+                    statement.setString(3, member.getTribe().toString());
+                }
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            pluginLogger.log("unable to save members: " + e.getMessage());
+        } finally {
+            registry.closeQuietly();
+        }
     }
 
     @Override
