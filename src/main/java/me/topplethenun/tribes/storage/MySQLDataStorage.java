@@ -37,7 +37,7 @@ public final class MySQLDataStorage implements DataStorage {
     private static final String TR_CELLS_CREATE = "CREATE TABLE IF NOT EXISTS tr_cells (world VARCHAR(60) NOT NULL," +
             "x INT NOT NULL, z INT NOT NULL, owner VARCHAR(60), PRIMARY KEY (world, x, z))";
     private static final String TR_MEMBERS_CREATE = "CREATE TABLE IF NOT EXISTS tr_members (id VARCHAR(60) PRIMARY " +
-            "KEY, tribe VARCHAR(60), rank VARCHAR(20))";
+            "KEY, score INT NOT NULL, tribe VARCHAR(60), rank VARCHAR(20))";
     private static final String TR_TRIBES_CREATE = "CREATE TABLE IF NOT EXISTS tr_tribes (id VARCHAR(60) PRIMARY " +
             "KEY, owner VARCHAR(60) NOT NULL)";
     private final PluginLogger pluginLogger;
