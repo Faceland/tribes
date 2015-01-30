@@ -29,6 +29,7 @@ public final class Tribe {
 
     private final UUID uniqueId;
     private UUID owner;
+    private String name;
     private Map<UUID, Rank> memberRankMap;
     private Map<Vec2, Cell> claimedLandMap;
 
@@ -88,6 +89,14 @@ public final class Tribe {
         Preconditions.checkNotNull(cell, "cell cannot be null");
         cell.setOwner(null);
         claimedLandMap.remove(cell.getLocation());
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public enum Permission {
