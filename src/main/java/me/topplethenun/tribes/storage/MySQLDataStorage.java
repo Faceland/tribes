@@ -273,7 +273,7 @@ public final class MySQLDataStorage implements DataStorage {
                 } else {
                     statement.setString(3, member.getTribe().toString());
                 }
-                statement.setString(4, member.getRank().name());
+                statement.setString(4, member.getRank() != null ? member.getRank().name() : Tribe.Rank.GUEST.name());
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
