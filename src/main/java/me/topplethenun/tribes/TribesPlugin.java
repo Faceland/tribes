@@ -18,11 +18,13 @@ import me.topplethenun.tribes.commands.TribeCommand;
 import me.topplethenun.tribes.data.Cell;
 import me.topplethenun.tribes.data.Member;
 import me.topplethenun.tribes.data.Tribe;
+import me.topplethenun.tribes.listeners.PlayerListener;
 import me.topplethenun.tribes.managers.CellManager;
 import me.topplethenun.tribes.managers.MemberManager;
 import me.topplethenun.tribes.managers.TribeManager;
 import me.topplethenun.tribes.storage.DataStorage;
 import me.topplethenun.tribes.storage.MySQLDataStorage;
+import org.bukkit.event.HandlerList;
 import org.nunnerycode.facecore.configuration.MasterConfiguration;
 import org.nunnerycode.facecore.configuration.VersionedSmartConfiguration;
 import org.nunnerycode.facecore.configuration.VersionedSmartYamlConfiguration;
@@ -76,6 +78,8 @@ public class TribesPlugin extends FacePlugin {
         CommandHandler commandHandler = new CommandHandler(this);
         commandHandler.registerCommands(new TribeCommand(this));
 
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
             public void run() {
@@ -118,6 +122,8 @@ public class TribesPlugin extends FacePlugin {
 
     @Override
     public void disable() {
+        HandlerList.unregisterAll(this);
+        getServer().getScheduler().cancelTasks(this);
         saveData();
         dataStorage.shutdown();
     }
