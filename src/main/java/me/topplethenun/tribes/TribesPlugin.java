@@ -123,6 +123,18 @@ public class TribesPlugin extends FacePlugin {
         }
     }
 
+    public CellManager getCellManager() {
+        return cellManager;
+    }
+
+    public TribeManager getTribeManager() {
+        return tribeManager;
+    }
+
+    public MemberManager getMemberManager() {
+        return memberManager;
+    }
+
     public MasterConfiguration getSettings() {
         return settings;
     }
