@@ -69,4 +69,15 @@ public class MemberManager {
         return memberMap.containsKey(uuid) ? Optional.of(memberMap.get(uuid)) : Optional.<Member>absent();
     }
 
+    public Set<Member> getMembersWithTribe(UUID uuid) {
+        Preconditions.checkNotNull(uuid);
+        Set<Member> members = new HashSet<>();
+        for (Member member : getMembers()) {
+            if (member.getTribe() != null && member.getTribe().equals(uuid)) {
+                members.add(member);
+            }
+        }
+        return members;
+    }
+
 }
