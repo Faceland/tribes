@@ -105,9 +105,13 @@ public class TribesPlugin extends FacePlugin {
             }
             Optional<Tribe> tribeOptional = tribeManager.getTribe(member.getTribe());
             if (tribeOptional.isPresent()) {
+                Tribe tribe = tribeOptional.get();
                 tribeOptional.get().setRank(member.getUniqueId(), member.getRank());
+                getTribeManager().removeTribe(tribe);
+                getTribeManager().addTribe(tribe);
             } else {
                 member.setRank(Tribe.Rank.GUEST);
+                member.setTribe(null);
             }
         }
     }
