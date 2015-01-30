@@ -49,6 +49,12 @@ public class TribesPlugin extends FacePlugin {
         debugPrinter = new PluginLogger(this);
         debug("Enabling v" + getDescription().getVersion());
 
+        VersionedSmartYamlConfiguration configYAML = new VersionedSmartYamlConfiguration(
+                new File(getDataFolder(), "config.yml"), getResource("config.yml"),
+                VersionedSmartConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
+        if (configYAML.update()) {
+            debug("Updating config.yml");
+        }
         VersionedSmartYamlConfiguration dbYAML = new VersionedSmartYamlConfiguration(
                 new File(getDataFolder(), "db.yml"), getResource("db.yml"),
                 VersionedSmartConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
@@ -56,7 +62,7 @@ public class TribesPlugin extends FacePlugin {
             debug("Updating db.yml");
         }
 
-        settings = MasterConfiguration.loadFromFiles(dbYAML);
+        settings = MasterConfiguration.loadFromFiles(configYAML, dbYAML);
 
         dataStorage = new MySQLDataStorage(this);
         dataStorage.initialize();
