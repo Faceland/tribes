@@ -14,6 +14,7 @@
  */
 package me.topplethenun.tribes;
 
+import me.topplethenun.tribes.commands.TribeCommand;
 import me.topplethenun.tribes.data.Cell;
 import me.topplethenun.tribes.data.Member;
 import me.topplethenun.tribes.data.Tribe;
@@ -27,6 +28,7 @@ import org.nunnerycode.facecore.configuration.VersionedSmartConfiguration;
 import org.nunnerycode.facecore.configuration.VersionedSmartYamlConfiguration;
 import org.nunnerycode.facecore.logging.PluginLogger;
 import org.nunnerycode.facecore.plugin.FacePlugin;
+import org.nunnerycode.kern.methodcommand.CommandHandler;
 import org.nunnerycode.kern.shade.google.common.base.Optional;
 
 import java.io.File;
@@ -64,6 +66,9 @@ public class TribesPlugin extends FacePlugin {
         tribeManager = new TribeManager();
 
         loadData();
+
+        CommandHandler commandHandler = new CommandHandler(this);
+        commandHandler.registerCommands(new TribeCommand(this));
 
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
