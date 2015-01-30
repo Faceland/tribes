@@ -69,4 +69,14 @@ public class TribeManager {
         return tribeMap.containsKey(uuid) ? Optional.of(tribeMap.get(uuid)) : Optional.<Tribe>absent();
     }
 
+    public Optional<Tribe> getTribeByName(String name) {
+        Preconditions.checkNotNull(name);
+        for (Tribe tribe : getTribes()) {
+            if (tribe.getName().equals(name)) {
+                return Optional.of(tribe);
+            }
+        }
+        return Optional.absent();
+    }
+
 }
