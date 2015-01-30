@@ -15,9 +15,12 @@
 package me.topplethenun.tribes.commands;
 
 import me.topplethenun.tribes.TribesPlugin;
+import me.topplethenun.tribes.data.Cell;
 import me.topplethenun.tribes.data.Member;
 import me.topplethenun.tribes.data.Tribe;
+import me.topplethenun.tribes.math.Vec2;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.nunnerycode.facecore.utilities.MessageUtils;
@@ -119,6 +122,40 @@ public class TribeCommand {
                 String[][]{{"%tribe%", tribe.getName()}});
         MessageUtils.sendMessage(player, "<green>You are now the leader of the tribe <white>%tribe%<green>!", new
                 String[][]{{"%tribe%", tribe.getName()}});
+    }
+
+    @Command(identifier = "tribe claim", onlyPlayers = true)
+    public void claimSubcommand(Player player) {
+        Member member = plugin.getMemberManager().getMember(player.getUniqueId()).or(new Member(player.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(player, "<red>You cannot claim if you are not part of a tribe.");
+            return;
+        }
+        Chunk chunk = player.getLocation().getChunk();
+        Vec2 vec2 = Vec2.fromChunk(chunk);
+        Cell cell = plugin.getCellManager().getCell(vec2).or(new Cell(vec2));
+        if (cell.getOwner() != null) {
+            MessageUtils.sendMessage(player, "<red>You cannot claim a cell if it's already claimed.");
+            return;
+        }
+        Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+        int cap = plugin.getSettings().getInt("config.cells-per-member", 1) * plugin.getMemberManager()
+                .getMembersWithTribe(tribe.getUniqueId()).size();
+        int numOfCells = plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId()).size();
+        if (numOfCells >= cap) {
+            MessageUtils.sendMessage(player, "<red>You cannot claim another cell for your tribe.");
+            return;
+        }
+        if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
+            MessageUtils.sendMessage(player, "<red>You must be the leader of your tribe in order to claim.");
+            return;
+        }
+        cell.setOwner(tribe.getOwner());
+        plugin.getCellManager().placeCell(vec2, cell);
+        MessageUtils.sendMessage(player, "<green>You claimed this cell for your tribe!");
     }
 
 }
