@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class CellManager {
 
@@ -45,6 +46,17 @@ public class CellManager {
 
     public Set<Cell> getCells() {
         return new HashSet<>(cellMap.values());
+    }
+
+    public Set<Cell> getCellsWithOwner(UUID owner) {
+        Preconditions.checkNotNull(owner);
+        Set<Cell> cells = new HashSet<>();
+        for (Cell cell : getCells()) {
+            if (cell.getOwner() != null && cell.getOwner().equals(owner)) {
+                cells.add(cell);
+            }
+        }
+        return cells;
     }
 
 }
