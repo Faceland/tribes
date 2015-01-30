@@ -212,7 +212,10 @@ public final class MySQLDataStorage implements DataStorage {
             while (resultSet.next()) {
                 Member member = new Member(UUID.fromString(resultSet.getString("id")));
                 member.setScore(resultSet.getInt("score"));
-                member.setTribe(UUID.fromString(resultSet.getString("tribe")));
+                String tribeString = resultSet.getString("tribe");
+                if (tribeString != null) {
+                    member.setTribe(UUID.fromString(tribeString));
+                }
                 member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
                 members.add(member);
             }
