@@ -17,11 +17,16 @@ package me.topplethenun.tribes.commands;
 import me.topplethenun.tribes.TribesPlugin;
 import me.topplethenun.tribes.data.Member;
 import me.topplethenun.tribes.data.Tribe;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.nunnerycode.facecore.utilities.MessageUtils;
 import org.nunnerycode.kern.apache.commons.lang3.text.WordUtils;
+import org.nunnerycode.kern.methodcommand.Arg;
 import org.nunnerycode.kern.methodcommand.Command;
+import org.nunnerycode.kern.shade.google.common.base.Optional;
+
+import java.util.UUID;
 
 public class TribeCommand {
 
@@ -52,17 +57,68 @@ public class TribeCommand {
                     {"%tribe%", plugin.getTribeManager().getTribe(member.getTribe()).get().getName()}
             });
             for (Tribe.Permission permission : Tribe.Permission.values()) {
+                if (permission == Tribe.Permission.KICK_IMMUNE) {
+                    continue;
+                }
                 if (member.getRank().getPermissions().contains(permission)) {
-                    MessageUtils.sendMessage(player, "<gray>You <green>CAN <gray> " + permission.name().toLowerCase());
+                    MessageUtils.sendMessage(player, "<gray>You <green>CAN<gray> " + permission.name().toLowerCase());
                 } else {
-                    MessageUtils.sendMessage(player, "<gray>You <red>CAN'T <gray> " + permission.name()
-                            .toLowerCase());
+                    MessageUtils.sendMessage(player, "<gray>You <red>CAN'T<gray> " + permission.name().toLowerCase());
                 }
             }
         }
         MessageUtils.sendMessage(player, "<dark green>Score: <white>%score%", new String[][]{{"%score%", member
                 .getScore() + ""}});
         MessageUtils.sendMessage(player, "<green><====||====||====||====>");
+    }
+
+    @Command(identifier = "tribe create", onlyPlayers = false)
+    public void createByConsoleSubcommand(CommandSender sender, @Arg(name = "name") String tribeName,
+                                          @Arg(name = "player", def = "") String playerName) {
+        Player player;
+        if (playerName.equals("")) {
+            if (!(sender instanceof Player)) {
+                MessageUtils
+                        .sendMessage(sender, "<red>Must be a player to use this command without specifying a player.");
+                return;
+            } else {
+                player = (Player) sender;
+            }
+        } else {
+            player = Bukkit.getPlayer(playerName);
+            if (player == null) {
+                MessageUtils.sendMessage(sender, "<red>That player is not online right now.");
+                return;
+            }
+        }
+        Member member = plugin.getMemberManager().getMember(player.getUniqueId()).or(new Member(player.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (member.getTribe() != null) {
+            MessageUtils.sendMessage(sender, "<red>You cannot create a tribe for someone if they're already in one.");
+            MessageUtils.sendMessage(player, "<red>A tribe cannot be created for you if you're already in one.");
+            return;
+        }
+        Optional<Tribe> tribeOptional = plugin.getTribeManager().getTribeByName(tribeName);
+        if (tribeOptional.isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>A tribe already exists with that name.");
+            MessageUtils.sendMessage(player, "<red>A tribe already exists with that name.");
+            return;
+        }
+        Tribe tribe = new Tribe(UUID.randomUUID());
+        tribe.setName(tribeName);
+        tribe.setRank(member.getUniqueId(), Tribe.Rank.LEADER);
+        tribe.setOwner(member.getUniqueId());
+        member.setTribe(tribe.getUniqueId());
+        member.setRank(Tribe.Rank.LEADER);
+        plugin.getMemberManager().removeMember(member);
+        plugin.getMemberManager().addMember(member);
+        plugin.getTribeManager().addTribe(tribe);
+        MessageUtils.sendMessage(sender, "<green>You created the tribe <white>%tribe%<green>!", new
+                String[][]{{"%tribe%", tribe.getName()}});
+        MessageUtils.sendMessage(player, "<green>You are now the leader of the tribe <white>%tribe%<green>!", new
+                String[][]{{"%tribe%", tribe.getName()}});
     }
 
 }
