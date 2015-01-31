@@ -21,6 +21,7 @@ import me.topplethenun.tribes.data.Tribe;
 import me.topplethenun.tribes.math.Vec2;
 import org.nunnerycode.facecore.database.MySqlDatabasePool;
 import org.nunnerycode.facecore.logging.PluginLogger;
+import org.nunnerycode.facecore.utilities.IOUtils;
 import org.nunnerycode.kern.io.CloseableRegistry;
 import org.nunnerycode.kern.shade.google.common.base.Preconditions;
 
@@ -55,12 +56,17 @@ public final class SqliteDataStorage implements DataStorage {
         this.plugin = plugin;
         this.pluginLogger = new PluginLogger(new File(plugin.getDataFolder(), "logs/sqlite.log"));
         this.initialized = false;
+        IOUtils.createDirectory(new File(plugin.getDataFolder(), "db"));
         this.file = new File(plugin.getDataFolder(), "db/tribes.db");
     }
 
     private void createTable() throws SQLException {
         CloseableRegistry registry = new CloseableRegistry();
         Connection connection = registry.register(getConnection());
+
+        if (connection == null) {
+            return;
+        }
 
         Statement statement = registry.register(connection.createStatement());
         statement.executeUpdate(TR_CELLS_CREATE);
@@ -94,9 +100,9 @@ public final class SqliteDataStorage implements DataStorage {
         try {
             createTable();
             initialized = true;
-            plugin.getPluginLogger().log(Level.INFO, "mysql initialized");
+            plugin.getPluginLogger().log(Level.INFO, "sqlite initialized");
         } catch (SQLException ex) {
-            plugin.getPluginLogger().log(Level.INFO, "unable to setup mysql");
+            plugin.getPluginLogger().log(Level.INFO, "unable to setup sqlite");
         }
     }
 
@@ -377,6 +383,7 @@ public final class SqliteDataStorage implements DataStorage {
         try {
             return DriverManager.getConnection(getConnectionURI());
         } catch (SQLException e) {
+            e.printStackTrace();
             return null;
         }
     }
