@@ -24,6 +24,7 @@ import me.topplethenun.tribes.managers.MemberManager;
 import me.topplethenun.tribes.managers.TribeManager;
 import me.topplethenun.tribes.storage.DataStorage;
 import me.topplethenun.tribes.storage.MySQLDataStorage;
+import me.topplethenun.tribes.storage.SqliteDataStorage;
 import org.bukkit.event.HandlerList;
 import org.nunnerycode.facecore.configuration.MasterConfiguration;
 import org.nunnerycode.facecore.configuration.VersionedSmartConfiguration;
@@ -66,7 +67,11 @@ public class TribesPlugin extends FacePlugin {
 
         settings = MasterConfiguration.loadFromFiles(configYAML, dbYAML);
 
-        dataStorage = new MySQLDataStorage(this);
+        if (settings.getString("db.type").equals("mysql")) {
+            dataStorage = new MySQLDataStorage(this);
+        } else {
+            dataStorage = new SqliteDataStorage(this);
+        }
         dataStorage.initialize();
 
         cellManager = new CellManager();
