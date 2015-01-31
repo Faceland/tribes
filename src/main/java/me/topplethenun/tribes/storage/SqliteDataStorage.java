@@ -46,7 +46,7 @@ public final class SqliteDataStorage implements DataStorage {
     private static final String TR_MEMBERS_CREATE = "CREATE TABLE IF NOT EXISTS tr_members (id TEXT PRIMARY " +
             "KEY, score INTEGER NOT NULL, tribe TEXT, rank TEXT)";
     private static final String TR_TRIBES_CREATE = "CREATE TABLE IF NOT EXISTS tr_tribes (id TEXT PRIMARY " +
-            "KEY, owner TEXT NOT NULL, name TEXT NOT NULL UNIQUE, validated INTEGER NOT NULL)";
+            "KEY, owner TEXT NOT NULL, name TEXT NOT NULL UNIQUE)";
     private final PluginLogger pluginLogger;
     private boolean initialized;
     private TribesPlugin plugin;
@@ -304,7 +304,7 @@ public final class SqliteDataStorage implements DataStorage {
                 Tribe tribe = new Tribe(UUID.fromString(resultSet.getString("id")));
                 tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
                 tribe.setName(resultSet.getString("name"));
-                tribe.setValidated(resultSet.getBoolean("validated"));
+                tribe.setValidated(true);
                 tribes.add(tribe);
             }
         } catch (SQLException e) {
@@ -330,7 +330,7 @@ public final class SqliteDataStorage implements DataStorage {
                     Tribe tribe = new Tribe(UUID.fromString(resultSet.getString("id")));
                     tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
                     tribe.setName(resultSet.getString("name"));
-                    tribe.setValidated(resultSet.getBoolean("validated"));
+                    tribe.setValidated(true);
                     tribes.add(tribe);
                 }
             }
@@ -350,12 +350,15 @@ public final class SqliteDataStorage implements DataStorage {
     @Override
     public void saveTribes(Iterable<Tribe> tribeIterable) {
         Preconditions.checkNotNull(tribeIterable);
-        String query = "REPLACE INTO tr_tribes (id, owner, name) VALUES (?,?, ?)";
+        String query = "REPLACE INTO tr_tribes (id, owner, name) VALUES (?,?,?)";
         CloseableRegistry registry = new CloseableRegistry();
         try {
             Connection connection = registry.register(getConnection());
             PreparedStatement statement = registry.register(connection.prepareStatement(query));
             for (Tribe tribe : tribeIterable) {
+                if (!tribe.isValidated()) {
+                    continue;
+                }
                 statement.setString(1, tribe.getUniqueId().toString());
                 if (tribe.getOwner() == null) {
                     statement.setNull(2, Types.VARCHAR);
@@ -363,7 +366,6 @@ public final class SqliteDataStorage implements DataStorage {
                     statement.setString(2, tribe.getOwner().toString());
                 }
                 statement.setString(3, tribe.getName());
-                statement.setBoolean(4, tribe.isValidated());
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
