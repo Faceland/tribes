@@ -27,7 +27,6 @@ import org.nunnerycode.facecore.utilities.MessageUtils;
 import org.nunnerycode.kern.apache.commons.lang3.text.WordUtils;
 import org.nunnerycode.kern.methodcommand.Arg;
 import org.nunnerycode.kern.methodcommand.Command;
-import org.nunnerycode.kern.shade.google.common.base.Optional;
 
 import java.util.UUID;
 
@@ -55,12 +54,13 @@ public class TribeCommand {
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
             MessageUtils.sendMessage(player, "<red>Not a member of any Tribe");
         } else {
+            Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
             MessageUtils.sendMessage(player, "<white>%rank%<dark green> of <white>%tribe%", new String[][]{
                     {"%rank%", WordUtils.capitalizeFully(member.getRank().name())},
-                    {"%tribe%", plugin.getTribeManager().getTribe(member.getTribe()).get().getName()}
+                    {"%tribe%", !tribe.isValidated() ? tribe.getName() : "a nonvalidated tribe"}
             });
             for (Tribe.Permission permission : Tribe.Permission.values()) {
-                if (permission == Tribe.Permission.KICK_IMMUNE) {
+                if (permission == Tribe.Permission.KICK_IMMUNE || !tribe.isValidated()) {
                     continue;
                 }
                 if (member.getRank().getPermissions().contains(permission)) {
@@ -76,8 +76,7 @@ public class TribeCommand {
     }
 
     @Command(identifier = "tribe create", onlyPlayers = false)
-    public void createByConsoleSubcommand(CommandSender sender, @Arg(name = "name") String tribeName,
-                                          @Arg(name = "player", def = "") String playerName) {
+    public void createByConsoleSubcommand(CommandSender sender, @Arg(name = "player", def = "") String playerName) {
         Player player;
         if (playerName.equals("")) {
             if (!(sender instanceof Player)) {
@@ -103,14 +102,7 @@ public class TribeCommand {
             MessageUtils.sendMessage(player, "<red>A tribe cannot be created for you if you're already in one.");
             return;
         }
-        Optional<Tribe> tribeOptional = plugin.getTribeManager().getTribeByName(tribeName);
-        if (tribeOptional.isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>A tribe already exists with that name.");
-            MessageUtils.sendMessage(player, "<red>A tribe already exists with that name.");
-            return;
-        }
         Tribe tribe = new Tribe(UUID.randomUUID());
-        tribe.setName(tribeName);
         tribe.setRank(member.getUniqueId(), Tribe.Rank.LEADER);
         tribe.setOwner(member.getUniqueId());
         member.setTribe(tribe.getUniqueId());
@@ -118,10 +110,8 @@ public class TribeCommand {
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);
         plugin.getTribeManager().addTribe(tribe);
-        MessageUtils.sendMessage(sender, "<green>You created the tribe <white>%tribe%<green>!", new
-                String[][]{{"%tribe%", tribe.getName()}});
-        MessageUtils.sendMessage(player, "<green>You are now the leader of the tribe <white>%tribe%<green>!", new
-                String[][]{{"%tribe%", tribe.getName()}});
+        MessageUtils.sendMessage(sender, "<green>You created a tribe!");
+        MessageUtils.sendMessage(player, "<green>You are now the leader of a tribe!");
     }
 
     @Command(identifier = "tribe claim", onlyPlayers = true)
@@ -142,6 +132,10 @@ public class TribeCommand {
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+        if (!tribe.isValidated()) {
+            MessageUtils.sendMessage(player, "<red>You cannot claim if your tribe is not validated.");
+            return;
+        }
         int cap = plugin.getSettings().getInt("config.cells-per-member", 1) * plugin.getMemberManager()
                 .getMembersWithTribe(tribe.getUniqueId()).size();
         int numOfCells = plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId()).size();
