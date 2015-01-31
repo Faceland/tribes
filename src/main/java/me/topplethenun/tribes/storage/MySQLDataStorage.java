@@ -40,7 +40,7 @@ public final class MySQLDataStorage implements DataStorage {
     private static final String TR_MEMBERS_CREATE = "CREATE TABLE IF NOT EXISTS tr_members (id VARCHAR(60) PRIMARY " +
             "KEY, score INT NOT NULL, tribe VARCHAR(60), rank VARCHAR(20))";
     private static final String TR_TRIBES_CREATE = "CREATE TABLE IF NOT EXISTS tr_tribes (id VARCHAR(60) PRIMARY " +
-            "KEY, owner VARCHAR(60) NOT NULL, name VARCHAR(20) NOT NULL UNIQUE)";
+            "KEY, owner VARCHAR(60) NOT NULL, name VARCHAR(20) NOT NULL UNIQUE, validated INT NOT NULL)";
     private final PluginLogger pluginLogger;
     private boolean initialized;
     private TribesPlugin plugin;
@@ -299,6 +299,7 @@ public final class MySQLDataStorage implements DataStorage {
                 Tribe tribe = new Tribe(UUID.fromString(resultSet.getString("id")));
                 tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
                 tribe.setName(resultSet.getString("name"));
+                tribe.setValidated(resultSet.getBoolean("validated"));
                 tribes.add(tribe);
             }
         } catch (SQLException e) {
@@ -324,6 +325,7 @@ public final class MySQLDataStorage implements DataStorage {
                     Tribe tribe = new Tribe(UUID.fromString(resultSet.getString("id")));
                     tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
                     tribe.setName(resultSet.getString("name"));
+                    tribe.setValidated(resultSet.getBoolean("validated"));
                     tribes.add(tribe);
                 }
             }
@@ -343,7 +345,7 @@ public final class MySQLDataStorage implements DataStorage {
     @Override
     public void saveTribes(Iterable<Tribe> tribeIterable) {
         Preconditions.checkNotNull(tribeIterable);
-        String query = "REPLACE INTO tr_tribes (id, owner, name) VALUES (?,?, ?)";
+        String query = "REPLACE INTO tr_tribes (id, owner, name, validated) VALUES (?,?,?,?)";
         CloseableRegistry registry = new CloseableRegistry();
         try {
             Connection connection = registry.register(connectionPool.getConnection());
@@ -356,6 +358,7 @@ public final class MySQLDataStorage implements DataStorage {
                     statement.setString(2, tribe.getOwner().toString());
                 }
                 statement.setString(3, tribe.getName());
+                statement.setBoolean(4, tribe.isValidated());
                 statement.executeUpdate();
             }
         } catch (SQLException e) {

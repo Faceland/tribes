@@ -32,6 +32,7 @@ public final class Tribe {
     private String name;
     private Map<UUID, Rank> memberRankMap;
     private Map<Vec2, Cell> claimedLandMap;
+    private boolean validated;
 
     public Tribe(UUID uniqueId) {
         this.uniqueId = uniqueId;
@@ -97,6 +98,14 @@ public final class Tribe {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isValidated() {
+        return validated;
+    }
+
+    public void setValidated(boolean validated) {
+        this.validated = validated;
     }
 
     public enum Permission {
