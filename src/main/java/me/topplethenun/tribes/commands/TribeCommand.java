@@ -201,7 +201,7 @@ public class TribeCommand {
             plugin.getMemberManager().addMember(member);
         }
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>You cannot name your tribe if you are not part of your tribe.");
+            MessageUtils.sendMessage(sender, "<red>You cannot name your tribe if you are not part of a tribe.");
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
