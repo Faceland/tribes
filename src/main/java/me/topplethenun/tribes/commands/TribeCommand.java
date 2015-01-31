@@ -27,6 +27,7 @@ import org.nunnerycode.facecore.utilities.MessageUtils;
 import org.nunnerycode.kern.apache.commons.lang3.text.WordUtils;
 import org.nunnerycode.kern.methodcommand.Arg;
 import org.nunnerycode.kern.methodcommand.Command;
+import org.nunnerycode.kern.shade.google.common.base.Optional;
 
 import java.util.UUID;
 
@@ -151,6 +152,70 @@ public class TribeCommand {
         cell.setOwner(tribe.getOwner());
         plugin.getCellManager().placeCell(vec2, cell);
         MessageUtils.sendMessage(player, "<green>You claimed this cell for your tribe!");
+    }
+
+    @Command(identifier = "tribe validate", onlyPlayers = false, permissions = "tribes.command.validate")
+    public void validateSubcommand(CommandSender sender, @Arg(name = "tribe", def = "") String tribeName) {
+        Tribe tribe;
+        if (tribeName.equals("")) {
+            if (!(sender instanceof Player)) {
+                MessageUtils.sendMessage(sender, "<red>You may not validate your own tribe unless you are a player.");
+                return;
+            } else {
+                Member member = plugin.getMemberManager().getMember(((Player) sender).getUniqueId()).or(new Member
+                        (((Player) sender).getUniqueId()));
+                if (!plugin.getMemberManager().hasMember(member)) {
+                    plugin.getMemberManager().addMember(member);
+                }
+                if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+                    MessageUtils.sendMessage(sender, "<red>You cannot validate if you are not part of a tribe.");
+                    return;
+                }
+                tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+            }
+        } else {
+            Optional<Tribe> tribeOptional = plugin.getTribeManager().getTribeByName(tribeName);
+            if (!tribeOptional.isPresent()) {
+                MessageUtils.sendMessage(sender, "<red>You may not validate a nonexistent tribe.");
+                return;
+            }
+            tribe = tribeOptional.get();
+        }
+        if (tribe.isValidated()) {
+            MessageUtils.sendMessage(sender, "<red>That tribe is already validated.");
+            return;
+        }
+        if (tribe.getName() == null || tribe.getName().equals("")) {
+            MessageUtils.sendMessage(sender, "<red>You may not validate a tribe without a name.");
+            return;
+        }
+        tribe.setValidated(true);
+        MessageUtils.sendMessage(sender, "<green>You validated the tribe <white>%tribe%<green>!",
+                new String[][]{{"%tribe%", tribe.getName()}});
+    }
+
+    @Command(identifier = "tribe name", onlyPlayers = true, permissions = "tribes.command.name")
+    public void nameSubcommand(Player sender, @Arg(name = "name") String name) {
+        Member member = plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>You cannot name your tribe if you are not part of your tribe.");
+            return;
+        }
+        Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+        if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
+            MessageUtils.sendMessage(sender, "<red>You must be the leader of your tribe in order to name.");
+            return;
+        }
+        if (!plugin.getTribeManager().getTribeByName(name).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>That name has already been taken.");
+            return;
+        }
+        tribe.setName(name);
+        MessageUtils.sendMessage(sender, "<green>You have named your tribe <white>%tribe%<green>!",
+                new String[][]{{"%tribe%", tribe.getName()}});
     }
 
 }
