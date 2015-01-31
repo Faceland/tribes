@@ -6,3 +6,11 @@ depend: [facecore]
 commands:
   tribe:
     alias: [tr]
+
+permissions:
+  tribes.command:
+    default: true
+  tribes.command.create:
+    default: op
+  tribes.command.claim:
+    default: true

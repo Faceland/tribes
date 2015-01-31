@@ -38,7 +38,8 @@ public class TribeCommand {
         this.plugin = plugin;
     }
 
-    @Command(identifier = "tribe", description = "base tribe command", onlyPlayers = false)
+    @Command(identifier = "tribe", description = "base tribe command", onlyPlayers = false,
+            permissions = "tribes.command")
     public void baseCommand(CommandSender sender) {
         if (!(sender instanceof Player)) {
             MessageUtils.sendMessage(sender, "<red>Only players can execute the base command.");
@@ -75,7 +76,7 @@ public class TribeCommand {
         MessageUtils.sendMessage(player, "<green><====||====||====||====>");
     }
 
-    @Command(identifier = "tribe create", onlyPlayers = false)
+    @Command(identifier = "tribe create", onlyPlayers = false, permissions = "tribes.command.create")
     public void createByConsoleSubcommand(CommandSender sender, @Arg(name = "player", def = "") String playerName) {
         Player player;
         if (playerName.equals("")) {
@@ -114,7 +115,7 @@ public class TribeCommand {
         MessageUtils.sendMessage(player, "<green>You are now the leader of a tribe!");
     }
 
-    @Command(identifier = "tribe claim", onlyPlayers = true)
+    @Command(identifier = "tribe claim", onlyPlayers = true, permissions = "tribes.command.claim")
     public void claimSubcommand(Player player) {
         Member member = plugin.getMemberManager().getMember(player.getUniqueId()).or(new Member(player.getUniqueId()));
         if (!plugin.getMemberManager().hasMember(member)) {
