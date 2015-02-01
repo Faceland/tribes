@@ -209,7 +209,7 @@ public class TribeCommand {
             MessageUtils.sendMessage(sender, "<red>You must be the leader of your tribe in order to name.");
             return;
         }
-        if (!plugin.getTribeManager().getTribeByName(name).isPresent()) {
+        if (plugin.getTribeManager().getTribeByName(name).isPresent()) {
             MessageUtils.sendMessage(sender, "<red>That name has already been taken.");
             return;
         }
