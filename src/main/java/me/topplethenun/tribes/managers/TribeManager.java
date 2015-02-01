@@ -72,7 +72,7 @@ public class TribeManager {
     public Optional<Tribe> getTribeByName(String name) {
         Preconditions.checkNotNull(name);
         for (Tribe tribe : getTribes()) {
-            if (tribe.getName().equals(name)) {
+            if (name.equals(tribe.getName())) {
                 return Optional.of(tribe);
             }
         }
