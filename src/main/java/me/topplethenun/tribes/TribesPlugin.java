@@ -100,9 +100,15 @@ public class TribesPlugin extends FacePlugin {
             cellManager.placeCell(cell.getLocation(), cell);
         }
         for (Member member : dataStorage.loadMembers()) {
+            if (memberManager.hasMember(member)) {
+                memberManager.removeMember(member);
+            }
             memberManager.addMember(member);
         }
         for (Tribe tribe : dataStorage.loadTribes()) {
+            if (tribeManager.hasTribe(tribe)) {
+                tribeManager.removeTribe(tribe);
+            }
             tribeManager.addTribe(tribe);
         }
         debug("cells loaded: " + cellManager.getCells().size(),
