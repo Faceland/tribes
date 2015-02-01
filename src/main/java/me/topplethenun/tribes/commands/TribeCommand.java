@@ -149,7 +149,7 @@ public class TribeCommand {
             MessageUtils.sendMessage(player, "<red>You must be the leader of your tribe in order to claim.");
             return;
         }
-        cell.setOwner(tribe.getOwner());
+        cell.setOwner(tribe.getUniqueId());
         plugin.getCellManager().placeCell(vec2, cell);
         MessageUtils.sendMessage(player, "<green>You claimed this cell for your tribe!");
     }
