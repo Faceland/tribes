@@ -99,6 +99,10 @@ public final class Vec2 {
         return (int) Math.ceil(Math.sqrt(distanceSquared(other)));
     }
 
+    public Vec2 add(int x, int z) {
+        return new Vec2(world, getX() + x, getZ() + z);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Vec2)) {

@@ -149,6 +149,19 @@ public class TribeCommand {
             MessageUtils.sendMessage(player, "<red>You must be the leader of your tribe in order to claim.");
             return;
         }
+        if (numOfCells > 0) {
+            Cell northCell = plugin.getCellManager().getCell(vec2.add(1, 0)).or(new Cell(vec2.add(1, 0)));
+            Cell westCell = plugin.getCellManager().getCell(vec2.add(0, 1)).or(new Cell(vec2.add(0, 1)));
+            Cell southCell = plugin.getCellManager().getCell(vec2.add(-1, 0)).or(new Cell(vec2.add(-1, 0)));
+            Cell eastCell = plugin.getCellManager().getCell(vec2.add(0, -1)).or(new Cell(vec2.add(0, -1)));
+            if (!tribe.getUniqueId().equals(northCell.getOwner()) && !tribe.getUniqueId().equals(westCell.getOwner())
+                    && !tribe.getUniqueId().equals(southCell.getOwner()) && !tribe.getUniqueId().equals(eastCell
+                    .getOwner())) {
+                MessageUtils.sendMessage(player, "<red>The cell you're claiming must be adjacent to an existing claim" +
+                        ".");
+                return;
+            }
+        }
         cell.setOwner(tribe.getUniqueId());
         plugin.getCellManager().placeCell(vec2, cell);
         MessageUtils.sendMessage(player, "<green>You claimed this cell for your tribe!");
