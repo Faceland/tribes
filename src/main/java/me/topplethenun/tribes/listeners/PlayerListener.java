@@ -47,7 +47,7 @@ public class PlayerListener implements Listener {
         Vec2 fromVec = Vec2.fromChunk(from.getChunk());
         Cell toCell = plugin.getCellManager().getCell(toVec).or(new Cell(toVec));
         Cell fromCell = plugin.getCellManager().getCell(fromVec).or(new Cell(fromVec));
-        if (Objects.equal(toCell, fromCell)) {
+        if (Objects.equal(toCell, fromCell) || Objects.equal(toCell.getOwner(), fromCell.getOwner())) {
             return;
         }
         if (toCell.getOwner() == null) {
