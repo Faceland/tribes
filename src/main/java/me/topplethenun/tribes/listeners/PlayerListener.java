@@ -52,6 +52,7 @@ public class PlayerListener implements Listener {
         }
         if (toCell.getOwner() == null) {
             MessageUtils.sendMessage(event.getPlayer(), "<gray>Entering unclaimed land");
+            return;
         }
         Optional<Tribe> tribeOptional = plugin.getTribeManager().getTribe(toCell.getOwner());
         if (!tribeOptional.isPresent()) {
