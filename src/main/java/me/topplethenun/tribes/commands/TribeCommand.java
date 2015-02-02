@@ -203,6 +203,8 @@ public class TribeCommand {
             return;
         }
         tribe.setValidated(true);
+        plugin.getTribeManager().removeTribe(tribe);
+        plugin.getTribeManager().addTribe(tribe);
         MessageUtils.sendMessage(sender, "<green>You validated the tribe <white>%tribe%<green>!",
                 new String[][]{{"%tribe%", tribe.getName()}});
     }
@@ -222,11 +224,14 @@ public class TribeCommand {
             MessageUtils.sendMessage(sender, "<red>You must be the leader of your tribe in order to name.");
             return;
         }
-        if (plugin.getTribeManager().getTribeByName(name).isPresent()) {
+        String checkName = name.length() > 16 ? name.substring(0, 15) : name;
+        if (plugin.getTribeManager().getTribeByName(checkName).isPresent()) {
             MessageUtils.sendMessage(sender, "<red>That name has already been taken.");
             return;
         }
-        tribe.setName(name);
+        tribe.setName(checkName);
+        plugin.getTribeManager().removeTribe(tribe);
+        plugin.getTribeManager().addTribe(tribe);
         MessageUtils.sendMessage(sender, "<green>You have named your tribe <white>%tribe%<green>!",
                 new String[][]{{"%tribe%", tribe.getName()}});
     }
