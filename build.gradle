@@ -28,6 +28,7 @@ repositories {
 
 dependencies {
     compile "org.nunnerycode:facecore-gradle-all:0.0.3-SNAPSHOT"
+    compile "info.faceland:q:1.0.0"
 }
 
 processResources {
