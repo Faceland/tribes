@@ -48,6 +48,10 @@ public class TribesPlugin extends FacePlugin {
     private MasterConfiguration settings;
     private QPlugin qPlugin;
 
+    public DataStorage getDataStorage() {
+        return dataStorage;
+    }
+
     @Override
     public void enable() {
         INSTANCE = this;
@@ -88,6 +92,7 @@ public class TribesPlugin extends FacePlugin {
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
         qPlugin = (QPlugin) getServer().getPluginManager().getPlugin("q");
+
 
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override

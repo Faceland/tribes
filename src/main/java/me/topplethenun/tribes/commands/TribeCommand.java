@@ -336,5 +336,17 @@ public class TribeCommand {
         MessageUtils.sendMessage(sender, "<green>You left your tribe.");
     }
 
+    @Command(identifier = "tribe top", onlyPlayers = false, permissions = "tribes.command.top")
+    public void topSubcommand(CommandSender sender) {
+        List<Member> topMembers = plugin.getDataStorage().loadMembers();
+        MessageUtils.sendMessage(sender, "<green><====||==== PvP Rankings ====||====>");
+        for (int i = 0; i < Math.min(10, topMembers.size()); i++) {
+            Member m = topMembers.get(i);
+            MessageUtils.sendMessage(sender, "<gray>%num%. <white>%player%<gray> : <white>%%score%<gray> points",
+                    new String[][]{{"%num%", (i + 1) + ""}, {"%player%", Bukkit.getOfflinePlayer(m.getUniqueId())
+                            .getName()}, {"%score%", m.getScore() + ""}});
+        }
+    }
+
 
 }

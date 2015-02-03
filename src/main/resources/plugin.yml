@@ -20,3 +20,5 @@ permissions:
     default: true
   tribes.command.validate:
     default: true
+  tribes.command.top:
+    default: true
