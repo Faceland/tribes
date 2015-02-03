@@ -309,5 +309,32 @@ public class TribeCommand {
                 new String[][]{{"%player%", target.getDisplayName()}});
     }
 
+    @Command(identifier = "tribe leave", onlyPlayers = true, permissions = "tribes.command.leave")
+    public void leaveSubcommand(Player sender) {
+        Member member =
+                plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>You can't leave a tribe if you're not in one.");
+            return;
+        }
+        Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+        if (plugin.getMemberManager().getMembersWithTribe(tribe.getUniqueId()).size() > 1 && member.getUniqueId()
+                .equals(tribe.getOwner())) {
+            MessageUtils.sendMessage(sender, "<red>You cannot leave your tribe unless you are the last member.");
+            return;
+        }
+        member.setTribe(null);
+        member.setRank(Tribe.Rank.GUEST);
+        tribe.setRank(member.getUniqueId(), Tribe.Rank.GUEST);
+        plugin.getMemberManager().removeMember(member);
+        plugin.getMemberManager().addMember(member);
+        plugin.getTribeManager().removeTribe(tribe);
+        plugin.getTribeManager().addTribe(tribe);
+        MessageUtils.sendMessage(sender, "<green>You left your tribe.");
+    }
+
 
 }
