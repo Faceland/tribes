@@ -33,8 +33,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -206,9 +208,9 @@ public final class SqliteDataStorage implements DataStorage {
     }
 
     @Override
-    public Set<Member> loadMembers() {
-        Set<Member> members = new HashSet<>();
-        String query = "SELECT * FROM tr_members";
+    public List<Member> loadMembers() {
+        List<Member> members = new ArrayList<>();
+        String query = "SELECT * FROM tr_members ORDER BY score DESC";
         CloseableRegistry registry = new CloseableRegistry();
         try {
             Connection connection = registry.register(getConnection());
@@ -233,10 +235,10 @@ public final class SqliteDataStorage implements DataStorage {
     }
 
     @Override
-    public Set<Member> loadMembers(Iterable<UUID> uuids) {
-        Set<Member> members = new HashSet<>();
+    public List<Member> loadMembers(Iterable<UUID> uuids) {
+        List<Member> members = new ArrayList<>();
         Preconditions.checkState(initialized, "must be initialized");
-        String query = "SELECT * FROM tr_members WHERE id=?";
+        String query = "SELECT * FROM tr_members WHERE id=? ORDER BY score DESC";
         CloseableRegistry registry = new CloseableRegistry();
         try {
             Connection c = registry.register(getConnection());
@@ -261,7 +263,7 @@ public final class SqliteDataStorage implements DataStorage {
     }
 
     @Override
-    public Set<Member> loadMembers(UUID... uuids) {
+    public List<Member> loadMembers(UUID... uuids) {
         return loadMembers(Arrays.asList(uuids));
     }
 
@@ -292,8 +294,8 @@ public final class SqliteDataStorage implements DataStorage {
     }
 
     @Override
-    public Set<Tribe> loadTribes() {
-        Set<Tribe> tribes = new HashSet<>();
+    public List<Tribe> loadTribes() {
+        List<Tribe> tribes = new ArrayList<>();
         String query = "SELECT * FROM tr_tribes";
         CloseableRegistry registry = new CloseableRegistry();
         try {
@@ -316,8 +318,8 @@ public final class SqliteDataStorage implements DataStorage {
     }
 
     @Override
-    public Set<Tribe> loadTribes(Iterable<UUID> uuids) {
-        Set<Tribe> tribes = new HashSet<>();
+    public List<Tribe> loadTribes(Iterable<UUID> uuids) {
+        List<Tribe> tribes = new ArrayList<>();
         String query = "SELECT * FROM tr_tribes WHERE id=?";
         CloseableRegistry registry = new CloseableRegistry();
         try {
@@ -343,7 +345,7 @@ public final class SqliteDataStorage implements DataStorage {
     }
 
     @Override
-    public Set<Tribe> loadTribes(UUID... uuids) {
+    public List<Tribe> loadTribes(UUID... uuids) {
         return loadTribes(Arrays.asList(uuids));
     }
 

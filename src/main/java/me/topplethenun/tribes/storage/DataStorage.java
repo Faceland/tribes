@@ -19,6 +19,7 @@ import me.topplethenun.tribes.data.Member;
 import me.topplethenun.tribes.data.Tribe;
 import me.topplethenun.tribes.math.Vec2;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,19 +37,19 @@ public interface DataStorage {
 
     void saveCells(Iterable<Cell> cellIterable);
 
-    Set<Member> loadMembers();
+    List<Member> loadMembers();
 
-    Set<Member> loadMembers(Iterable<UUID> uuids);
+    List<Member> loadMembers(Iterable<UUID> uuids);
 
-    Set<Member> loadMembers(UUID... uuids);
+    List<Member> loadMembers(UUID... uuids);
 
     void saveMembers(Iterable<Member> memberIterable);
 
-    Set<Tribe> loadTribes();
+    List<Tribe> loadTribes();
 
-    Set<Tribe> loadTribes(Iterable<UUID> uuids);
+    List<Tribe> loadTribes(Iterable<UUID> uuids);
 
-    Set<Tribe> loadTribes(UUID... uuids);
+    List<Tribe> loadTribes(UUID... uuids);
 
     void saveTribes(Iterable<Tribe> tribeIterable);
 
