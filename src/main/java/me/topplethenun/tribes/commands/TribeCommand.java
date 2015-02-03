@@ -61,6 +61,11 @@ public class TribeCommand {
                     {"%rank%", WordUtils.capitalizeFully(member.getRank().name())},
                     {"%tribe%", !tribe.isValidated() ? tribe.getName() : "a nonvalidated tribe"}
             });
+            int cap = plugin.getSettings().getInt("config.cells-per-member", 1) * plugin.getMemberManager()
+                    .getMembersWithTribe(tribe.getUniqueId()).size();
+            int numOfCells = plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId()).size();
+            MessageUtils.sendMessage(player, "<gray>Your tribe has claimed <white>%amount%<gray>/<white>%cap%<gray> " +
+                    "cells");
             for (Tribe.Permission permission : Tribe.Permission.values()) {
                 if (permission == Tribe.Permission.KICK_IMMUNE || !tribe.isValidated()) {
                     continue;
