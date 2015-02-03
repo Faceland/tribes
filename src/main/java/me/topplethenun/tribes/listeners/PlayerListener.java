@@ -16,12 +16,16 @@ package me.topplethenun.tribes.listeners;
 
 import me.topplethenun.tribes.TribesPlugin;
 import me.topplethenun.tribes.data.Cell;
+import me.topplethenun.tribes.data.Member;
 import me.topplethenun.tribes.data.Tribe;
 import me.topplethenun.tribes.math.Vec2;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.nunnerycode.facecore.utilities.MessageUtils;
 import org.nunnerycode.kern.shade.google.common.base.Objects;
@@ -60,6 +64,63 @@ public class PlayerListener implements Listener {
         }
         MessageUtils.sendMessage(event.getPlayer(), "<gray>Owner: <white>%owner%", new String[][]{{"%owner%",
                 tribeOptional.get().getName()}});
+    }
+
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player)) {
+            return;
+        }
+        Player damaged = (Player) event.getEntity();
+        Player damager = (Player) event.getDamager();
+        Member damagedMember = plugin.getMemberManager().getMember(damaged.getUniqueId()).or(new Member(damaged
+                .getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(damagedMember)) {
+            plugin.getMemberManager().addMember(damagedMember);
+        }
+        Member damagerMember = plugin.getMemberManager().getMember(damager.getUniqueId()).or(new Member(damager
+                .getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(damagerMember)) {
+            plugin.getMemberManager().addMember(damagerMember);
+        }
+        if (damagedMember.getTribe() == null || damagerMember.getTribe() == null) {
+            return;
+        }
+        if (damagedMember.getTribe().equals(damagerMember.getTribe())) {
+            MessageUtils.sendMessage(damager, "<red>You cannot damage a member of your tribe!");
+            event.setCancelled(true);
+            event.setDamage(0);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        if (event.getEntity().getKiller() == null) {
+            return;
+        }
+        Player damaged = event.getEntity();
+        Player damager = event.getEntity().getKiller();
+        Member damagedMember = plugin.getMemberManager().getMember(damaged.getUniqueId()).or(new Member(damaged
+                .getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(damagedMember)) {
+            plugin.getMemberManager().addMember(damagedMember);
+        }
+        Member damagerMember = plugin.getMemberManager().getMember(damager.getUniqueId()).or(new Member(damager
+                .getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(damagerMember)) {
+            plugin.getMemberManager().addMember(damagerMember);
+        }
+        int score = damagedMember.getScore() / 10;
+        damagedMember.setScore(damagedMember.getScore() - score);
+        damagerMember.setScore(damagerMember.getScore() + score);
+        plugin.getMemberManager().removeMember(damagedMember);
+        plugin.getMemberManager().removeMember(damagerMember);
+        plugin.getMemberManager().addMember(damagedMember);
+        plugin.getMemberManager().addMember(damagerMember);
+        MessageUtils.sendMessage(damaged, "<red>You lost <white>%amount%<red> score for dying.",
+                new String[][]{{"%amount%", score + ""}});
+        MessageUtils.sendMessage(damager, "<green>You gained <white>%amount%<green> score for a successful kill.",
+                new String[][]{{"%amount%", score + ""}});
     }
 
 }
