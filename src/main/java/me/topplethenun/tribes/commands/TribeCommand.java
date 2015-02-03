@@ -14,21 +14,27 @@
  */
 package me.topplethenun.tribes.commands;
 
+import info.faceland.q.actions.options.Option;
+import info.faceland.q.actions.questions.Question;
 import me.topplethenun.tribes.TribesPlugin;
 import me.topplethenun.tribes.data.Cell;
 import me.topplethenun.tribes.data.Member;
 import me.topplethenun.tribes.data.Tribe;
 import me.topplethenun.tribes.math.Vec2;
+import me.topplethenun.tribes.utils.Formatter;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.nunnerycode.facecore.utilities.MessageUtils;
+import org.nunnerycode.facecore.utilities.TextUtils;
 import org.nunnerycode.kern.apache.commons.lang3.text.WordUtils;
 import org.nunnerycode.kern.methodcommand.Arg;
 import org.nunnerycode.kern.methodcommand.Command;
 import org.nunnerycode.kern.shade.google.common.base.Optional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class TribeCommand {
@@ -240,5 +246,68 @@ public class TribeCommand {
         MessageUtils.sendMessage(sender, "<green>You have named your tribe <white>%tribe%<green>!",
                 new String[][]{{"%tribe%", tribe.getName()}});
     }
+
+    @Command(identifier = "tribe invite", onlyPlayers = true, permissions = "tribes.command.invite")
+    public void inviteSubcommand(final Player sender, @Arg(name = "target") final Player target) {
+        Member senderMember =
+                plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(senderMember)) {
+            plugin.getMemberManager().addMember(senderMember);
+        }
+        final Member targetMember =
+                plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(targetMember)) {
+            plugin.getMemberManager().addMember(targetMember);
+        }
+        if (senderMember.getTribe() == null || !plugin.getTribeManager().getTribe(senderMember.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>You cannot invite to your tribe if you are not part of a tribe.");
+            return;
+        }
+        final Tribe tribe = plugin.getTribeManager().getTribe(senderMember.getTribe()).get();
+        if (targetMember.getTribe() != null && plugin.getTribeManager().getTribe(targetMember.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>You cannot invite someone if they're already part of a tribe.");
+            return;
+        }
+        if (!senderMember.getRank().getPermissions().contains(Tribe.Permission.INVITE)) {
+            MessageUtils.sendMessage(sender, "<red>You don't have permission in your tribe to invite someone.");
+            return;
+        }
+        List<Option> options = new ArrayList<>();
+        options.add(new Option("accept", new Runnable() {
+            @Override
+            public void run() {
+                tribe.setRank(targetMember.getUniqueId(), Tribe.Rank.GUEST);
+                plugin.getTribeManager().removeTribe(tribe);
+                plugin.getTribeManager().addTribe(tribe);
+                targetMember.setTribe(tribe.getUniqueId());
+                plugin.getMemberManager().removeMember(targetMember);
+                plugin.getMemberManager().addMember(targetMember);
+                MessageUtils.sendMessage(sender, "<white>%player%<green> joined your tribe!",
+                        new String[][]{{"%player%", target.getDisplayName()}});
+                MessageUtils.sendMessage(target, "<green>You joined <white>%tribe%<green>!",
+                        new String[][]{{"%tribe%", tribe.getName()}});
+            }
+        }, "Accept the invitation"));
+        options.add(new Option("deny", new Runnable() {
+            @Override
+            public void run() {
+                MessageUtils.sendMessage(sender, "<white>%player%<red> rejected your invitation.",
+                        new String[][]{{"%player%", target.getDisplayName()}});
+                MessageUtils.sendMessage(target, "<red>You rejected <white>%player%<red>'s invitation.",
+                        new String[][]{{"%player%", sender.getDisplayName()}});
+            }
+        }, "Reject the invitation"));
+        Question question = new Question(target.getUniqueId(), TextUtils.color(TextUtils.args(
+                "<green>You have been invited to join <white>%tribe%<green> by <white>%player%<green>!",
+                new String[][]{{}})), options);
+        plugin.getQPlugin().getQuestionManager().appendQuestion(question);
+        List<String> messages = Formatter.format(question);
+        for (String m : messages) {
+            target.sendMessage(m);
+        }
+        MessageUtils.sendMessage(sender, "<green>You sent an invite to <white>%player%<green>!",
+                new String[][]{{"%player%", target.getDisplayName()}});
+    }
+
 
 }

@@ -14,3 +14,9 @@ permissions:
     default: op
   tribes.command.claim:
     default: true
+  tribes.command.name:
+    default: true
+  tribes.command.invite:
+    default: true
+  tribes.command.validate:
+    default: true

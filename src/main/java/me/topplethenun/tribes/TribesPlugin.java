@@ -14,6 +14,7 @@
  */
 package me.topplethenun.tribes;
 
+import info.faceland.q.QPlugin;
 import me.topplethenun.tribes.commands.TribeCommand;
 import me.topplethenun.tribes.data.Cell;
 import me.topplethenun.tribes.data.Member;
@@ -45,6 +46,7 @@ public class TribesPlugin extends FacePlugin {
     private MemberManager memberManager;
     private PluginLogger debugPrinter;
     private MasterConfiguration settings;
+    private QPlugin qPlugin;
 
     @Override
     public void enable() {
@@ -84,6 +86,8 @@ public class TribesPlugin extends FacePlugin {
         commandHandler.registerCommands(new TribeCommand(this));
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+
+        qPlugin = (QPlugin) getServer().getPluginManager().getPlugin("q");
 
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
@@ -170,4 +174,9 @@ public class TribesPlugin extends FacePlugin {
     public MasterConfiguration getSettings() {
         return settings;
     }
+
+    public QPlugin getQPlugin() {
+        return qPlugin;
+    }
+
 }
