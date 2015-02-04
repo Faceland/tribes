@@ -31,6 +31,7 @@ import org.nunnerycode.facecore.utilities.TextUtils;
 import org.nunnerycode.kern.apache.commons.lang3.text.WordUtils;
 import org.nunnerycode.kern.methodcommand.Arg;
 import org.nunnerycode.kern.methodcommand.Command;
+import org.nunnerycode.kern.methodcommand.Wildcard;
 import org.nunnerycode.kern.shade.google.common.base.Optional;
 
 import java.util.ArrayList;
@@ -221,7 +222,7 @@ public class TribeCommand {
     }
 
     @Command(identifier = "tribe name", onlyPlayers = true, permissions = "tribes.command.name")
-    public void nameSubcommand(Player sender, @Arg(name = "name") String name) {
+    public void nameSubcommand(Player sender, @Wildcard @Arg(name = "name") String name) {
         Member member = plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
