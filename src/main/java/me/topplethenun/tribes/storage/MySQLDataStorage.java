@@ -44,7 +44,7 @@ public final class MySQLDataStorage implements DataStorage {
     private static final String TR_CELLS_CREATE = "CREATE TABLE IF NOT EXISTS tr_cells (world VARCHAR(60) NOT NULL," +
             "x INT NOT NULL, z INT NOT NULL, owner VARCHAR(60), PRIMARY KEY (world, x, z))";
     private static final String TR_MEMBERS_CREATE = "CREATE TABLE IF NOT EXISTS tr_members (id VARCHAR(60) PRIMARY " +
-            "KEY, score INT NOT NULL, tribe VARCHAR(60), rank VARCHAR(20))";
+            "KEY, score INT NOT NULL, tribe VARCHAR(60), rank VARCHAR(20), pvpstate INT NOT NULL, partnerid VARCHAR(60))";
     private static final String TR_TRIBES_CREATE = "CREATE TABLE IF NOT EXISTS tr_tribes (id VARCHAR(60) PRIMARY " +
             "KEY, owner VARCHAR(60) NOT NULL, name VARCHAR(20) NOT NULL UNIQUE)";
     private final PluginLogger pluginLogger;
@@ -223,6 +223,11 @@ public final class MySQLDataStorage implements DataStorage {
                     member.setTribe(UUID.fromString(tribeString));
                 }
                 member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
+                member.setPvpState(Member.PvpState.values()[resultSet.getInt("pvpstate")]);
+                String partnerId = resultSet.getString("partnerid");
+                if (partnerId != null) {
+                    member.setDuelPartner(UUID.fromString(partnerId));
+                }
                 members.add(member);
             }
         } catch (SQLException e) {
@@ -248,8 +253,16 @@ public final class MySQLDataStorage implements DataStorage {
                 while (resultSet.next()) {
                     Member member = new Member(UUID.fromString(resultSet.getString("id")));
                     member.setScore(resultSet.getInt("score"));
-                    member.setTribe(UUID.fromString(resultSet.getString("tribe")));
+                    String tribeString = resultSet.getString("tribe");
+                    if (tribeString != null) {
+                        member.setTribe(UUID.fromString(tribeString));
+                    }
                     member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
+                    member.setPvpState(Member.PvpState.values()[resultSet.getInt("pvpstate")]);
+                    String partnerId = resultSet.getString("partnerid");
+                    if (partnerId != null) {
+                        member.setDuelPartner(UUID.fromString(partnerId));
+                    }
                     members.add(member);
                 }
             }
@@ -270,7 +283,7 @@ public final class MySQLDataStorage implements DataStorage {
     public void saveMembers(Iterable<Member> memberIterable) {
         Preconditions.checkNotNull(memberIterable, "memberIterable cannot be null");
         CloseableRegistry registry = new CloseableRegistry();
-        String query = "REPLACE INTO tr_members (id, score, tribe, rank) VALUES (?,?,?,?)";
+        String query = "REPLACE INTO tr_members (id, score, tribe, rank, pvpstate, partnerid) VALUES (?,?,?,?,?,?)";
         try {
             Connection connection = registry.register(connectionPool.getConnection());
             PreparedStatement statement = registry.register(connection.prepareStatement(query));
@@ -283,6 +296,12 @@ public final class MySQLDataStorage implements DataStorage {
                     statement.setString(3, member.getTribe().toString());
                 }
                 statement.setString(4, member.getRank() != null ? member.getRank().name() : Tribe.Rank.GUEST.name());
+                statement.setInt(5, member.getPvpState().ordinal());
+                if (member.getDuelPartner() == null) {
+                    statement.setNull(6, Types.VARCHAR);
+                } else {
+                    statement.setString(6, member.getDuelPartner().toString());
+                }
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
