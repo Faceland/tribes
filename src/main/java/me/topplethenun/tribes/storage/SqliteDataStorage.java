@@ -45,7 +45,7 @@ public final class SqliteDataStorage implements DataStorage {
     private static final String TR_CELLS_CREATE = "CREATE TABLE IF NOT EXISTS tr_cells (world TEXT NOT NULL," +
             "x INTEGER NOT NULL, z INTEGER NOT NULL, owner TEXT, PRIMARY KEY (world, x, z))";
     private static final String TR_MEMBERS_CREATE = "CREATE TABLE IF NOT EXISTS tr_members (id TEXT PRIMARY " +
-            "KEY, score INTEGER NOT NULL, tribe TEXT, rank TEXT)";
+            "KEY, score INTEGER NOT NULL, tribe TEXT, rank TEXT, pvpstate INTEGER NOT NULL, partnerid TEXT)";
     private static final String TR_TRIBES_CREATE = "CREATE TABLE IF NOT EXISTS tr_tribes (id TEXT PRIMARY " +
             "KEY, owner TEXT NOT NULL, name TEXT NOT NULL UNIQUE)";
     private final PluginLogger pluginLogger;
@@ -186,6 +186,7 @@ public final class SqliteDataStorage implements DataStorage {
 
     @Override
     public void saveCells(Iterable<Cell> cellIterable) {
+        Preconditions.checkState(initialized, "must be initialized");
         Preconditions.checkNotNull(cellIterable, "cellIterable cannot be null");
         String query = "REPLACE INTO tr_cells (world, x, z, owner) VALUES (?,?,?,?)";
         CloseableRegistry registry = new CloseableRegistry();
@@ -209,6 +210,7 @@ public final class SqliteDataStorage implements DataStorage {
     @Override
     public List<Member> loadMembers() {
         List<Member> members = new ArrayList<>();
+        Preconditions.checkState(initialized, "must be initialized");
         String query = "SELECT * FROM tr_members ORDER BY score DESC";
         CloseableRegistry registry = new CloseableRegistry();
         try {
@@ -223,6 +225,11 @@ public final class SqliteDataStorage implements DataStorage {
                     member.setTribe(UUID.fromString(tribeString));
                 }
                 member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
+                member.setPvpState(Member.PvpState.values()[resultSet.getInt("pvpstate")]);
+                String partnerId = resultSet.getString("partnerid");
+                if (partnerId != null) {
+                    member.setDuelPartner(UUID.fromString(partnerId));
+                }
                 members.add(member);
             }
         } catch (SQLException e) {
@@ -248,8 +255,16 @@ public final class SqliteDataStorage implements DataStorage {
                 while (resultSet.next()) {
                     Member member = new Member(UUID.fromString(resultSet.getString("id")));
                     member.setScore(resultSet.getInt("score"));
-                    member.setTribe(UUID.fromString(resultSet.getString("tribe")));
+                    String tribe = resultSet.getString("tribe");
+                    if (tribe != null) {
+                        member.setTribe(UUID.fromString(tribe));
+                    }
                     member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
+                    member.setPvpState(Member.PvpState.values()[resultSet.getInt("pvpstate")]);
+                    String partnerId = resultSet.getString("partnerid");
+                    if (partnerId != null) {
+                        member.setDuelPartner(UUID.fromString(partnerId));
+                    }
                     members.add(member);
                 }
             }
@@ -269,6 +284,7 @@ public final class SqliteDataStorage implements DataStorage {
     @Override
     public void saveMembers(Iterable<Member> memberIterable) {
         Preconditions.checkNotNull(memberIterable, "memberIterable cannot be null");
+        Preconditions.checkState(initialized, "must be initialized");
         CloseableRegistry registry = new CloseableRegistry();
         String query = "REPLACE INTO tr_members (id, score, tribe, rank) VALUES (?,?,?,?)";
         try {
@@ -295,6 +311,7 @@ public final class SqliteDataStorage implements DataStorage {
     @Override
     public List<Tribe> loadTribes() {
         List<Tribe> tribes = new ArrayList<>();
+        Preconditions.checkState(initialized, "must be initialized");
         String query = "SELECT * FROM tr_tribes";
         CloseableRegistry registry = new CloseableRegistry();
         try {
@@ -319,6 +336,7 @@ public final class SqliteDataStorage implements DataStorage {
     @Override
     public List<Tribe> loadTribes(Iterable<UUID> uuids) {
         List<Tribe> tribes = new ArrayList<>();
+        Preconditions.checkState(initialized, "must be initialized");
         String query = "SELECT * FROM tr_tribes WHERE id=?";
         CloseableRegistry registry = new CloseableRegistry();
         try {
@@ -351,6 +369,7 @@ public final class SqliteDataStorage implements DataStorage {
     @Override
     public void saveTribes(Iterable<Tribe> tribeIterable) {
         Preconditions.checkNotNull(tribeIterable);
+        Preconditions.checkState(initialized, "must be initialized");
         String query = "REPLACE INTO tr_tribes (id, owner, name) VALUES (?,?,?)";
         CloseableRegistry registry = new CloseableRegistry();
         try {
