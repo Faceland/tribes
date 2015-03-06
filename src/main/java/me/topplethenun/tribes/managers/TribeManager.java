@@ -15,8 +15,8 @@
 package me.topplethenun.tribes.managers;
 
 import com.google.common.base.Preconditions;
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import me.topplethenun.tribes.data.Tribe;
-import org.nunnerycode.kern.shade.google.common.base.Optional;
 
 import java.util.HashSet;
 import java.util.Map;

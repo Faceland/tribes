@@ -14,9 +14,9 @@
  */
 package me.topplethenun.tribes.utils;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import info.faceland.q.actions.options.Option;
 import info.faceland.q.actions.questions.AbstractQuestion;
-import org.nunnerycode.facecore.utilities.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;

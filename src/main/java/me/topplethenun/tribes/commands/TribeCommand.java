@@ -14,6 +14,13 @@
  */
 package me.topplethenun.tribes.commands;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
+import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
+import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.text.WordUtils;
+import com.tealcube.minecraft.bukkit.kern.methodcommand.Arg;
+import com.tealcube.minecraft.bukkit.kern.methodcommand.Command;
+import com.tealcube.minecraft.bukkit.kern.methodcommand.Wildcard;
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import info.faceland.q.actions.options.Option;
 import info.faceland.q.actions.questions.Question;
 import me.topplethenun.tribes.TribesPlugin;
@@ -26,13 +33,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.nunnerycode.facecore.utilities.MessageUtils;
-import org.nunnerycode.facecore.utilities.TextUtils;
-import org.nunnerycode.kern.apache.commons.lang3.text.WordUtils;
-import org.nunnerycode.kern.methodcommand.Arg;
-import org.nunnerycode.kern.methodcommand.Command;
-import org.nunnerycode.kern.methodcommand.Wildcard;
-import org.nunnerycode.kern.shade.google.common.base.Optional;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -14,10 +14,10 @@
  */
 package me.topplethenun.tribes.managers;
 
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Preconditions;
 import me.topplethenun.tribes.data.Cell;
 import me.topplethenun.tribes.math.Vec2;
-import org.nunnerycode.kern.shade.google.common.base.Optional;
-import org.nunnerycode.kern.shade.google.common.base.Preconditions;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -14,8 +14,8 @@
  */
 package me.topplethenun.tribes.data;
 
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Preconditions;
 import me.topplethenun.tribes.math.Vec2;
-import org.nunnerycode.kern.shade.google.common.base.Preconditions;
 
 import java.util.UUID;
 

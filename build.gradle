@@ -3,7 +3,6 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id "com.github.hierynomus.license" version "0.11.0"
     id "java"
-    id "maven"
     id "maven-publish"
     id "wrapper"
 }
@@ -12,14 +11,14 @@ sourceCompatibility = "1.7"
 
 defaultTasks 'clean', 'licenseFormat', 'check', 'build'
 
-group = "me.topplethenun"
+group = "com.tealcube.minecraft.bukkit"
 archivesBaseName = "tribes"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
     maven {
-        url "http://repo-topplethenun.rhcloud.com/nexus/content/groups/public/"
+        url "http://tealcube.com/nexus/content/groups/public/"
     }
     maven {
         url "https://hub.spigotmc.org/nexus/content/groups/public/"
@@ -27,14 +26,14 @@ repositories {
 }
 
 dependencies {
-    compile "org.nunnerycode:facecore-gradle-all:0.0.3-SNAPSHOT"
-    compile "org.nunnerycode:q-gradle:0.0.1-SNAPSHOT"
+    compile "com.tealcube.minecraft.bukkit:facecore-all:1.0.0-SNAPSHOT"
+    compile "com.tealcube.minecraft.bukkit:q:1.0.0-SNAPSHOT"
 }
 
 processResources {
     filter ReplaceTokens, tokens: [
-            VERSION: version + "-" + (System.getenv("CIRCLECI") != null ? "circleci" : "compiled") + "-" + (System.getenv("CIRCLE_BUILD_NUM") ?: "0"),
-            NAME   : project.name
+            VERSION: version + "-" + (System.getenv("BUILD_NUMBER") ?: "0"),
+            NAME   : (System.getenv("JOB_NAME") ?: project.name)
     ]
 }
 
@@ -56,8 +55,8 @@ publishing {
     }
     repositories {
         maven {
-            url "http://repo-topplethenun.rhcloud.com/nexus/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases'}/"
-            name "nunnerycode-repo"
+            url "http://tealcube.com/nexus/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases'}/"
+            name "TealCube"
             credentials {
                 username System.getenv("nexusUsername") ?: nexusUsername
                 password System.getenv("nexusPassword") ?: nexusPassword

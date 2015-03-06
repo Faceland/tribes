@@ -14,6 +14,13 @@
  */
 package me.topplethenun.tribes;
 
+import com.tealcube.minecraft.bukkit.facecore.logging.PluginLogger;
+import com.tealcube.minecraft.bukkit.facecore.plugin.FacePlugin;
+import com.tealcube.minecraft.bukkit.facecore.shade.config.MasterConfiguration;
+import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartConfiguration;
+import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartYamlConfiguration;
+import com.tealcube.minecraft.bukkit.kern.methodcommand.CommandHandler;
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import info.faceland.q.QPlugin;
 import me.topplethenun.tribes.commands.TribeCommand;
 import me.topplethenun.tribes.data.Cell;
@@ -27,13 +34,6 @@ import me.topplethenun.tribes.storage.DataStorage;
 import me.topplethenun.tribes.storage.MySQLDataStorage;
 import me.topplethenun.tribes.storage.SqliteDataStorage;
 import org.bukkit.event.HandlerList;
-import org.nunnerycode.facecore.configuration.MasterConfiguration;
-import org.nunnerycode.facecore.configuration.VersionedSmartConfiguration;
-import org.nunnerycode.facecore.configuration.VersionedSmartYamlConfiguration;
-import org.nunnerycode.facecore.logging.PluginLogger;
-import org.nunnerycode.facecore.plugin.FacePlugin;
-import org.nunnerycode.kern.methodcommand.CommandHandler;
-import org.nunnerycode.kern.shade.google.common.base.Optional;
 
 import java.io.File;
 

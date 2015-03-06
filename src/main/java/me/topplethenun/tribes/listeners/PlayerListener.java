@@ -14,6 +14,9 @@
  */
 package me.topplethenun.tribes.listeners;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Objects;
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import me.topplethenun.tribes.TribesPlugin;
 import me.topplethenun.tribes.data.Cell;
 import me.topplethenun.tribes.data.Member;
@@ -27,9 +30,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.nunnerycode.facecore.utilities.MessageUtils;
-import org.nunnerycode.kern.shade.google.common.base.Objects;
-import org.nunnerycode.kern.shade.google.common.base.Optional;
 
 public class PlayerListener implements Listener {
 
