@@ -286,7 +286,7 @@ public final class SqliteDataStorage implements DataStorage {
         Preconditions.checkNotNull(memberIterable, "memberIterable cannot be null");
         Preconditions.checkState(initialized, "must be initialized");
         CloseableRegistry registry = new CloseableRegistry();
-        String query = "REPLACE INTO tr_members (id, score, tribe, rank) VALUES (?,?,?,?)";
+        String query = "REPLACE INTO tr_members (id, score, tribe, rank, pvpstate, partnerid) VALUES (?,?,?,?,?,?)";
         try {
             Connection connection = registry.register(getConnection());
             PreparedStatement statement = registry.register(connection.prepareStatement(query));
@@ -299,6 +299,12 @@ public final class SqliteDataStorage implements DataStorage {
                     statement.setString(3, member.getTribe().toString());
                 }
                 statement.setString(4, member.getRank() != null ? member.getRank().name() : Tribe.Rank.GUEST.name());
+                statement.setInt(5, member.getPvpState().ordinal());
+                if (member.getDuelPartner() == null) {
+                    statement.setNull(6, Types.VARCHAR);
+                } else {
+                    statement.setString(6, member.getDuelPartner().toString());
+                }
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
