@@ -12,12 +12,12 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-package me.topplethenun.tribes.storage;
+package com.tealcube.minecraft.bukkit.tribes.storage;
 
-import me.topplethenun.tribes.data.Cell;
-import me.topplethenun.tribes.data.Member;
-import me.topplethenun.tribes.data.Tribe;
-import me.topplethenun.tribes.math.Vec2;
+import com.tealcube.minecraft.bukkit.tribes.data.Member;
+import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
+import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 
 import java.util.List;
 import java.util.Set;

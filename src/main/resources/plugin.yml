@@ -1,7 +1,7 @@
 name: @NAME@
 version: @VERSION@
-main: me.topplethenun.tribes.TribesPlugin
-depend: [facecore, q]
+main: com.tealcube.minecraft.bukkit.tribes.TribesPlugin
+depend: [Facecore, Q]
 
 commands:
   tribe:

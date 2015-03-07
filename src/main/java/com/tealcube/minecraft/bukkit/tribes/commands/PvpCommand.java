@@ -1,10 +1,10 @@
-package me.topplethenun.tribes.commands;
+package com.tealcube.minecraft.bukkit.tribes.commands;
 
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.kern.methodcommand.Command;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
-import me.topplethenun.tribes.TribesPlugin;
-import me.topplethenun.tribes.data.Member;
+import com.tealcube.minecraft.bukkit.tribes.data.Member;
+import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
 import org.bukkit.entity.Player;
 
 public class PvpCommand {

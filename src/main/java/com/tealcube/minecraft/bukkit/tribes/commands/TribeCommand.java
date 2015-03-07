@@ -12,7 +12,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-package me.topplethenun.tribes.commands;
+package com.tealcube.minecraft.bukkit.tribes.commands;
 
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
@@ -21,14 +21,14 @@ import com.tealcube.minecraft.bukkit.kern.methodcommand.Arg;
 import com.tealcube.minecraft.bukkit.kern.methodcommand.Command;
 import com.tealcube.minecraft.bukkit.kern.methodcommand.Wildcard;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
+import com.tealcube.minecraft.bukkit.tribes.data.Member;
+import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
+import com.tealcube.minecraft.bukkit.tribes.utils.Formatter;
 import info.faceland.q.actions.options.Option;
 import info.faceland.q.actions.questions.Question;
-import me.topplethenun.tribes.TribesPlugin;
-import me.topplethenun.tribes.data.Cell;
-import me.topplethenun.tribes.data.Member;
-import me.topplethenun.tribes.data.Tribe;
-import me.topplethenun.tribes.math.Vec2;
-import me.topplethenun.tribes.utils.Formatter;
+import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
+import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;

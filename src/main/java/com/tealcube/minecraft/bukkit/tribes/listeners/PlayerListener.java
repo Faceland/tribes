@@ -12,16 +12,16 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-package me.topplethenun.tribes.listeners;
+package com.tealcube.minecraft.bukkit.tribes.listeners;
 
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Objects;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
-import me.topplethenun.tribes.TribesPlugin;
-import me.topplethenun.tribes.data.Cell;
-import me.topplethenun.tribes.data.Member;
-import me.topplethenun.tribes.data.Tribe;
-import me.topplethenun.tribes.math.Vec2;
+import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
+import com.tealcube.minecraft.bukkit.tribes.data.Cell;
+import com.tealcube.minecraft.bukkit.tribes.data.Member;
+import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

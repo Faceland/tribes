@@ -12,7 +12,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-package me.topplethenun.tribes.utils;
+package com.tealcube.minecraft.bukkit.tribes.utils;
 
 import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import info.faceland.q.actions.options.Option;

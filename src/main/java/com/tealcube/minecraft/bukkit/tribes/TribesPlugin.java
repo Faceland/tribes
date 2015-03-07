@@ -12,7 +12,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-package me.topplethenun.tribes;
+package com.tealcube.minecraft.bukkit.tribes;
 
 import com.tealcube.minecraft.bukkit.facecore.logging.PluginLogger;
 import com.tealcube.minecraft.bukkit.facecore.plugin.FacePlugin;
@@ -21,20 +21,20 @@ import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartConfigu
 import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartYamlConfiguration;
 import com.tealcube.minecraft.bukkit.kern.methodcommand.CommandHandler;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
+import com.tealcube.minecraft.bukkit.tribes.commands.PvpCommand;
+import com.tealcube.minecraft.bukkit.tribes.commands.TribeCommand;
+import com.tealcube.minecraft.bukkit.tribes.data.Member;
+import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
+import com.tealcube.minecraft.bukkit.tribes.managers.CellManager;
+import com.tealcube.minecraft.bukkit.tribes.managers.MemberManager;
+import com.tealcube.minecraft.bukkit.tribes.managers.PvpManager;
+import com.tealcube.minecraft.bukkit.tribes.managers.TribeManager;
+import com.tealcube.minecraft.bukkit.tribes.storage.DataStorage;
+import com.tealcube.minecraft.bukkit.tribes.storage.MySQLDataStorage;
 import info.faceland.q.QPlugin;
-import me.topplethenun.tribes.commands.PvpCommand;
-import me.topplethenun.tribes.commands.TribeCommand;
-import me.topplethenun.tribes.data.Cell;
-import me.topplethenun.tribes.data.Member;
-import me.topplethenun.tribes.data.Tribe;
-import me.topplethenun.tribes.listeners.PlayerListener;
-import me.topplethenun.tribes.managers.CellManager;
-import me.topplethenun.tribes.managers.MemberManager;
-import me.topplethenun.tribes.managers.PvpManager;
-import me.topplethenun.tribes.managers.TribeManager;
-import me.topplethenun.tribes.storage.DataStorage;
-import me.topplethenun.tribes.storage.MySQLDataStorage;
-import me.topplethenun.tribes.storage.SqliteDataStorage;
+import com.tealcube.minecraft.bukkit.tribes.data.Cell;
+import com.tealcube.minecraft.bukkit.tribes.listeners.PlayerListener;
+import com.tealcube.minecraft.bukkit.tribes.storage.SqliteDataStorage;
 import org.bukkit.event.HandlerList;
 
 import java.io.File;

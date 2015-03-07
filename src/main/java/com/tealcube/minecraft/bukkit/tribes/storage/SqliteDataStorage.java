@@ -12,20 +12,21 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-package me.topplethenun.tribes.storage;
+package com.tealcube.minecraft.bukkit.tribes.storage;
 
-import com.tealcube.minecraft.bukkit.facecore.database.MySqlDatabasePool;
 import com.tealcube.minecraft.bukkit.facecore.logging.PluginLogger;
+import com.tealcube.minecraft.bukkit.facecore.utilities.IOUtils;
 import com.tealcube.minecraft.bukkit.kern.io.CloseableRegistry;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Preconditions;
-import me.topplethenun.tribes.TribesPlugin;
-import me.topplethenun.tribes.data.Cell;
-import me.topplethenun.tribes.data.Member;
-import me.topplethenun.tribes.data.Tribe;
-import me.topplethenun.tribes.math.Vec2;
+import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
+import com.tealcube.minecraft.bukkit.tribes.data.Cell;
+import com.tealcube.minecraft.bukkit.tribes.data.Member;
+import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,28 +40,34 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public final class MySQLDataStorage implements DataStorage {
+public final class SqliteDataStorage implements DataStorage {
 
-    private static final String TR_CELLS_CREATE = "CREATE TABLE IF NOT EXISTS tr_cells (world VARCHAR(60) NOT NULL," +
-            "x INT NOT NULL, z INT NOT NULL, owner VARCHAR(60), PRIMARY KEY (world, x, z))";
-    private static final String TR_MEMBERS_CREATE = "CREATE TABLE IF NOT EXISTS tr_members (id VARCHAR(60) PRIMARY " +
-            "KEY, score INT NOT NULL, tribe VARCHAR(60), rank VARCHAR(20), pvpstate INT NOT NULL, partnerid VARCHAR(60))";
-    private static final String TR_TRIBES_CREATE = "CREATE TABLE IF NOT EXISTS tr_tribes (id VARCHAR(60) PRIMARY " +
-            "KEY, owner VARCHAR(60) NOT NULL, name VARCHAR(20) NOT NULL UNIQUE)";
+    private static final String TR_CELLS_CREATE = "CREATE TABLE IF NOT EXISTS tr_cells (world TEXT NOT NULL," +
+            "x INTEGER NOT NULL, z INTEGER NOT NULL, owner TEXT, PRIMARY KEY (world, x, z))";
+    private static final String TR_MEMBERS_CREATE = "CREATE TABLE IF NOT EXISTS tr_members (id TEXT PRIMARY " +
+            "KEY, score INTEGER NOT NULL, tribe TEXT, rank TEXT, pvpstate INTEGER NOT NULL, partnerid TEXT)";
+    private static final String TR_TRIBES_CREATE = "CREATE TABLE IF NOT EXISTS tr_tribes (id TEXT PRIMARY " +
+            "KEY, owner TEXT NOT NULL, name TEXT NOT NULL UNIQUE)";
     private final PluginLogger pluginLogger;
     private boolean initialized;
     private TribesPlugin plugin;
-    private MySqlDatabasePool connectionPool;
+    private File file;
 
-    public MySQLDataStorage(TribesPlugin plugin) {
+    public SqliteDataStorage(TribesPlugin plugin) {
         this.plugin = plugin;
-        this.pluginLogger = new PluginLogger(new File(plugin.getDataFolder(), "logs/mysql.log"));
+        this.pluginLogger = new PluginLogger(new File(plugin.getDataFolder(), "logs/sqlite.log"));
         this.initialized = false;
+        IOUtils.createDirectory(new File(plugin.getDataFolder(), "db"));
+        this.file = new File(plugin.getDataFolder(), "db/tribes.db");
     }
 
     private void createTable() throws SQLException {
         CloseableRegistry registry = new CloseableRegistry();
-        Connection connection = registry.register(connectionPool.getConnection());
+        Connection connection = registry.register(getConnection());
+
+        if (connection == null) {
+            return;
+        }
 
         Statement statement = registry.register(connection.createStatement());
         statement.executeUpdate(TR_CELLS_CREATE);
@@ -91,19 +98,12 @@ public final class MySQLDataStorage implements DataStorage {
             return;
         }
 
-        connectionPool = new MySqlDatabasePool(plugin.getSettings().getString("db.host"), plugin.getSettings()
-                .getString("db.port"), plugin.getSettings().getString("db.username"), plugin.getSettings().getString
-                ("db.password"), plugin.getSettings().getString("db.database"));
-        if (!connectionPool.initialize()) {
-            return;
-        }
-
         try {
             createTable();
             initialized = true;
-            plugin.getPluginLogger().log(Level.INFO, "mysql initialized");
+            plugin.getPluginLogger().log(Level.INFO, "sqlite initialized");
         } catch (SQLException ex) {
-            plugin.getPluginLogger().log(Level.INFO, "unable to setup mysql");
+            plugin.getPluginLogger().log(Level.INFO, "unable to setup sqlite");
         }
     }
 
@@ -119,7 +119,7 @@ public final class MySQLDataStorage implements DataStorage {
         String query = "SELECT * FROM tr_cells";
         CloseableRegistry registry = new CloseableRegistry();
         try {
-            Connection c = registry.register(connectionPool.getConnection());
+            Connection c = registry.register(getConnection());
             Statement s = registry.register(c.createStatement());
             ResultSet rs = registry.register(s.executeQuery(query));
             while (rs.next()) {
@@ -150,7 +150,7 @@ public final class MySQLDataStorage implements DataStorage {
         String query = "SELECT * FROM tr_cells WHERE world=? AND x=? AND z=?";
         CloseableRegistry registry = new CloseableRegistry();
         try {
-            Connection c = registry.register(connectionPool.getConnection());
+            Connection c = registry.register(getConnection());
             PreparedStatement statement = registry.register(c.prepareStatement(query));
             for (Vec2 vec : vec2s) {
                 statement.setString(1, vec.getWorld().getName());
@@ -186,11 +186,12 @@ public final class MySQLDataStorage implements DataStorage {
 
     @Override
     public void saveCells(Iterable<Cell> cellIterable) {
+        Preconditions.checkState(initialized, "must be initialized");
         Preconditions.checkNotNull(cellIterable, "cellIterable cannot be null");
         String query = "REPLACE INTO tr_cells (world, x, z, owner) VALUES (?,?,?,?)";
         CloseableRegistry registry = new CloseableRegistry();
         try {
-            Connection c = registry.register(connectionPool.getConnection());
+            Connection c = registry.register(getConnection());
             PreparedStatement statement = registry.register(c.prepareStatement(query));
             for (Cell cell : cellIterable) {
                 statement.setString(1, cell.getLocation().getWorld().getName());
@@ -209,10 +210,11 @@ public final class MySQLDataStorage implements DataStorage {
     @Override
     public List<Member> loadMembers() {
         List<Member> members = new ArrayList<>();
+        Preconditions.checkState(initialized, "must be initialized");
         String query = "SELECT * FROM tr_members ORDER BY score DESC";
         CloseableRegistry registry = new CloseableRegistry();
         try {
-            Connection connection = registry.register(connectionPool.getConnection());
+            Connection connection = registry.register(getConnection());
             Statement statement = registry.register(connection.createStatement());
             ResultSet resultSet = registry.register(statement.executeQuery(query));
             while (resultSet.next()) {
@@ -245,7 +247,7 @@ public final class MySQLDataStorage implements DataStorage {
         String query = "SELECT * FROM tr_members WHERE id=? ORDER BY score DESC";
         CloseableRegistry registry = new CloseableRegistry();
         try {
-            Connection c = registry.register(connectionPool.getConnection());
+            Connection c = registry.register(getConnection());
             PreparedStatement statement = registry.register(c.prepareStatement(query));
             for (UUID uuid : uuids) {
                 statement.setString(1, uuid.toString());
@@ -253,9 +255,9 @@ public final class MySQLDataStorage implements DataStorage {
                 while (resultSet.next()) {
                     Member member = new Member(UUID.fromString(resultSet.getString("id")));
                     member.setScore(resultSet.getInt("score"));
-                    String tribeString = resultSet.getString("tribe");
-                    if (tribeString != null) {
-                        member.setTribe(UUID.fromString(tribeString));
+                    String tribe = resultSet.getString("tribe");
+                    if (tribe != null) {
+                        member.setTribe(UUID.fromString(tribe));
                     }
                     member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
                     member.setPvpState(Member.PvpState.values()[resultSet.getInt("pvpstate")]);
@@ -282,10 +284,11 @@ public final class MySQLDataStorage implements DataStorage {
     @Override
     public void saveMembers(Iterable<Member> memberIterable) {
         Preconditions.checkNotNull(memberIterable, "memberIterable cannot be null");
+        Preconditions.checkState(initialized, "must be initialized");
         CloseableRegistry registry = new CloseableRegistry();
         String query = "REPLACE INTO tr_members (id, score, tribe, rank, pvpstate, partnerid) VALUES (?,?,?,?,?,?)";
         try {
-            Connection connection = registry.register(connectionPool.getConnection());
+            Connection connection = registry.register(getConnection());
             PreparedStatement statement = registry.register(connection.prepareStatement(query));
             for (Member member : memberIterable) {
                 statement.setString(1, member.getUniqueId().toString());
@@ -314,10 +317,11 @@ public final class MySQLDataStorage implements DataStorage {
     @Override
     public List<Tribe> loadTribes() {
         List<Tribe> tribes = new ArrayList<>();
+        Preconditions.checkState(initialized, "must be initialized");
         String query = "SELECT * FROM tr_tribes";
         CloseableRegistry registry = new CloseableRegistry();
         try {
-            Connection connection = registry.register(connectionPool.getConnection());
+            Connection connection = registry.register(getConnection());
             Statement statement = registry.register(connection.createStatement());
             ResultSet resultSet = registry.register(statement.executeQuery(query));
             while (resultSet.next()) {
@@ -338,10 +342,11 @@ public final class MySQLDataStorage implements DataStorage {
     @Override
     public List<Tribe> loadTribes(Iterable<UUID> uuids) {
         List<Tribe> tribes = new ArrayList<>();
+        Preconditions.checkState(initialized, "must be initialized");
         String query = "SELECT * FROM tr_tribes WHERE id=?";
         CloseableRegistry registry = new CloseableRegistry();
         try {
-            Connection connection = registry.register(connectionPool.getConnection());
+            Connection connection = registry.register(getConnection());
             PreparedStatement statement = registry.register(connection.prepareStatement(query));
             for (UUID uuid : uuids) {
                 statement.setString(1, uuid.toString());
@@ -370,10 +375,11 @@ public final class MySQLDataStorage implements DataStorage {
     @Override
     public void saveTribes(Iterable<Tribe> tribeIterable) {
         Preconditions.checkNotNull(tribeIterable);
+        Preconditions.checkState(initialized, "must be initialized");
         String query = "REPLACE INTO tr_tribes (id, owner, name) VALUES (?,?,?)";
         CloseableRegistry registry = new CloseableRegistry();
         try {
-            Connection connection = registry.register(connectionPool.getConnection());
+            Connection connection = registry.register(getConnection());
             PreparedStatement statement = registry.register(connection.prepareStatement(query));
             for (Tribe tribe : tribeIterable) {
                 if (!tribe.isValidated()) {
@@ -396,8 +402,21 @@ public final class MySQLDataStorage implements DataStorage {
     }
 
     private String getConnectionURI() {
-        return "jdbc:mysql://" + plugin.getSettings().getString("db.host") + ":" + plugin.getSettings().getString("db" +
-                ".port") + "/" + plugin.getSettings().getString("db.database");
+        return "jdbc:sqlite:" + file.getAbsolutePath();
+    }
+
+    private Connection getConnection() {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+        try {
+            return DriverManager.getConnection(getConnectionURI());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

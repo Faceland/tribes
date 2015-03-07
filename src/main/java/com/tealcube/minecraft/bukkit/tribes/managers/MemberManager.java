@@ -12,11 +12,11 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-package me.topplethenun.tribes.managers;
+package com.tealcube.minecraft.bukkit.tribes.managers;
 
 import com.google.common.base.Preconditions;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
-import me.topplethenun.tribes.data.Member;
+import com.tealcube.minecraft.bukkit.tribes.data.Member;
 
 import java.util.HashSet;
 import java.util.Map;

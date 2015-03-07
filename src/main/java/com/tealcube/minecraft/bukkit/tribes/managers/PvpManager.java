@@ -1,4 +1,4 @@
-package me.topplethenun.tribes.managers;
+package com.tealcube.minecraft.bukkit.tribes.managers;
 
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Preconditions;
 
