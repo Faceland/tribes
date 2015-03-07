@@ -100,8 +100,10 @@ public class PlayerListener implements Listener {
                         damager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 10, 10), true);
                         damagerMember.setScore((int) (damagerMember.getScore() + damagedMember.getScore() * 0.25));
                         damagerMember.setPvpState(damagerMember.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
+                        damagerMember.setDuelPartner(null);
                         damagedMember.setScore((int) (damagedMember.getScore() - damagedMember.getScore() * 0.25));
                         damagedMember.setPvpState(damagedMember.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
+                        damagedMember.setDuelPartner(null);
                         Bukkit.broadcastMessage(TextUtils.args(TextUtils.color("<white>%winner%<gray> has defeated <white>%loser%<gray> in a duel!"),
                                 new String[][]{{"%winner%", damager.getDisplayName()}, {"%loser%", damaged.getDisplayName()}}));
                         MessageUtils.sendMessage(damaged, "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + damagedMember.getScore()}});
