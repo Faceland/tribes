@@ -83,6 +83,27 @@ public class PlayerListener implements Listener {
         if (!plugin.getMemberManager().hasMember(damagerMember)) {
             plugin.getMemberManager().addMember(damagerMember);
         }
+        if (damagedMember.getPvpState() == Member.PvpState.DUEL || damagerMember.getPvpState() == Member.PvpState.DUEL) {
+            if (damagedMember.getDuelPartner() != null && damagerMember.getDuelPartner() != null) {
+                if (damagedMember.getDuelPartner().equals(damagerMember.getUniqueId()) && damagerMember.getDuelPartner().equals(damagedMember.getUniqueId())) {
+                    return;
+                } else {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                }
+            } else {
+                event.setCancelled(true);
+                event.setDamage(0);
+            }
+            MessageUtils.sendMessage(damager, "<red>You cannot damage someone in a duel unless you're dueling them!");
+            return;
+        }
+        if (damagedMember.getPvpState() == Member.PvpState.OFF || damagerMember.getPvpState() == Member.PvpState.OFF) {
+            MessageUtils.sendMessage(damager, "<red>You cannot PvP unless both parties are in PvP mode.");
+            event.setCancelled(true);
+            event.setDamage(0);
+            return;
+        }
         if (damagedMember.getTribe() == null || damagerMember.getTribe() == null) {
             return;
         }
