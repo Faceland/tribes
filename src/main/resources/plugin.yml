@@ -6,6 +6,8 @@ depend: [facecore, q]
 commands:
   tribe:
     alias: [tr]
+  pvp:
+    alias: []
 
 permissions:
   tribes.command:
@@ -21,4 +23,6 @@ permissions:
   tribes.command.validate:
     default: true
   tribes.command.top:
+    default: true
+  tribes.command.pvp:
     default: true

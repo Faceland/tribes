@@ -22,6 +22,7 @@ import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartYamlCon
 import com.tealcube.minecraft.bukkit.kern.methodcommand.CommandHandler;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import info.faceland.q.QPlugin;
+import me.topplethenun.tribes.commands.PvpCommand;
 import me.topplethenun.tribes.commands.TribeCommand;
 import me.topplethenun.tribes.data.Cell;
 import me.topplethenun.tribes.data.Member;
@@ -29,6 +30,7 @@ import me.topplethenun.tribes.data.Tribe;
 import me.topplethenun.tribes.listeners.PlayerListener;
 import me.topplethenun.tribes.managers.CellManager;
 import me.topplethenun.tribes.managers.MemberManager;
+import me.topplethenun.tribes.managers.PvpManager;
 import me.topplethenun.tribes.managers.TribeManager;
 import me.topplethenun.tribes.storage.DataStorage;
 import me.topplethenun.tribes.storage.MySQLDataStorage;
@@ -44,9 +46,14 @@ public class TribesPlugin extends FacePlugin {
     private CellManager cellManager;
     private TribeManager tribeManager;
     private MemberManager memberManager;
+    private PvpManager pvpManager;
     private PluginLogger debugPrinter;
     private MasterConfiguration settings;
     private QPlugin qPlugin;
+
+    public static TribesPlugin getInstance() {
+        return INSTANCE;
+    }
 
     public DataStorage getDataStorage() {
         return dataStorage;
@@ -83,11 +90,13 @@ public class TribesPlugin extends FacePlugin {
         cellManager = new CellManager();
         memberManager = new MemberManager();
         tribeManager = new TribeManager();
+        pvpManager = new PvpManager();
 
         loadData();
 
         CommandHandler commandHandler = new CommandHandler(this);
         commandHandler.registerCommands(new TribeCommand(this));
+        commandHandler.registerCommands(new PvpCommand(this));
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
@@ -102,6 +111,20 @@ public class TribesPlugin extends FacePlugin {
                 loadData();
             }
         }, 20L * 600, 20L * 600);
+    }
+
+    @Override
+    public void disable() {
+        HandlerList.unregisterAll(this);
+        getServer().getScheduler().cancelTasks(this);
+        saveData();
+        dataStorage.shutdown();
+    }
+
+    public void debug(String... messages) {
+        for (String message : messages) {
+            debugPrinter.log(message);
+        }
     }
 
     private void loadData() {
@@ -140,36 +163,18 @@ public class TribesPlugin extends FacePlugin {
         }
     }
 
-    @Override
-    public void disable() {
-        HandlerList.unregisterAll(this);
-        getServer().getScheduler().cancelTasks(this);
-        saveData();
-        dataStorage.shutdown();
-    }
-
     private void saveData() {
         dataStorage.saveCells(cellManager.getCells());
         dataStorage.saveMembers(memberManager.getMembers());
         dataStorage.saveTribes(tribeManager.getTribes());
     }
 
-    public static TribesPlugin getInstance() {
-        return INSTANCE;
-    }
-
-    public void debug(String... messages) {
-        for (String message : messages) {
-            debugPrinter.log(message);
-        }
+    public TribeManager getTribeManager() {
+        return tribeManager;
     }
 
     public CellManager getCellManager() {
         return cellManager;
-    }
-
-    public TribeManager getTribeManager() {
-        return tribeManager;
     }
 
     public MemberManager getMemberManager() {
@@ -178,6 +183,10 @@ public class TribesPlugin extends FacePlugin {
 
     public MasterConfiguration getSettings() {
         return settings;
+    }
+
+    public PvpManager getPvpManager() {
+        return pvpManager;
     }
 
     public QPlugin getQPlugin() {
