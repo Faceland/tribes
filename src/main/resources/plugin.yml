@@ -8,6 +8,8 @@ commands:
     alias: [tr]
   pvp:
     alias: []
+  duel:
+    alias: []
 
 permissions:
   tribes.command:
