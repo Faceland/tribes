@@ -15,6 +15,7 @@
 package com.tealcube.minecraft.bukkit.tribes.listeners;
 
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
+import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Objects;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
@@ -22,6 +23,7 @@ import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,6 +32,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class PlayerListener implements Listener {
 
@@ -66,7 +70,7 @@ public class PlayerListener implements Listener {
                 tribeOptional.get().getName()}});
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player)) {
             return;
@@ -86,6 +90,25 @@ public class PlayerListener implements Listener {
         if (damagedMember.getPvpState() == Member.PvpState.DUEL || damagerMember.getPvpState() == Member.PvpState.DUEL) {
             if (damagedMember.getDuelPartner() != null && damagerMember.getDuelPartner() != null) {
                 if (damagedMember.getDuelPartner().equals(damagerMember.getUniqueId()) && damagerMember.getDuelPartner().equals(damagedMember.getUniqueId())) {
+                    double curHealth = damaged.getHealth();
+                    if (curHealth - event.getFinalDamage() <= 0D) {
+                        event.setDamage(0);
+                        event.setCancelled(true);
+                        damaged.setHealth(damaged.getMaxHealth());
+                        damaged.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 10, 10), true);
+                        damager.setHealth(damager.getMaxHealth());
+                        damager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 10, 10), true);
+                        damagerMember.setScore((int) (damagerMember.getScore() + damagedMember.getScore() * 0.25));
+                        damagedMember.setScore((int) (damagedMember.getScore() - damagedMember.getScore() * 0.25));
+                        Bukkit.broadcastMessage(TextUtils.args(TextUtils.color("<white>%winner%<gray> has defeated <white>%loser%<gray> in a duel!"),
+                                new String[][]{{"%winner%", damager.getDisplayName()}, {"%loser%", damaged.getDisplayName()}}));
+                        MessageUtils.sendMessage(damaged, "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + damagedMember.getScore()}});
+                        MessageUtils.sendMessage(damager, "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + damagerMember.getScore()}});
+                        plugin.getMemberManager().removeMember(damagedMember);
+                        plugin.getMemberManager().removeMember(damagerMember);
+                        plugin.getMemberManager().addMember(damagedMember);
+                        plugin.getMemberManager().addMember(damagerMember);
+                    }
                     return;
                 } else {
                     event.setCancelled(true);
