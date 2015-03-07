@@ -116,10 +116,10 @@ public class PlayerListener implements Listener {
                         plugin.getMemberManager().removeMember(damagerMember);
                         plugin.getMemberManager().addMember(damagedMember);
                         plugin.getMemberManager().addMember(damagerMember);
-                        NametagAPI.setPrefix(damager.getName(), ChatColor.RED + String.valueOf('\u2726'));
-                        NametagAPI.setPrefix(damaged.getName(), ChatColor.RED + String.valueOf('\u2726'));
-                        NametagAPI.setSuffix(damager.getName(), ChatColor.RED + String.valueOf('\u2726'));
-                        NametagAPI.setSuffix(damaged.getName(), ChatColor.RED + String.valueOf('\u2726'));
+                        NametagAPI.setPrefix(damager.getName(), (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+                        NametagAPI.setPrefix(damaged.getName(), (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+                        NametagAPI.setSuffix(damager.getName(), (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+                        NametagAPI.setSuffix(damaged.getName(), (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
                     }
                     return;
                 } else {

@@ -90,10 +90,10 @@ public class DuelCommand {
                 plugin.getMemberManager().removeMember(senderMember);
                 plugin.getMemberManager().addMember(targetMember);
                 plugin.getMemberManager().addMember(senderMember);
-                NametagAPI.setPrefix(target.getName(), ChatColor.BLUE + String.valueOf('\u2726'));
-                NametagAPI.setPrefix(sender.getName(), ChatColor.BLUE + String.valueOf('\u2726'));
-                NametagAPI.setSuffix(target.getName(), ChatColor.BLUE + String.valueOf('\u2726'));
-                NametagAPI.setSuffix(sender.getName(), ChatColor.BLUE + String.valueOf('\u2726'));
+                NametagAPI.setPrefix(target.getName(), ChatColor.LIGHT_PURPLE + String.valueOf('\u2726'));
+                NametagAPI.setPrefix(sender.getName(), ChatColor.LIGHT_PURPLE + String.valueOf('\u2726'));
+                NametagAPI.setSuffix(target.getName(), ChatColor.LIGHT_PURPLE + String.valueOf('\u2726'));
+                NametagAPI.setSuffix(sender.getName(), ChatColor.LIGHT_PURPLE + String.valueOf('\u2726'));
             }
         }));
         options.add(new Option("deny", new Runnable() {

@@ -110,8 +110,8 @@ public class PvpCommand {
             return;
         }
         member.setPvpState(Member.PvpState.OFF);
-        NametagAPI.setPrefix(sender.getName(), ChatColor.GREEN + String.valueOf('\u2726'));
-        NametagAPI.setSuffix(sender.getName(), ChatColor.GREEN + String.valueOf('\u2726'));
+        NametagAPI.setPrefix(sender.getName(), ChatColor.WHITE + String.valueOf('\u2726'));
+        NametagAPI.setSuffix(sender.getName(), ChatColor.WHITE + String.valueOf('\u2726'));
         MessageUtils.sendMessage(sender, "<green>You toggled PvP off.");
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);
