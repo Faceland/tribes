@@ -102,7 +102,7 @@ public class TribesPlugin extends FacePlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
-        qPlugin = (QPlugin) getServer().getPluginManager().getPlugin("q");
+        qPlugin = (QPlugin) getServer().getPluginManager().getPlugin("Q");
 
 
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
