@@ -14,6 +14,7 @@
  */
 package com.tealcube.minecraft.bukkit.tribes.listeners;
 
+import ca.wacos.nametagedit.NametagAPI;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Objects;
@@ -24,6 +25,7 @@ import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -96,8 +98,10 @@ public class PlayerListener implements Listener {
                         event.setCancelled(true);
                         damaged.setHealth(damaged.getMaxHealth());
                         damaged.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 10, 10), true);
+                        damaged.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 10, 10), true);
                         damager.setHealth(damager.getMaxHealth());
                         damager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 10, 10), true);
+                        damager.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 10, 10), true);
                         damagerMember.setScore((int) (damagerMember.getScore() + damagedMember.getScore() * 0.25));
                         damagerMember.setPvpState(damagerMember.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
                         damagerMember.setDuelPartner(null);
@@ -112,6 +116,10 @@ public class PlayerListener implements Listener {
                         plugin.getMemberManager().removeMember(damagerMember);
                         plugin.getMemberManager().addMember(damagedMember);
                         plugin.getMemberManager().addMember(damagerMember);
+                        NametagAPI.setPrefix(damager.getName(), ChatColor.RED + String.valueOf('\u2726'));
+                        NametagAPI.setPrefix(damaged.getName(), ChatColor.RED + String.valueOf('\u2726'));
+                        NametagAPI.setSuffix(damager.getName(), ChatColor.RED + String.valueOf('\u2726'));
+                        NametagAPI.setSuffix(damaged.getName(), ChatColor.RED + String.valueOf('\u2726'));
                     }
                     return;
                 } else {

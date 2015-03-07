@@ -14,6 +14,7 @@
  */
 package com.tealcube.minecraft.bukkit.tribes.commands;
 
+import ca.wacos.nametagedit.NametagAPI;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.text.WordUtils;
@@ -30,6 +31,7 @@ import info.faceland.q.actions.questions.Question;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
 import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -281,12 +283,15 @@ public class TribeCommand {
                 plugin.getTribeManager().removeTribe(tribe);
                 plugin.getTribeManager().addTribe(tribe);
                 targetMember.setTribe(tribe.getUniqueId());
+                targetMember.setPvpState(Member.PvpState.ON);
                 plugin.getMemberManager().removeMember(targetMember);
                 plugin.getMemberManager().addMember(targetMember);
                 MessageUtils.sendMessage(sender, "<white>%player%<green> joined your tribe!",
                         new String[][]{{"%player%", target.getDisplayName()}});
                 MessageUtils.sendMessage(target, "<green>You joined <white>%tribe%<green>!",
                         new String[][]{{"%tribe%", tribe.getName()}});
+                NametagAPI.setPrefix(target.getName(), ChatColor.RED + String.valueOf('\u2726'));
+                NametagAPI.setSuffix(target.getName(), ChatColor.RED + String.valueOf('\u2726'));
             }
         }, "Accept the invitation"));
         options.add(new Option("deny", new Runnable() {

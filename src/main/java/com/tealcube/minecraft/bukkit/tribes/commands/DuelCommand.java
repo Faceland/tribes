@@ -1,5 +1,6 @@
 package com.tealcube.minecraft.bukkit.tribes.commands;
 
+import ca.wacos.nametagedit.NametagAPI;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.kern.methodcommand.Arg;
@@ -9,6 +10,7 @@ import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.utils.Formatter;
 import info.faceland.q.actions.options.Option;
 import info.faceland.q.actions.questions.Question;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -74,6 +76,10 @@ public class DuelCommand {
                 plugin.getMemberManager().removeMember(senderMember);
                 plugin.getMemberManager().addMember(targetMember);
                 plugin.getMemberManager().addMember(senderMember);
+                NametagAPI.setPrefix(target.getName(), ChatColor.BLUE + String.valueOf('\u2726'));
+                NametagAPI.setPrefix(sender.getName(), ChatColor.BLUE + String.valueOf('\u2726'));
+                NametagAPI.setSuffix(target.getName(), ChatColor.BLUE + String.valueOf('\u2726'));
+                NametagAPI.setSuffix(sender.getName(), ChatColor.BLUE + String.valueOf('\u2726'));
             }
         }));
         options.add(new Option("deny", new Runnable() {

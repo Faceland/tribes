@@ -1,10 +1,12 @@
 package com.tealcube.minecraft.bukkit.tribes.commands;
 
+import ca.wacos.nametagedit.NametagAPI;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.kern.methodcommand.Command;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class PvpCommand {
@@ -66,6 +68,8 @@ public class PvpCommand {
             return;
         }
         member.setPvpState(Member.PvpState.ON);
+        NametagAPI.setPrefix(sender.getName(), ChatColor.RED + String.valueOf('\u2726'));
+        NametagAPI.setSuffix(sender.getName(), ChatColor.RED + String.valueOf('\u2726'));
         MessageUtils.sendMessage(sender, "<green>You toggled PvP on.");
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);
@@ -92,6 +96,8 @@ public class PvpCommand {
             return;
         }
         member.setPvpState(Member.PvpState.OFF);
+        NametagAPI.setPrefix(sender.getName(), ChatColor.GREEN + String.valueOf('\u2726'));
+        NametagAPI.setSuffix(sender.getName(), ChatColor.GREEN + String.valueOf('\u2726'));
         MessageUtils.sendMessage(sender, "<green>You toggled PvP off.");
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);
