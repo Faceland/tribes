@@ -52,7 +52,7 @@ public class PlayerListener implements Listener {
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
         }
-        NametagAPI.setPrefix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+        NametagAPI.setPrefix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
         NametagAPI.setSuffix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
     }
 
@@ -127,8 +127,8 @@ public class PlayerListener implements Listener {
                         plugin.getMemberManager().removeMember(damagerMember);
                         plugin.getMemberManager().addMember(damagedMember);
                         plugin.getMemberManager().addMember(damagerMember);
-                        NametagAPI.setPrefix(damager.getName(), (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
-                        NametagAPI.setPrefix(damaged.getName(), (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+                        NametagAPI.setPrefix(damager.getName(), (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+                        NametagAPI.setPrefix(damaged.getName(), (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
                         NametagAPI.setSuffix(damager.getName(), (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
                         NametagAPI.setSuffix(damaged.getName(), (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
                     }
