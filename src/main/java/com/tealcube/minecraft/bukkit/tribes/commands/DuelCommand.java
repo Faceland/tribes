@@ -41,7 +41,7 @@ public class DuelCommand {
     @Command(identifier = "duel", permissions = "tribes.command.duel", onlyPlayers = true)
     public void duelCommand(final Player sender, @Arg(name = "target") final Player target) {
         if (sender.equals(target)) {
-            MessageUtils.sendMessage(sender, "<red>You cannot duel yourself.");
+            MessageUtils.sendMessage(sender, "<red>You cannot duel yourself, dingus.");
             return;
         }
         final Member senderMember = plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
@@ -53,15 +53,15 @@ public class DuelCommand {
             plugin.getMemberManager().addMember(targetMember);
         }
         if (senderMember.getPvpState() == Member.PvpState.DUEL || senderMember.getDuelPartner() != null) {
-            MessageUtils.sendMessage(sender, "<red>You cannot duel someone if you're already dueling somebody else.");
+            MessageUtils.sendMessage(sender, "<red>You are already in a duel!");
             return;
         }
         if (targetMember.getPvpState() == Member.PvpState.DUEL || targetMember.getDuelPartner() != null) {
-            MessageUtils.sendMessage(sender, "<red>You cannot duel someone if they're already dueling somebody else.");
+            MessageUtils.sendMessage(sender, "<red>This player is dueling somebody else.");
             return;
         }
         if (sender.getLocation().distance(target.getLocation()) > 50) {
-            MessageUtils.sendMessage(target, "<red>You cannot duel someone greater than 50 blocks away.");
+            MessageUtils.sendMessage(target, "<red>This player is too far away to duel.");
             return;
         }
         List<Option> options = new ArrayList<>();
@@ -69,23 +69,23 @@ public class DuelCommand {
             @Override
             public void run() {
                 if (senderMember.getPvpState() == Member.PvpState.DUEL || senderMember.getDuelPartner() != null) {
-                    MessageUtils.sendMessage(target, "<red>You cannot duel someone if they're already dueling somebody else.");
+                    MessageUtils.sendMessage(target, "<red>This player is dueling somebody else.");
                     return;
                 }
                 if (targetMember.getPvpState() == Member.PvpState.DUEL || targetMember.getDuelPartner() != null) {
-                    MessageUtils.sendMessage(target, "<red>You cannot duel someone if you're already dueling somebody else.");
+                    MessageUtils.sendMessage(target, "<red>You are already in a duel!");
                     return;
                 }
                 if (sender.getLocation().distance(target.getLocation()) > 50) {
-                    MessageUtils.sendMessage(target, "<red>You cannot duel someone greater than 50 blocks away.");
+                    MessageUtils.sendMessage(target, "<red>This player is too far away to duel.");
                     return;
                 }
                 senderMember.setPvpState(Member.PvpState.DUEL);
                 targetMember.setPvpState(Member.PvpState.DUEL);
                 senderMember.setDuelPartner(targetMember.getUniqueId());
                 targetMember.setDuelPartner(senderMember.getUniqueId());
-                MessageUtils.sendMessage(sender, "<white>%name%<green> accepted your duel request.", new String[][]{{"%name%", target.getDisplayName()}});
-                MessageUtils.sendMessage(target, "<green>You accepted <white>%name%<green>'s duel request.", new String[][]{{"%name%", target.getDisplayName()}});
+                MessageUtils.sendMessage(sender, "<white>%name% <dark purple>accepted your duel request! Fight!", new String[][]{{"%name%", target.getDisplayName()}});
+                MessageUtils.sendMessage(target, "<dark purple>You accepted <white>%name%<dark purple>'s duel request! Fight!", new String[][]{{"%name%", target.getDisplayName()}});
                 plugin.getMemberManager().removeMember(targetMember);
                 plugin.getMemberManager().removeMember(senderMember);
                 plugin.getMemberManager().addMember(targetMember);
@@ -99,19 +99,19 @@ public class DuelCommand {
         options.add(new Option("deny", new Runnable() {
             @Override
             public void run() {
-                MessageUtils.sendMessage(sender, "<white>%name%<red> denied your duel request.", new String[][]{{"%name%", target.getDisplayName()}});
-                MessageUtils.sendMessage(target, "<red>You denied <white>%name%<red>'s duel request.", new String[][]{{"%name%", target.getDisplayName()}});
+                MessageUtils.sendMessage(sender, "<white>%name%<red> has declined your duel request.", new String[][]{{"%name%", target.getDisplayName()}});
+                MessageUtils.sendMessage(target, "<red>You declined <white>%name%<red>'s duel request.", new String[][]{{"%name%", target.getDisplayName()}});
             }
         }));
         Question question = new Question(target.getUniqueId(), TextUtils.color(TextUtils.args(
-                "<white>%sender%<gray> would like to duel.",
+                "<dark purple>[!] <white>%sender%<dark purple> has challened you to a duel!",
                 new String[][]{{"%sender%", sender.getDisplayName()}})), options);
         plugin.getQPlugin().getQuestionManager().appendQuestion(question);
         List<String> messages = Formatter.format(question);
         for (String m : messages) {
             target.sendMessage(m);
         }
-        MessageUtils.sendMessage(sender, "<gray>You sent a duel invite to <white>%player%<gray>!",
+        MessageUtils.sendMessage(sender, "<dark purple>You have challened <white>%player%<dark purple> to a duel!",
                 new String[][]{{"%player%", target.getDisplayName()}});
     }
 
