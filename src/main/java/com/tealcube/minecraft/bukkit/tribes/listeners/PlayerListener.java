@@ -35,6 +35,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -54,6 +55,35 @@ public class PlayerListener implements Listener {
         }
         NametagAPI.setPrefix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
         NametagAPI.setSuffix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        boolean tagged = plugin.getPvpManager().getTime(member.getUniqueId()) != 0;
+        if (!tagged) {
+            return;
+        }
+        event.getPlayer().setHealth(0D);
+        member.setPvpState(member.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
+        if (member.getDuelPartner() != null) {
+            Member duelPartner = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
+            if (!plugin.getMemberManager().hasMember(duelPartner)) {
+                plugin.getMemberManager().addMember(duelPartner);
+            }
+            duelPartner.setPvpState(member.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
+            duelPartner.setDuelPartner(null);
+            member.setDuelPartner(null);
+            duelPartner.setScore((int) (duelPartner.getScore() + member.getScore() * 0.25));
+            member.setScore((int) (member.getScore() - member.getScore() * 0.25));
+            Bukkit.broadcastMessage(TextUtils.args(TextUtils.color("<white>%winner%<gray> has defeated the cowardly <white>%loser%<gray> in a duel!"),
+                    new String[][]{{"%winner%", Bukkit.getPlayer(duelPartner.getUniqueId()).getDisplayName()}, {"%loser%", event.getPlayer().getDisplayName()}}));
+            MessageUtils.sendMessage(event.getPlayer(), "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + member.getScore()}});
+            MessageUtils.sendMessage(Bukkit.getPlayer(duelPartner.getUniqueId()), "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + duelPartner.getScore()}});
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
