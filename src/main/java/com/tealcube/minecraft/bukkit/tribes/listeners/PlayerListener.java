@@ -77,8 +77,8 @@ public class PlayerListener implements Listener {
             duelPartner.setPvpState(member.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
             duelPartner.setDuelPartner(null);
             member.setDuelPartner(null);
-            duelPartner.setScore((int) (duelPartner.getScore() + member.getScore() * 0.25));
-            member.setScore((int) (member.getScore() - member.getScore() * 0.25));
+            duelPartner.setScore((int) (duelPartner.getScore() + member.getScore() * 0.05));
+            member.setScore((int) (member.getScore() - member.getScore() * 0.05));
             Bukkit.broadcastMessage(TextUtils.args(TextUtils.color("<white>%winner%<gray> has defeated the cowardly <white>%loser%<gray> in a duel!"),
                     new String[][]{{"%winner%", Bukkit.getPlayer(duelPartner.getUniqueId()).getDisplayName()}, {"%loser%", event.getPlayer().getDisplayName()}}));
             MessageUtils.sendMessage(event.getPlayer(), "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + member.getScore()}});
@@ -143,10 +143,10 @@ public class PlayerListener implements Listener {
                         damager.setHealth(damager.getMaxHealth());
                         damager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 10, 10), true);
                         damager.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 10, 10), true);
-                        damagerMember.setScore((int) (damagerMember.getScore() + damagedMember.getScore() * 0.25));
+                        damagerMember.setScore((int) (damagerMember.getScore() + damagedMember.getScore() * 0.05));
                         damagerMember.setPvpState(damagerMember.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
                         damagerMember.setDuelPartner(null);
-                        damagedMember.setScore((int) (damagedMember.getScore() - damagedMember.getScore() * 0.25));
+                        damagedMember.setScore((int) (damagedMember.getScore() - damagedMember.getScore() * 0.05));
                         damagedMember.setPvpState(damagedMember.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
                         damagedMember.setDuelPartner(null);
                         Bukkit.broadcastMessage(TextUtils.args(TextUtils.color("<white>%winner%<gray> has defeated <white>%loser%<gray> in a duel!"),
