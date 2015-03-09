@@ -47,7 +47,7 @@ public final class SqliteDataStorage implements DataStorage {
     private static final String TR_MEMBERS_CREATE = "CREATE TABLE IF NOT EXISTS tr_members (id TEXT PRIMARY " +
             "KEY, score INTEGER NOT NULL, tribe TEXT, rank TEXT, pvpstate INTEGER NOT NULL, partnerid TEXT)";
     private static final String TR_TRIBES_CREATE = "CREATE TABLE IF NOT EXISTS tr_tribes (id TEXT PRIMARY " +
-            "KEY, owner TEXT NOT NULL, name TEXT NOT NULL UNIQUE)";
+            "KEY, owner TEXT NOT NULL, name TEXT NOT NULL UNIQUE, level INTEGER NOT NULL)";
     private final PluginLogger pluginLogger;
     private boolean initialized;
     private TribesPlugin plugin;

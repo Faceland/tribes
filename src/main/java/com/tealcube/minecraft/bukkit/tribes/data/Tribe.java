@@ -33,11 +33,13 @@ public final class Tribe {
     private Map<UUID, Rank> memberRankMap;
     private Map<Vec2, Cell> claimedLandMap;
     private boolean validated;
+    private Level level;
 
     public Tribe(UUID uniqueId) {
         this.uniqueId = uniqueId;
         this.memberRankMap = new ConcurrentHashMap<>();
         this.claimedLandMap = new ConcurrentHashMap<>();
+        this.level = Level.TINY;
     }
 
     public UUID getUniqueId() {
@@ -108,6 +110,14 @@ public final class Tribe {
         this.validated = validated;
     }
 
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
     public enum Permission {
         BREAK,
         INTERACT,
@@ -139,6 +149,24 @@ public final class Tribe {
                 }
             }
             return GUEST;
+        }
+    }
+
+    public enum Level {
+        TINY(5),
+        SMALL(10),
+        MEDIUM(15),
+        LARGE(20),
+        HUGE(25);
+
+        private final int size;
+
+        private Level(int size) {
+            this.size = size;
+        }
+
+        public int getSize() {
+            return size;
         }
     }
 
