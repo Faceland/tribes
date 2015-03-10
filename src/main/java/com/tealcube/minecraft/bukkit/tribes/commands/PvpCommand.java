@@ -76,7 +76,7 @@ public class PvpCommand {
             MessageUtils.sendMessage(sender, "<red>You cannot toggle PvP if you're in a tribe.");
             return;
         }
-        long time = plugin.getPvpManager().getTime(sender.getUniqueId());
+        long time = plugin.getPvpManager().getData(sender.getUniqueId()).time();
         if (System.currentTimeMillis() - time < plugin.getSettings().getLong("config.time-since-tag-in-seconds") * 1000) {
             MessageUtils.sendMessage(sender, "<red>You must have been out of PvP for 5 seconds to toggle PvP.");
             return;
@@ -104,7 +104,7 @@ public class PvpCommand {
             MessageUtils.sendMessage(sender, "<red>You cannot toggle PvP if you're in a tribe.");
             return;
         }
-        long time = plugin.getPvpManager().getTime(sender.getUniqueId());
+        long time = plugin.getPvpManager().getData(sender.getUniqueId()).time();
         if (System.currentTimeMillis() - time < plugin.getSettings().getLong("config.time-since-tag-in-seconds") * 1000) {
             MessageUtils.sendMessage(sender, "<red>You must have been out of PvP for 5 seconds to toggle PvP.");
             return;

@@ -23,7 +23,9 @@ import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
 import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
+import com.tealcube.minecraft.bukkit.tribes.managers.PvpManager;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
+import com.tealcube.minecraft.bukkit.tribes.utils.ScoreboardUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -55,6 +57,7 @@ public class PlayerListener implements Listener {
         }
         NametagAPI.setPrefix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
         NametagAPI.setSuffix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+        ScoreboardUtils.updateMightDisplay(member);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -63,17 +66,14 @@ public class PlayerListener implements Listener {
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
         }
-        boolean tagged = plugin.getPvpManager().getTime(member.getUniqueId()) != 0;
-        if (!tagged) {
-            return;
-        }
-        event.getPlayer().setHealth(0D);
+        PvpManager.PvpData data = plugin.getPvpManager().getData(member.getUniqueId());
         member.setPvpState(member.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
         if (member.getDuelPartner() != null) {
-            Member duelPartner = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
+            Member duelPartner = plugin.getMemberManager().getMember(member.getDuelPartner()).or(new Member(member.getDuelPartner()));
             if (!plugin.getMemberManager().hasMember(duelPartner)) {
                 plugin.getMemberManager().addMember(duelPartner);
             }
+            event.getPlayer().setHealth(0D);
             duelPartner.setPvpState(member.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
             duelPartner.setDuelPartner(null);
             member.setDuelPartner(null);
@@ -83,6 +83,20 @@ public class PlayerListener implements Listener {
                     new String[][]{{"%winner%", Bukkit.getPlayer(duelPartner.getUniqueId()).getDisplayName()}, {"%loser%", event.getPlayer().getDisplayName()}}));
             MessageUtils.sendMessage(event.getPlayer(), "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + member.getScore()}});
             MessageUtils.sendMessage(Bukkit.getPlayer(duelPartner.getUniqueId()), "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + duelPartner.getScore()}});
+            ScoreboardUtils.updateMightDisplay(duelPartner);
+            ScoreboardUtils.updateMightDisplay(member);
+        } else if (data.time() != 0 && System.currentTimeMillis() - data.time() < 5000 && data.tagger() != null) {
+            Member tagger = plugin.getMemberManager().getMember(data.tagger()).or(new Member(data.tagger()));
+            if (!plugin.getMemberManager().hasMember(tagger)) {
+                plugin.getMemberManager().addMember(tagger);
+            }
+            event.getPlayer().setHealth(0D);
+            tagger.setScore((int) (tagger.getScore() + member.getScore() * 0.05));
+            member.setScore((int) (member.getScore() - member.getScore() * 0.05));
+            MessageUtils.sendMessage(Bukkit.getPlayer(tagger.getUniqueId()), "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + tagger.getScore()}});
+            ScoreboardUtils.updateMightDisplay(tagger);
+            ScoreboardUtils.updateMightDisplay(member);
+            plugin.getPvpManager().clearTime(member.getUniqueId());
         }
     }
 
@@ -122,6 +136,9 @@ public class PlayerListener implements Listener {
         Player damager = (Player) event.getDamager();
         Member damagedMember = plugin.getMemberManager().getMember(damaged.getUniqueId()).or(new Member(damaged
                 .getUniqueId()));
+        PvpManager.PvpData oldData = plugin.getPvpManager().getData(damaged.getUniqueId());
+        PvpManager.PvpData newData = oldData.withTime(System.currentTimeMillis()).withTagger(damager.getUniqueId());
+        plugin.getPvpManager().setData(damaged.getUniqueId(), newData);
         if (!plugin.getMemberManager().hasMember(damagedMember)) {
             plugin.getMemberManager().addMember(damagedMember);
         }
@@ -161,6 +178,8 @@ public class PlayerListener implements Listener {
                         NametagAPI.setPrefix(damaged.getName(), (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
                         NametagAPI.setSuffix(damager.getName(), (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
                         NametagAPI.setSuffix(damaged.getName(), (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+                        ScoreboardUtils.updateMightDisplay(damagedMember);
+                        ScoreboardUtils.updateMightDisplay(damagerMember);
                     }
                     return;
                 } else {
@@ -207,17 +226,19 @@ public class PlayerListener implements Listener {
         if (!plugin.getMemberManager().hasMember(damagerMember)) {
             plugin.getMemberManager().addMember(damagerMember);
         }
-        int score = damagedMember.getScore() / 10;
-        damagedMember.setScore(damagedMember.getScore() - score);
-        damagerMember.setScore(damagerMember.getScore() + score);
+        int changeScore = damagedMember.getScore() / 10;
+        damagedMember.setScore(damagedMember.getScore() - changeScore);
+        damagerMember.setScore(damagerMember.getScore() + changeScore);
         plugin.getMemberManager().removeMember(damagedMember);
         plugin.getMemberManager().removeMember(damagerMember);
         plugin.getMemberManager().addMember(damagedMember);
         plugin.getMemberManager().addMember(damagerMember);
         MessageUtils.sendMessage(damaged, "<red>You lost <white>%amount%<red> score for dying.",
-                new String[][]{{"%amount%", score + ""}});
+                new String[][]{{"%amount%", changeScore + ""}});
         MessageUtils.sendMessage(damager, "<green>You gained <white>%amount%<green> score for a successful kill.",
-                new String[][]{{"%amount%", score + ""}});
+                new String[][]{{"%amount%", changeScore + ""}});
+        ScoreboardUtils.updateMightDisplay(damagedMember);
+        ScoreboardUtils.updateMightDisplay(damagerMember);
     }
 
 }

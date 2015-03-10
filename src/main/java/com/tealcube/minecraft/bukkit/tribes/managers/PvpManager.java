@@ -22,25 +22,51 @@ import java.util.UUID;
 
 public class PvpManager {
 
-    private final Map<UUID, Long> tagTime;
+    private final Map<UUID, PvpData> tagData;
 
     public PvpManager() {
-        tagTime = new HashMap<>();
+        tagData = new HashMap<>();
     }
 
-    public long getTime(UUID uuid) {
+    public PvpData getData(UUID uuid) {
         Preconditions.checkNotNull(uuid);
-        return tagTime.containsKey(uuid) ? tagTime.get(uuid) : 0;
+        return tagData.containsKey(uuid) ? tagData.get(uuid) : new PvpData(0, null);
     }
 
-    public void setTime(UUID uuid, long time) {
+    public void setData(UUID uuid, PvpData data) {
         Preconditions.checkNotNull(uuid);
-        tagTime.put(uuid, time);
+        tagData.put(uuid, data);
     }
 
     public void clearTime(UUID uuid) {
         Preconditions.checkNotNull(uuid);
-        tagTime.remove(uuid);
+        tagData.remove(uuid);
+    }
+
+    public class PvpData {
+        private final long time;
+        private final UUID tagger;
+
+        private PvpData(long time, UUID tagger) {
+            this.time = time;
+            this.tagger = tagger;
+        }
+
+        public long time() {
+            return time;
+        }
+
+        public UUID tagger() {
+            return tagger;
+        }
+
+        public PvpData withTime(long time) {
+            return new PvpData(time, tagger);
+        }
+
+        public PvpData withTagger(UUID tagger) {
+            return new PvpData(time, tagger);
+        }
     }
 
 }
