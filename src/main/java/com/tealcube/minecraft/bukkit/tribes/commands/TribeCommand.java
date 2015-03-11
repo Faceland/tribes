@@ -33,6 +33,7 @@ import info.faceland.q.actions.questions.Question;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -363,5 +364,35 @@ public class TribeCommand {
         }
     }
 
-
+    @Command(identifier = "tribe banish", onlyPlayers = true, permissions = "tribes.command.banish")
+    public void banishSubcommand(Player sender, @Arg(name = "target") String name) {
+        OfflinePlayer target = Bukkit.getOfflinePlayer(name);
+        Member member =
+                plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>You can't banish from a tribe if you're not in one.");
+            return;
+        }
+        Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+        if (!member.getRank().getPermissions().contains(Tribe.Permission.KICK)) {
+            MessageUtils.sendMessage(sender, "<red>You don't have permission to banish.");
+            return;
+        }
+        Member targetMember = plugin.getMemberManager().getMember(target.getUniqueId()).or(new Member(target.getUniqueId()));
+        if (!member.getTribe().equals(targetMember.getUniqueId())) {
+            MessageUtils.sendMessage(sender, "<red>You can't banish someone who isn't in your tribe..");
+            return;
+        }
+        if (targetMember.getRank().getPermissions().contains(Tribe.Permission.KICK_IMMUNE)) {
+            MessageUtils.sendMessage(sender, "<red>You cannot banish that member.");
+            return;
+        }
+        targetMember.setTribe(null);
+        tribe.setRank(targetMember.getUniqueId(), Tribe.Rank.GUEST);
+        MessageUtils.sendMessage(target.getPlayer(), "<red>You have been banished from your tribe.");
+        MessageUtils.sendMessage(sender, "<green>You banished <white>%target%<green> from your tribe.", new String[][]{{"%target%", target.getPlayer().getDisplayName()}});
+    }
 }
