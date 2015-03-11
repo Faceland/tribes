@@ -395,4 +395,34 @@ public class TribeCommand {
         MessageUtils.sendMessage(target.getPlayer(), "<red>You have been banished from your tribe.");
         MessageUtils.sendMessage(sender, "<green>You banished <white>%target%<green> from your tribe.", new String[][]{{"%target%", target.getPlayer().getDisplayName()}});
     }
+
+    @Command(identifier = "tribe upgrade", onlyPlayers = true, permissions = "tribes.command.upgrade")
+    public void upgradeSubcommand(Player sender) {
+        Member member = plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>You cannot upgrade your tribe if you are not part of a tribe.");
+            return;
+        }
+        Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+        if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
+            MessageUtils.sendMessage(sender, "<red>You must be the leader of your tribe in order to upgrade.");
+            return;
+        }
+        if (tribe.getLevel().ordinal() == Tribe.Level.values().length - 1) {
+            MessageUtils.sendMessage(sender, "<red>You cannot upgrade your tribe any further.");
+            return;
+        }
+        double price = Tribe.Level.values()[tribe.getLevel().ordinal() + 1].getPrice();
+        double balance = plugin.getEconomy().getBalance(sender);
+        if (balance < price) {
+            MessageUtils.sendMessage(sender, "<red>You don't have enough bits. You need <white>%currency%<red>.", new String[][]{{"%currency%", plugin.getEconomy().format(price)}});
+            return;
+        }
+        plugin.getEconomy().withdrawPlayer(sender, price);
+        tribe.setLevel(Tribe.Level.values()[tribe.getLevel().ordinal() + 1]);
+        MessageUtils.sendMessage(sender, "<green>You upgraded your tribe!");
+    }
 }

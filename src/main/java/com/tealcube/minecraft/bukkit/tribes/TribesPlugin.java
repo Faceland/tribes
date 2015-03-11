@@ -24,19 +24,21 @@ import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import com.tealcube.minecraft.bukkit.tribes.commands.DuelCommand;
 import com.tealcube.minecraft.bukkit.tribes.commands.PvpCommand;
 import com.tealcube.minecraft.bukkit.tribes.commands.TribeCommand;
+import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
+import com.tealcube.minecraft.bukkit.tribes.listeners.PlayerListener;
 import com.tealcube.minecraft.bukkit.tribes.managers.CellManager;
 import com.tealcube.minecraft.bukkit.tribes.managers.MemberManager;
 import com.tealcube.minecraft.bukkit.tribes.managers.PvpManager;
 import com.tealcube.minecraft.bukkit.tribes.managers.TribeManager;
 import com.tealcube.minecraft.bukkit.tribes.storage.DataStorage;
 import com.tealcube.minecraft.bukkit.tribes.storage.MySQLDataStorage;
-import info.faceland.q.QPlugin;
-import com.tealcube.minecraft.bukkit.tribes.data.Cell;
-import com.tealcube.minecraft.bukkit.tribes.listeners.PlayerListener;
 import com.tealcube.minecraft.bukkit.tribes.storage.SqliteDataStorage;
+import info.faceland.q.QPlugin;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.io.File;
 
@@ -51,6 +53,7 @@ public class TribesPlugin extends FacePlugin {
     private PluginLogger debugPrinter;
     private MasterConfiguration settings;
     private QPlugin qPlugin;
+    private Economy economy;
 
     public static TribesPlugin getInstance() {
         return INSTANCE;
@@ -104,6 +107,10 @@ public class TribesPlugin extends FacePlugin {
 
         qPlugin = (QPlugin) getServer().getPluginManager().getPlugin("Q");
 
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            economy = economyProvider.getProvider();
+        }
 
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
@@ -195,4 +202,7 @@ public class TribesPlugin extends FacePlugin {
         return qPlugin;
     }
 
+    public Economy getEconomy() {
+        return economy;
+    }
 }

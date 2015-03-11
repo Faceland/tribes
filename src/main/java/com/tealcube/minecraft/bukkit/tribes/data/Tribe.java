@@ -153,18 +153,20 @@ public final class Tribe {
     }
 
     public enum Level {
-        TINY(1, 4),
-        SMALL(4, 8),
-        MEDIUM(8, 16),
-        LARGE(12, 24),
-        HUGE(16, 32);
+        TINY(1, 4, 0),
+        SMALL(4, 8, 100 * 1000),
+        MEDIUM(8, 16, 250 * 1000),
+        LARGE(12, 24, 550 * 1000),
+        HUGE(16, 32, 1150 * 1000);
 
         private final int chunks;
         private final int members;
+        private final double price;
 
-        Level(int chunks, int members) {
+        Level(int chunks, int members, double price) {
             this.chunks = chunks;
             this.members = members;
+            this.price = price;
         }
 
         public int getChunks() {
@@ -173,6 +175,10 @@ public final class Tribe {
 
         public int getMembers() {
             return members;
+        }
+
+        public double getPrice() {
+            return price;
         }
     }
 

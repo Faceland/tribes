@@ -26,6 +26,9 @@ repositories {
     maven {
         url "http://ci.playmc.cc/plugin/repository/everything/"
     }
+    maven {
+        url "http://nexus.theyeticave.net/content/repositories/pub_releases"
+    }
 }
 
 dependencies {
@@ -34,6 +37,7 @@ dependencies {
     compile("com.wacos:NametagEdit:3.0-SNAPSHOT") {
         exclude module: "metrics"
     }
+    compile "net.milkbowl.vault:VaultAPI:1.5"
 }
 
 processResources {
