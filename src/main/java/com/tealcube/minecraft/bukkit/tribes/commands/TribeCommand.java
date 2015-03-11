@@ -70,11 +70,10 @@ public class TribeCommand {
                     {"%rank%", WordUtils.capitalizeFully(member.getRank().name())},
                     {"%tribe%", !tribe.isValidated() ? tribe.getName() : "a nonvalidated tribe"}
             });
-            int cap = plugin.getSettings().getInt("config.cells-per-member", 1) * plugin.getMemberManager()
-                    .getMembersWithTribe(tribe.getUniqueId()).size();
+            int cap = tribe.getLevel().getChunks();
             int numOfCells = plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId()).size();
             MessageUtils.sendMessage(player, "<gray>Your tribe has claimed <white>%amount%<gray>/<white>%cap%<gray> " +
-                    "cells");
+                    "cells", new String[][]{{"%amount%", numOfCells + ""}, {"%cap%", cap + ""}});
             for (Tribe.Permission permission : Tribe.Permission.values()) {
                 if (permission == Tribe.Permission.KICK_IMMUNE || !tribe.isValidated()) {
                     continue;
@@ -85,6 +84,13 @@ public class TribeCommand {
                     MessageUtils.sendMessage(player, "<gray>You <red>CAN'T<gray> " + permission.name().toLowerCase());
                 }
             }
+            List<String> onlineMembers = new ArrayList<>();
+            for (UUID uuid : tribe.getMembers()) {
+                if (Bukkit.getPlayer(uuid).isOnline()) {
+                    onlineMembers.add(Bukkit.getPlayer(uuid).getDisplayName());
+                }
+            }
+            MessageUtils.sendMessage(player, "<green>Online Members: <white>%members%", new String[][]{{"%members%", onlineMembers.toString().replace("[", "").replace("]", "")}});
         }
         MessageUtils.sendMessage(player, "<dark green>Score: <white>%score%", new String[][]{{"%score%", member
                 .getScore() + ""}});
@@ -152,8 +158,7 @@ public class TribeCommand {
             MessageUtils.sendMessage(player, "<red>You cannot claim if your tribe is not validated.");
             return;
         }
-        int cap = plugin.getSettings().getInt("config.cells-per-member", 1) * plugin.getMemberManager()
-                .getMembersWithTribe(tribe.getUniqueId()).size();
+        int cap = tribe.getLevel().getChunks();
         int numOfCells = plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId()).size();
         if (numOfCells >= cap) {
             MessageUtils.sendMessage(player, "<red>You cannot claim another cell for your tribe.");
@@ -267,6 +272,10 @@ public class TribeCommand {
             return;
         }
         final Tribe tribe = plugin.getTribeManager().getTribe(senderMember.getTribe()).get();
+        if (tribe.getMembers().size() >= tribe.getLevel().getMembers()) {
+            MessageUtils.sendMessage(sender, "<red>You have already reached your member limit.");
+            return;
+        }
         if (targetMember.getTribe() != null && plugin.getTribeManager().getTribe(targetMember.getTribe()).isPresent()) {
             MessageUtils.sendMessage(sender, "<red>You cannot invite someone if they're already part of a tribe.");
             return;
