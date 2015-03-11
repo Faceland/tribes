@@ -21,7 +21,7 @@ public final class Member {
     private final UUID uniqueId;
     private UUID tribe;
     private int score = 100;
-    private Tribe.Rank rank;
+    private Tribe.Rank rank = Tribe.Rank.GUEST;
     private PvpState pvpState = PvpState.OFF;
     private UUID duelPartner;
 
