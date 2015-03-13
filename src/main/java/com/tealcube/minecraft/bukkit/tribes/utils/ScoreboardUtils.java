@@ -35,16 +35,18 @@ public final class ScoreboardUtils {
         Preconditions.checkNotNull(player);
         Objective objective = player.getScoreboard().getObjective("mightBottom");
         if (objective != null) {
-            objective = player.getScoreboard().getObjective(DisplaySlot.BELOW_NAME);
+            objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
             objective.setDisplayName(ChatColor.WHITE + "Might");
             Score score = objective.getScore(player.getName());
             score.setScore(member.getScore());
+            Bukkit.getLogger().info(player.getName() + " : " + score.getScore());
         } else {
             objective = player.getScoreboard().registerNewObjective("mightBottom", "dummy");
             objective.setDisplayName(ChatColor.WHITE + "Might");
             objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
             Score score = objective.getScore(player.getName());
             score.setScore(member.getScore());
+            Bukkit.getLogger().info(player.getName() + " : " + score.getScore());
         }
     }
 

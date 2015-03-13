@@ -50,14 +50,19 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
+    public void onPlayerJoin(final PlayerJoinEvent event) {
+        final Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
         }
-        NametagAPI.setPrefix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
-        NametagAPI.setSuffix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
-        ScoreboardUtils.updateMightDisplay(member);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+                NametagAPI.setPrefix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+                NametagAPI.setSuffix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+                ScoreboardUtils.updateMightDisplay(member);
+            }
+        }, 20L);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
