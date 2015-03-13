@@ -130,6 +130,7 @@ public class TribeCommand {
         tribe.setOwner(member.getUniqueId());
         member.setTribe(tribe.getUniqueId());
         member.setRank(Tribe.Rank.LEADER);
+        member.setPvpState(Member.PvpState.ON);
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);
         plugin.getTribeManager().addTribe(tribe);
