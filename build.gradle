@@ -34,9 +34,6 @@ repositories {
 dependencies {
     compile "com.tealcube.minecraft.bukkit:facecore-all:1.0.0-SNAPSHOT"
     compile "com.tealcube.minecraft.bukkit:q:1.0.0-SNAPSHOT"
-    compile("com.wacos:NametagEdit:3.0-SNAPSHOT") {
-        exclude module: "metrics"
-    }
     compile "net.milkbowl.vault:VaultAPI:1.5"
 }
 

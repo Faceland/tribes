@@ -14,7 +14,6 @@
  */
 package com.tealcube.minecraft.bukkit.tribes.listeners;
 
-import ca.wacos.nametagedit.NametagAPI;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Objects;
@@ -58,8 +57,8 @@ public class PlayerListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                NametagAPI.setPrefix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
-                NametagAPI.setSuffix(event.getPlayer().getName(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+                ScoreboardUtils.setPrefix(event.getPlayer(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+                ScoreboardUtils.setSuffix(event.getPlayer(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
                 ScoreboardUtils.updateMightDisplay(member);
             }
         }, 20L);
@@ -73,6 +72,8 @@ public class PlayerListener implements Listener {
         }
         PvpManager.PvpData data = plugin.getPvpManager().getData(member.getUniqueId());
         member.setPvpState(member.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
+        ScoreboardUtils.setPrefix(event.getPlayer(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+        ScoreboardUtils.setSuffix(event.getPlayer(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
         if (member.getDuelPartner() != null) {
             Member duelPartner = plugin.getMemberManager().getMember(member.getDuelPartner()).or(new Member(member.getDuelPartner()));
             if (!plugin.getMemberManager().hasMember(duelPartner)) {
@@ -85,6 +86,9 @@ public class PlayerListener implements Listener {
             int scoreChange = (int) (member.getScore() * 0.05);
             duelPartner.setScore(duelPartner.getScore() + scoreChange);
             member.setScore(member.getScore() - scoreChange);
+            Player p = Bukkit.getPlayer(member.getUniqueId());
+            ScoreboardUtils.setPrefix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+            ScoreboardUtils.setSuffix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
             Bukkit.broadcastMessage(TextUtils.args(TextUtils.color("<white>%winner%<gray> has defeated the cowardly <white>%loser%<gray> in a duel!"),
                     new String[][]{{"%winner%", Bukkit.getPlayer(duelPartner.getUniqueId()).getDisplayName()}, {"%loser%", event.getPlayer().getDisplayName()}}));
             MessageUtils.sendMessage(event.getPlayer(), "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + member.getScore()}});
@@ -96,6 +100,9 @@ public class PlayerListener implements Listener {
             if (!plugin.getMemberManager().hasMember(tagger)) {
                 plugin.getMemberManager().addMember(tagger);
             }
+            Player p = Bukkit.getPlayer(tagger.getUniqueId());
+            ScoreboardUtils.setPrefix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+            ScoreboardUtils.setSuffix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
             event.getPlayer().setHealth(0D);
             int scoreChange = (int) (member.getScore() * 0.05);
             tagger.setScore(tagger.getScore() + scoreChange);
@@ -182,10 +189,10 @@ public class PlayerListener implements Listener {
                         plugin.getMemberManager().removeMember(damagerMember);
                         plugin.getMemberManager().addMember(damagedMember);
                         plugin.getMemberManager().addMember(damagerMember);
-                        NametagAPI.setPrefix(damager.getName(), (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
-                        NametagAPI.setPrefix(damaged.getName(), (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
-                        NametagAPI.setSuffix(damager.getName(), (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
-                        NametagAPI.setSuffix(damaged.getName(), (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+                        ScoreboardUtils.setPrefix(damager, (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+                        ScoreboardUtils.setPrefix(damaged, (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+                        ScoreboardUtils.setSuffix(damager, (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+                        ScoreboardUtils.setSuffix(damaged, (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
                         ScoreboardUtils.updateMightDisplay(damagedMember);
                         ScoreboardUtils.updateMightDisplay(damagerMember);
                     }

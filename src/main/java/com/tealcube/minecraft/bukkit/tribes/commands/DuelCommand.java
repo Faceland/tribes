@@ -14,7 +14,6 @@
  */
 package com.tealcube.minecraft.bukkit.tribes.commands;
 
-import ca.wacos.nametagedit.NametagAPI;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.kern.methodcommand.Arg;
@@ -22,6 +21,7 @@ import com.tealcube.minecraft.bukkit.kern.methodcommand.Command;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.utils.Formatter;
+import com.tealcube.minecraft.bukkit.tribes.utils.ScoreboardUtils;
 import info.faceland.q.actions.options.Option;
 import info.faceland.q.actions.questions.Question;
 import org.bukkit.ChatColor;
@@ -90,10 +90,10 @@ public class DuelCommand {
                 plugin.getMemberManager().removeMember(senderMember);
                 plugin.getMemberManager().addMember(targetMember);
                 plugin.getMemberManager().addMember(senderMember);
-                NametagAPI.setPrefix(target.getName(), ChatColor.LIGHT_PURPLE + String.valueOf('\u2726') + ChatColor.WHITE);
-                NametagAPI.setPrefix(sender.getName(), ChatColor.LIGHT_PURPLE + String.valueOf('\u2726') + ChatColor.WHITE);
-                NametagAPI.setSuffix(target.getName(), ChatColor.LIGHT_PURPLE + String.valueOf('\u2726'));
-                NametagAPI.setSuffix(sender.getName(), ChatColor.LIGHT_PURPLE + String.valueOf('\u2726'));
+                ScoreboardUtils.setPrefix(target, ChatColor.LIGHT_PURPLE + String.valueOf('\u2726') + ChatColor.WHITE);
+                ScoreboardUtils.setPrefix(sender, ChatColor.LIGHT_PURPLE + String.valueOf('\u2726') + ChatColor.WHITE);
+                ScoreboardUtils.setSuffix(target, ChatColor.LIGHT_PURPLE + String.valueOf('\u2726'));
+                ScoreboardUtils.setSuffix(sender, ChatColor.LIGHT_PURPLE + String.valueOf('\u2726'));
             }
         }));
         options.add(new Option("deny", new Runnable() {
