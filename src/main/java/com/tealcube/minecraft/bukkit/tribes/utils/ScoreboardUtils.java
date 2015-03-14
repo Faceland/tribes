@@ -19,35 +19,77 @@ import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.*;
 
 public final class ScoreboardUtils {
 
+    private static final String BOARD_KEY = "tribesboard";
+    private static final Scoreboard EMPTY_BOARD = Bukkit.getScoreboardManager().getNewScoreboard();
+
     private ScoreboardUtils() {
         // do nothing
+    }
+
+    public static void setPrefix(Player player, String prefix) {
+        Preconditions.checkNotNull(player);
+        Preconditions.checkNotNull(prefix);
+        Scoreboard scoreboard = EMPTY_BOARD;
+        for (Team t : scoreboard.getTeams()) {
+            t.removePlayer(player);
+        }
+        Team team = scoreboard.getTeam(player.getUniqueId().toString());
+        if (team == null) {
+            team = scoreboard.registerNewTeam(player.getUniqueId().toString());
+        }
+        team.setPrefix(prefix);
+        team.addPlayer(player);
+        player.setScoreboard(scoreboard);
+    }
+
+    public static void setSuffix(Player player, String suffix) {
+        Preconditions.checkNotNull(player);
+        Preconditions.checkNotNull(suffix);
+        Scoreboard scoreboard = EMPTY_BOARD;
+        for (Team t : scoreboard.getTeams()) {
+            t.removePlayer(player);
+        }
+        Team team = scoreboard.getTeam(player.getUniqueId().toString());
+        if (team == null) {
+            team = scoreboard.registerNewTeam(player.getUniqueId().toString());
+        }
+        team.setPrefix(suffix);
+        team.addPlayer(player);
+        player.setScoreboard(scoreboard);
+    }
+
+    public static void setDisplayBelowName(Player player, String display) {
+        Preconditions.checkNotNull(player);
+        Preconditions.checkNotNull(display);
+        Scoreboard scoreboard = EMPTY_BOARD;
+        Objective objective = scoreboard.getObjective(DisplaySlot.BELOW_NAME);
+        if (objective == null) {
+            objective = scoreboard.registerNewObjective("tribesdisplay", "dummy");
+        }
+        objective.setDisplayName(display);
+    }
+
+    public static void setDisplayBelowScore(Player player, int number) {
+        Preconditions.checkNotNull(player);
+        Scoreboard scoreboard = EMPTY_BOARD;
+        Objective objective = scoreboard.getObjective(DisplaySlot.BELOW_NAME);
+        if (objective == null) {
+            objective = scoreboard.registerNewObjective("tribesdisplay", "dummy");
+        }
+        Score score = objective.getScore(player.getName());
+        score.setScore(number);
     }
 
     public static void updateMightDisplay(Member member) {
         Preconditions.checkNotNull(member);
         Player player = Bukkit.getPlayer(member.getUniqueId());
         Preconditions.checkNotNull(player);
-        Objective objective = player.getScoreboard().getObjective("mightBottom");
-        if (objective != null) {
-            objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-            objective.setDisplayName(ChatColor.WHITE + "Might");
-            Score score = objective.getScore(player.getName());
-            score.setScore(member.getScore());
-            Bukkit.getLogger().info(player.getName() + " : " + score.getScore());
-        } else {
-            objective = player.getScoreboard().registerNewObjective("mightBottom", "dummy");
-            objective.setDisplayName(ChatColor.WHITE + "Might");
-            objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-            Score score = objective.getScore(player.getName());
-            score.setScore(member.getScore());
-            Bukkit.getLogger().info(player.getName() + " : " + score.getScore());
-        }
+        setDisplayBelowName(player, "Might");
+        setDisplayBelowScore(player, member.getScore());
     }
 
 }
