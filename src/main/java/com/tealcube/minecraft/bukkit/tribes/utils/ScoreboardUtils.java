@@ -83,6 +83,7 @@ public final class ScoreboardUtils {
         Objective objective = scoreboard.getObjective(DisplaySlot.BELOW_NAME);
         if (objective == null) {
             objective = scoreboard.registerNewObjective("tribesdisplay", "dummy");
+            objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
         }
         Score score = objective.getScore(player.getName());
         score.setScore(number);
