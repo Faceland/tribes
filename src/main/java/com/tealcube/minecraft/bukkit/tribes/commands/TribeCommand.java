@@ -30,6 +30,7 @@ import com.tealcube.minecraft.bukkit.tribes.utils.Formatter;
 import com.tealcube.minecraft.bukkit.tribes.utils.ScoreboardUtils;
 import info.faceland.q.actions.options.Option;
 import info.faceland.q.actions.questions.Question;
+import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -301,7 +302,7 @@ public class TribeCommand {
                         new String[][]{{"%player%", target.getDisplayName()}});
                 MessageUtils.sendMessage(target, "<green>You joined <white>%tribe%<green>!",
                         new String[][]{{"%tribe%", tribe.getName()}});
-                ScoreboardUtils.setPrefix(target, ChatColor.RED + String.valueOf('\u2726'));
+                ScoreboardUtils.setPrefix(target, ChatColor.RED + String.valueOf('\u2726') + ChatColor.WHITE);
                 ScoreboardUtils.setSuffix(target, ChatColor.RED + String.valueOf('\u2726'));
             }
         }, "Accept the invitation"));

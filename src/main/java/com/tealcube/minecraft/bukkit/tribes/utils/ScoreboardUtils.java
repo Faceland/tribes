@@ -17,14 +17,17 @@ package com.tealcube.minecraft.bukkit.tribes.utils;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Preconditions;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
 public final class ScoreboardUtils {
 
     private static final String BOARD_KEY = "tribesboard";
-    private static final Scoreboard EMPTY_BOARD = Bukkit.getScoreboardManager().getNewScoreboard();
+    private static final Scoreboard EMPTY_BOARD;
+
+    static {
+        EMPTY_BOARD = Bukkit.getScoreboardManager().getNewScoreboard();
+    }
 
     private ScoreboardUtils() {
         // do nothing
@@ -69,6 +72,7 @@ public final class ScoreboardUtils {
         Objective objective = scoreboard.getObjective(DisplaySlot.BELOW_NAME);
         if (objective == null) {
             objective = scoreboard.registerNewObjective("tribesdisplay", "dummy");
+            objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
         }
         objective.setDisplayName(display);
     }
