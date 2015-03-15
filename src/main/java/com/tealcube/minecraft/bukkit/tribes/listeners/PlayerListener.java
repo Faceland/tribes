@@ -226,9 +226,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (event.getEntity().getKiller() == null) {
-            return;
-        }
         Player damaged = event.getEntity();
         Player damager = event.getEntity().getKiller();
         Member damagedMember = plugin.getMemberManager().getMember(damaged.getUniqueId()).or(new Member(damaged
@@ -236,24 +233,53 @@ public class PlayerListener implements Listener {
         if (!plugin.getMemberManager().hasMember(damagedMember)) {
             plugin.getMemberManager().addMember(damagedMember);
         }
-        Member damagerMember = plugin.getMemberManager().getMember(damager.getUniqueId()).or(new Member(damager
-                .getUniqueId()));
-        if (!plugin.getMemberManager().hasMember(damagerMember)) {
+        boolean lostScore = false;
+        boolean sameGuy = damager != null && damager.getUniqueId().equals(damagedMember.getDuelPartner());
+        if (damagedMember.getDuelPartner() != null) {
+            Member damagerMember = plugin.getMemberManager().getMember(damagedMember.getDuelPartner()).or(new Member(
+                    damagedMember.getDuelPartner()));
+            if (!plugin.getMemberManager().hasMember(damagerMember)) {
+                plugin.getMemberManager().addMember(damagerMember);
+            }
+            damagedMember.setDuelPartner(null);
+            damagerMember.setDuelPartner(null);
+            int changeScore = damagedMember.getScore() / 10;
+            damagedMember.setScore(damagedMember.getScore() - changeScore);
+            damagerMember.setScore(damagerMember.getScore() + changeScore);
+            plugin.getMemberManager().removeMember(damagedMember);
+            plugin.getMemberManager().removeMember(damagerMember);
+            plugin.getMemberManager().addMember(damagedMember);
             plugin.getMemberManager().addMember(damagerMember);
+            MessageUtils.sendMessage(damaged, "<red>You lost <white>%amount%<red> score for dying.",
+                    new String[][]{{"%amount%", changeScore + ""}});
+            MessageUtils.sendMessage(Bukkit.getPlayer(damagerMember.getUniqueId()),
+                    "<green>You gained <white>%amount%<green> score for a successful kill.", new String[][]{{"%amount%",
+                            changeScore + ""}});
+            ScoreboardUtils.updateMightDisplay(damagedMember);
+            ScoreboardUtils.updateMightDisplay(damagerMember);
         }
-        int changeScore = damagedMember.getScore() / 10;
-        damagedMember.setScore(damagedMember.getScore() - changeScore);
-        damagerMember.setScore(damagerMember.getScore() + changeScore);
-        plugin.getMemberManager().removeMember(damagedMember);
-        plugin.getMemberManager().removeMember(damagerMember);
-        plugin.getMemberManager().addMember(damagedMember);
-        plugin.getMemberManager().addMember(damagerMember);
-        MessageUtils.sendMessage(damaged, "<red>You lost <white>%amount%<red> score for dying.",
-                new String[][]{{"%amount%", changeScore + ""}});
-        MessageUtils.sendMessage(damager, "<green>You gained <white>%amount%<green> score for a successful kill.",
-                new String[][]{{"%amount%", changeScore + ""}});
-        ScoreboardUtils.updateMightDisplay(damagedMember);
-        ScoreboardUtils.updateMightDisplay(damagerMember);
+        if (damager != null && !sameGuy) {
+            Member damagerMember = plugin.getMemberManager().getMember(damager.getUniqueId()).or(new Member(damager
+                    .getUniqueId()));
+            if (!plugin.getMemberManager().hasMember(damagerMember)) {
+                plugin.getMemberManager().addMember(damagerMember);
+            }
+            int changeScore = damagedMember.getScore() / 10;
+            damagedMember.setScore(damagedMember.getScore() - changeScore);
+            damagerMember.setScore(damagerMember.getScore() + changeScore);
+            damagedMember.setDuelPartner(null);
+            damagerMember.setDuelPartner(null);
+            plugin.getMemberManager().removeMember(damagedMember);
+            plugin.getMemberManager().removeMember(damagerMember);
+            plugin.getMemberManager().addMember(damagedMember);
+            plugin.getMemberManager().addMember(damagerMember);
+            MessageUtils.sendMessage(damaged, "<red>You lost <white>%amount%<red> score for dying.",
+                    new String[][]{{"%amount%", changeScore + ""}});
+            MessageUtils.sendMessage(damager, "<green>You gained <white>%amount%<green> score for a successful kill.",
+                    new String[][]{{"%amount%", changeScore + ""}});
+            ScoreboardUtils.updateMightDisplay(damagedMember);
+            ScoreboardUtils.updateMightDisplay(damagerMember);
+        }
     }
 
 }
