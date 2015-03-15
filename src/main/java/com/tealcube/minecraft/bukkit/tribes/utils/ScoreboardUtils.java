@@ -37,9 +37,6 @@ public final class ScoreboardUtils {
         Preconditions.checkNotNull(player);
         Preconditions.checkNotNull(prefix);
         Scoreboard scoreboard = EMPTY_BOARD;
-        for (Team t : scoreboard.getTeams()) {
-            t.removePlayer(player);
-        }
         Team team = scoreboard.getTeam(player.getName());
         if (team == null) {
             team = scoreboard.registerNewTeam(player.getName());
@@ -53,9 +50,6 @@ public final class ScoreboardUtils {
         Preconditions.checkNotNull(player);
         Preconditions.checkNotNull(suffix);
         Scoreboard scoreboard = EMPTY_BOARD;
-        for (Team t : scoreboard.getTeams()) {
-            t.removePlayer(player);
-        }
         Team team = scoreboard.getTeam(player.getName());
         if (team == null) {
             team = scoreboard.registerNewTeam(player.getName());
