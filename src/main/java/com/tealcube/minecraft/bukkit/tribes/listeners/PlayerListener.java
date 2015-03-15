@@ -257,6 +257,7 @@ public class PlayerListener implements Listener {
                             changeScore + ""}});
             ScoreboardUtils.updateMightDisplay(damagedMember);
             ScoreboardUtils.updateMightDisplay(damagerMember);
+            lostScore = true;
         }
         if (damager != null && !sameGuy) {
             Member damagerMember = plugin.getMemberManager().getMember(damager.getUniqueId()).or(new Member(damager
@@ -265,7 +266,9 @@ public class PlayerListener implements Listener {
                 plugin.getMemberManager().addMember(damagerMember);
             }
             int changeScore = damagedMember.getScore() / 10;
-            damagedMember.setScore(damagedMember.getScore() - changeScore);
+            if (!lostScore) {
+                damagedMember.setScore(damagedMember.getScore() - changeScore);
+            }
             damagerMember.setScore(damagerMember.getScore() + changeScore);
             damagedMember.setDuelPartner(null);
             damagerMember.setDuelPartner(null);
