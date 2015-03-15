@@ -37,9 +37,9 @@ public final class ScoreboardUtils {
         for (Team t : scoreboard.getTeams()) {
             t.removePlayer(player);
         }
-        Team team = scoreboard.getTeam(player.getUniqueId().toString());
+        Team team = scoreboard.getTeam(player.getName());
         if (team == null) {
-            team = scoreboard.registerNewTeam(player.getUniqueId().toString());
+            team = scoreboard.registerNewTeam(player.getName());
         }
         team.setPrefix(prefix);
         team.addPlayer(player);
@@ -53,9 +53,9 @@ public final class ScoreboardUtils {
         for (Team t : scoreboard.getTeams()) {
             t.removePlayer(player);
         }
-        Team team = scoreboard.getTeam(player.getUniqueId().toString());
+        Team team = scoreboard.getTeam(player.getName());
         if (team == null) {
-            team = scoreboard.registerNewTeam(player.getUniqueId().toString());
+            team = scoreboard.registerNewTeam(player.getName());
         }
         team.setPrefix(suffix);
         team.addPlayer(player);
