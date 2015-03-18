@@ -165,7 +165,7 @@ public class PlayerListener implements Listener {
             if (damagedMember.getDuelPartner() != null && damagerMember.getDuelPartner() != null) {
                 if (damagedMember.getDuelPartner().equals(damagerMember.getUniqueId()) && damagerMember.getDuelPartner().equals(damagedMember.getUniqueId())) {
                     double curHealth = damaged.getHealth();
-                    if (curHealth - event.getFinalDamage() <= 0D) {
+                    if (curHealth - event.getFinalDamage() <= 1D) {
                         event.setDamage(0);
                         event.setCancelled(true);
                         damaged.setHealth(damaged.getMaxHealth());
