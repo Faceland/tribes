@@ -54,7 +54,7 @@ public final class ScoreboardUtils {
         if (team == null) {
             team = scoreboard.registerNewTeam(player.getName());
         }
-        team.setPrefix(suffix);
+        team.setSuffix(suffix);
         team.addPlayer(player);
         player.setScoreboard(scoreboard);
     }
