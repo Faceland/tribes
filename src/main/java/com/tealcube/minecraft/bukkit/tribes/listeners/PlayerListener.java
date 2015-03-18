@@ -141,7 +141,7 @@ public class PlayerListener implements Listener {
                 tribeOptional.get().getName()}});
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player)) {
             return;
