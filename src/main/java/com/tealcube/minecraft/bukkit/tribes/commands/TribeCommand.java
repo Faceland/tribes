@@ -266,7 +266,7 @@ public class TribeCommand {
             plugin.getMemberManager().addMember(senderMember);
         }
         final Member targetMember =
-                plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+                plugin.getMemberManager().getMember(target.getUniqueId()).or(new Member(target.getUniqueId()));
         if (!plugin.getMemberManager().hasMember(targetMember)) {
             plugin.getMemberManager().addMember(targetMember);
         }

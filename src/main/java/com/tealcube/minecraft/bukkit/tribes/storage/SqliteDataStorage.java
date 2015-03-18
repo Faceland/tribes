@@ -223,6 +223,8 @@ public final class SqliteDataStorage implements DataStorage {
                 String tribeString = resultSet.getString("tribe");
                 if (tribeString != null) {
                     member.setTribe(UUID.fromString(tribeString));
+                } else {
+                    member.setTribe(null);
                 }
                 member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
                 member.setPvpState(Member.PvpState.values()[resultSet.getInt("pvpstate")]);
@@ -258,6 +260,8 @@ public final class SqliteDataStorage implements DataStorage {
                     String tribe = resultSet.getString("tribe");
                     if (tribe != null) {
                         member.setTribe(UUID.fromString(tribe));
+                    } else {
+                        member.setTribe(null);
                     }
                     member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
                     member.setPvpState(Member.PvpState.values()[resultSet.getInt("pvpstate")]);
