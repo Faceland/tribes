@@ -29,6 +29,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -143,11 +144,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player)) {
+        if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player || (event.getDamager() instanceof Projectile && ((Projectile) event
+                .getDamager()).getShooter() instanceof Player))) {
             return;
         }
         Player damaged = (Player) event.getEntity();
-        Player damager = (Player) event.getDamager();
+        Player damager = (event.getDamager() instanceof Projectile ? (Player)((Projectile) event.getDamager()).getShooter()
+                : (Player) event.getDamager());
         Member damagedMember = plugin.getMemberManager().getMember(damaged.getUniqueId()).or(new Member(damaged
                 .getUniqueId()));
         PvpManager.PvpData oldData = plugin.getPvpManager().getData(damaged.getUniqueId());
