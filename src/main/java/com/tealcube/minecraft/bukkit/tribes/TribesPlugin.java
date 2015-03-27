@@ -21,7 +21,6 @@ import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartConfigu
 import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartYamlConfiguration;
 import com.tealcube.minecraft.bukkit.kern.methodcommand.CommandHandler;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
-import com.tealcube.minecraft.bukkit.tribes.commands.DuelCommand;
 import com.tealcube.minecraft.bukkit.tribes.commands.PvpCommand;
 import com.tealcube.minecraft.bukkit.tribes.commands.TribeCommand;
 import com.tealcube.minecraft.bukkit.tribes.data.Cell;
@@ -101,7 +100,6 @@ public class TribesPlugin extends FacePlugin {
         CommandHandler commandHandler = new CommandHandler(this);
         commandHandler.registerCommands(new TribeCommand(this));
         commandHandler.registerCommands(new PvpCommand(this));
-        commandHandler.registerCommands(new DuelCommand(this));
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 

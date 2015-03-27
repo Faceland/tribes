@@ -55,9 +55,6 @@ public class PvpCommand {
                 MessageUtils.sendMessage(sender, "<gray>Your PvP state is <green>OFF<gray>.");
                 MessageUtils.sendMessage(sender, "<gray>Use <red>\"/pvp on\"<gray> to toggle PvP off.");
                 break;
-            case DUEL:
-                MessageUtils.sendMessage(sender, "<gray>You are in a duel.");
-                break;
         }
     }
 

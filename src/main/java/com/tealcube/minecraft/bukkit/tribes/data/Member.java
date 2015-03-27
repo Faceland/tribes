@@ -23,7 +23,6 @@ public final class Member {
     private int score = 100;
     private Tribe.Rank rank = Tribe.Rank.GUEST;
     private PvpState pvpState = PvpState.OFF;
-    private UUID duelPartner;
 
     public Member(UUID uuid) {
         this.uniqueId = uuid;
@@ -35,14 +34,6 @@ public final class Member {
 
     public void setPvpState(PvpState pvpState) {
         this.pvpState = pvpState;
-    }
-
-    public UUID getDuelPartner() {
-        return duelPartner;
-    }
-
-    public void setDuelPartner(UUID duelPartner) {
-        this.duelPartner = duelPartner;
     }
 
     public UUID getUniqueId() {
@@ -75,8 +66,7 @@ public final class Member {
 
     public enum PvpState {
         ON,
-        OFF,
-        DUEL
+        OFF
     }
 
 }

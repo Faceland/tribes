@@ -15,7 +15,6 @@
 package com.tealcube.minecraft.bukkit.tribes.listeners;
 
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
-import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Objects;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
@@ -38,8 +37,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class PlayerListener implements Listener {
 
@@ -58,8 +55,10 @@ public class PlayerListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                ScoreboardUtils.setPrefix(event.getPlayer(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
-                ScoreboardUtils.setSuffix(event.getPlayer(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+                ScoreboardUtils.setPrefix(event.getPlayer(),
+                        (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+                ScoreboardUtils.setSuffix(event.getPlayer(),
+                        (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
                 ScoreboardUtils.updateMightDisplay(member);
             }
         }, 20L);
@@ -73,42 +72,25 @@ public class PlayerListener implements Listener {
         }
         PvpManager.PvpData data = plugin.getPvpManager().getData(member.getUniqueId());
         member.setPvpState(member.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
-        ScoreboardUtils.setPrefix(event.getPlayer(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
-        ScoreboardUtils.setSuffix(event.getPlayer(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
-        if (member.getDuelPartner() != null) {
-            Member duelPartner = plugin.getMemberManager().getMember(member.getDuelPartner()).or(new Member(member.getDuelPartner()));
-            if (!plugin.getMemberManager().hasMember(duelPartner)) {
-                plugin.getMemberManager().addMember(duelPartner);
-            }
-            event.getPlayer().setHealth(0D);
-            duelPartner.setPvpState(member.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
-            duelPartner.setDuelPartner(null);
-            member.setDuelPartner(null);
-            int scoreChange = (int) (member.getScore() * 0.05);
-            duelPartner.setScore(duelPartner.getScore() + scoreChange);
-            member.setScore(member.getScore() - scoreChange);
-            Player p = Bukkit.getPlayer(member.getUniqueId());
-            ScoreboardUtils.setPrefix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
-            ScoreboardUtils.setSuffix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
-            Bukkit.broadcastMessage(TextUtils.args(TextUtils.color("<white>%winner%<gray> has defeated the cowardly <white>%loser%<gray> in a duel!"),
-                    new String[][]{{"%winner%", Bukkit.getPlayer(duelPartner.getUniqueId()).getDisplayName()}, {"%loser%", event.getPlayer().getDisplayName()}}));
-            MessageUtils.sendMessage(event.getPlayer(), "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + member.getScore()}});
-            MessageUtils.sendMessage(Bukkit.getPlayer(duelPartner.getUniqueId()), "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + duelPartner.getScore()}});
-            ScoreboardUtils.updateMightDisplay(duelPartner);
-            ScoreboardUtils.updateMightDisplay(member);
-        } else if (data.time() != 0 && System.currentTimeMillis() - data.time() < 5000 && data.tagger() != null) {
+        ScoreboardUtils.setPrefix(event.getPlayer(),
+                (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+        ScoreboardUtils.setSuffix(event.getPlayer(),
+                (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+        if (data.time() != 0 && System.currentTimeMillis() - data.time() < 5000 && data.tagger() != null) {
             Member tagger = plugin.getMemberManager().getMember(data.tagger()).or(new Member(data.tagger()));
             if (!plugin.getMemberManager().hasMember(tagger)) {
                 plugin.getMemberManager().addMember(tagger);
             }
             Player p = Bukkit.getPlayer(tagger.getUniqueId());
-            ScoreboardUtils.setPrefix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+            ScoreboardUtils.setPrefix(p,
+                    (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
             ScoreboardUtils.setSuffix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
             event.getPlayer().setHealth(0D);
             int scoreChange = (int) (member.getScore() * 0.05);
             tagger.setScore(tagger.getScore() + scoreChange);
             member.setScore(member.getScore() - scoreChange);
-            MessageUtils.sendMessage(Bukkit.getPlayer(tagger.getUniqueId()), "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + tagger.getScore()}});
+            MessageUtils.sendMessage(Bukkit.getPlayer(tagger.getUniqueId()), "<gray>Your score is now <white>%amount%<gray>.",
+                    new String[][]{{"%amount%", "" + tagger.getScore()}});
             ScoreboardUtils.updateMightDisplay(tagger);
             ScoreboardUtils.updateMightDisplay(member);
             plugin.getPvpManager().clearTime(member.getUniqueId());
@@ -144,12 +126,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player || (event.getDamager() instanceof Projectile && ((Projectile) event
-                .getDamager()).getShooter() instanceof Player))) {
+        if (!(event.getEntity() instanceof Player) ||
+                !(event.getDamager() instanceof Player || (event.getDamager() instanceof Projectile && ((Projectile) event
+                        .getDamager()).getShooter() instanceof Player))) {
             return;
         }
         Player damaged = (Player) event.getEntity();
-        Player damager = (event.getDamager() instanceof Projectile ? (Player)((Projectile) event.getDamager()).getShooter()
+        Player damager = (event.getDamager() instanceof Projectile ? (Player) ((Projectile) event.getDamager()).getShooter()
                 : (Player) event.getDamager());
         Member damagedMember = plugin.getMemberManager().getMember(damaged.getUniqueId()).or(new Member(damaged
                 .getUniqueId()));
@@ -163,53 +146,6 @@ public class PlayerListener implements Listener {
                 .getUniqueId()));
         if (!plugin.getMemberManager().hasMember(damagerMember)) {
             plugin.getMemberManager().addMember(damagerMember);
-        }
-        if (damagedMember.getPvpState() == Member.PvpState.DUEL || damagerMember.getPvpState() == Member.PvpState.DUEL) {
-            if (damagedMember.getDuelPartner() != null && damagerMember.getDuelPartner() != null) {
-                if (damagedMember.getDuelPartner().equals(damagerMember.getUniqueId()) && damagerMember.getDuelPartner().equals(damagedMember.getUniqueId())) {
-                    double curHealth = damaged.getHealth();
-                    if (curHealth - event.getFinalDamage() <= 1D) {
-                        event.setDamage(0);
-                        event.setCancelled(true);
-                        damaged.setHealth(damaged.getMaxHealth());
-                        damaged.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 10, 10), true);
-                        damaged.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 10, 10), true);
-                        damager.setHealth(damager.getMaxHealth());
-                        damager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 10, 10), true);
-                        damager.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 10, 10), true);
-                        int scoreChange = (int) (damagedMember.getScore() * 0.05);
-                        damagerMember.setScore(damagerMember.getScore() + scoreChange);
-                        damagerMember.setPvpState(damagerMember.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
-                        damagerMember.setDuelPartner(null);
-                        damagedMember.setScore(damagedMember.getScore() - scoreChange);
-                        damagedMember.setPvpState(damagedMember.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
-                        damagedMember.setDuelPartner(null);
-                        Bukkit.broadcastMessage(TextUtils.args(TextUtils.color("<white>%winner%<gray> has defeated <white>%loser%<gray> in a duel!"),
-                                new String[][]{{"%winner%", damager.getDisplayName()}, {"%loser%", damaged.getDisplayName()}}));
-                        MessageUtils.sendMessage(damaged, "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + damagedMember.getScore()}});
-                        MessageUtils.sendMessage(damager, "<gray>Your score is now <white>%amount%<gray>.", new String[][]{{"%amount%", "" + damagerMember.getScore()}});
-                        plugin.getMemberManager().removeMember(damagedMember);
-                        plugin.getMemberManager().removeMember(damagerMember);
-                        plugin.getMemberManager().addMember(damagedMember);
-                        plugin.getMemberManager().addMember(damagerMember);
-                        ScoreboardUtils.setPrefix(damager, (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
-                        ScoreboardUtils.setPrefix(damaged, (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
-                        ScoreboardUtils.setSuffix(damager, (damagerMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
-                        ScoreboardUtils.setSuffix(damaged, (damagedMember.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
-                        ScoreboardUtils.updateMightDisplay(damagedMember);
-                        ScoreboardUtils.updateMightDisplay(damagerMember);
-                    }
-                    return;
-                } else {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                }
-            } else {
-                event.setCancelled(true);
-                event.setDamage(0);
-            }
-            MessageUtils.sendMessage(damager, "<red>You cannot damage someone in a duel unless you're dueling them!");
-            return;
         }
         if (damagedMember.getPvpState() == Member.PvpState.OFF || damagerMember.getPvpState() == Member.PvpState.OFF) {
             MessageUtils.sendMessage(damager, "<red>You cannot PvP unless both parties are in PvP mode.");
@@ -231,61 +167,32 @@ public class PlayerListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player damaged = event.getEntity();
         Player damager = event.getEntity().getKiller();
+        if (damager == null) {
+            return;
+        }
         Member damagedMember = plugin.getMemberManager().getMember(damaged.getUniqueId()).or(new Member(damaged
                 .getUniqueId()));
         if (!plugin.getMemberManager().hasMember(damagedMember)) {
             plugin.getMemberManager().addMember(damagedMember);
         }
-        boolean lostScore = false;
-        boolean sameGuy = damager != null && damager.getUniqueId().equals(damagedMember.getDuelPartner());
-        if (damagedMember.getDuelPartner() != null) {
-            Member damagerMember = plugin.getMemberManager().getMember(damagedMember.getDuelPartner()).or(new Member(
-                    damagedMember.getDuelPartner()));
-            if (!plugin.getMemberManager().hasMember(damagerMember)) {
-                plugin.getMemberManager().addMember(damagerMember);
-            }
-            damagedMember.setDuelPartner(null);
-            damagerMember.setDuelPartner(null);
-            int changeScore = damagedMember.getScore() / 10;
-            damagedMember.setScore(damagedMember.getScore() - changeScore);
-            damagerMember.setScore(damagerMember.getScore() + changeScore);
-            plugin.getMemberManager().removeMember(damagedMember);
-            plugin.getMemberManager().removeMember(damagerMember);
-            plugin.getMemberManager().addMember(damagedMember);
+        Member damagerMember = plugin.getMemberManager().getMember(damager.getUniqueId()).or(new Member(damager
+                .getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(damagerMember)) {
             plugin.getMemberManager().addMember(damagerMember);
-            MessageUtils.sendMessage(damaged, "<red>You lost <white>%amount%<red> score for dying.",
-                    new String[][]{{"%amount%", changeScore + ""}});
-            MessageUtils.sendMessage(Bukkit.getPlayer(damagerMember.getUniqueId()),
-                    "<green>You gained <white>%amount%<green> score for a successful kill.", new String[][]{{"%amount%",
-                            changeScore + ""}});
-            ScoreboardUtils.updateMightDisplay(damagedMember);
-            ScoreboardUtils.updateMightDisplay(damagerMember);
-            lostScore = true;
         }
-        if (damager != null && !sameGuy) {
-            Member damagerMember = plugin.getMemberManager().getMember(damager.getUniqueId()).or(new Member(damager
-                    .getUniqueId()));
-            if (!plugin.getMemberManager().hasMember(damagerMember)) {
-                plugin.getMemberManager().addMember(damagerMember);
-            }
-            int changeScore = damagedMember.getScore() / 10;
-            if (!lostScore) {
-                damagedMember.setScore(damagedMember.getScore() - changeScore);
-            }
-            damagerMember.setScore(damagerMember.getScore() + changeScore);
-            damagedMember.setDuelPartner(null);
-            damagerMember.setDuelPartner(null);
-            plugin.getMemberManager().removeMember(damagedMember);
-            plugin.getMemberManager().removeMember(damagerMember);
-            plugin.getMemberManager().addMember(damagedMember);
-            plugin.getMemberManager().addMember(damagerMember);
-            MessageUtils.sendMessage(damaged, "<red>You lost <white>%amount%<red> score for dying.",
-                    new String[][]{{"%amount%", changeScore + ""}});
-            MessageUtils.sendMessage(damager, "<green>You gained <white>%amount%<green> score for a successful kill.",
-                    new String[][]{{"%amount%", changeScore + ""}});
-            ScoreboardUtils.updateMightDisplay(damagedMember);
-            ScoreboardUtils.updateMightDisplay(damagerMember);
-        }
+        int changeScore = damagedMember.getScore() / 10;
+        damagedMember.setScore(damagedMember.getScore() - changeScore);
+        damagerMember.setScore(damagerMember.getScore() + changeScore);
+        plugin.getMemberManager().removeMember(damagedMember);
+        plugin.getMemberManager().removeMember(damagerMember);
+        plugin.getMemberManager().addMember(damagedMember);
+        plugin.getMemberManager().addMember(damagerMember);
+        MessageUtils.sendMessage(damaged, "<red>You lost <white>%amount%<red> score for dying.",
+                new String[][]{{"%amount%", changeScore + ""}});
+        MessageUtils.sendMessage(damager, "<green>You gained <white>%amount%<green> score for a successful kill.",
+                new String[][]{{"%amount%", changeScore + ""}});
+        ScoreboardUtils.updateMightDisplay(damagedMember);
+        ScoreboardUtils.updateMightDisplay(damagerMember);
     }
 
 }

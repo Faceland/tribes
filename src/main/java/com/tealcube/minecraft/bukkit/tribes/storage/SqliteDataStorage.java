@@ -228,10 +228,6 @@ public final class SqliteDataStorage implements DataStorage {
                 }
                 member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
                 member.setPvpState(Member.PvpState.values()[resultSet.getInt("pvpstate")]);
-                String partnerId = resultSet.getString("partnerid");
-                if (partnerId != null) {
-                    member.setDuelPartner(UUID.fromString(partnerId));
-                }
                 members.add(member);
             }
         } catch (SQLException e) {
@@ -265,10 +261,6 @@ public final class SqliteDataStorage implements DataStorage {
                     }
                     member.setRank(Tribe.Rank.fromString(resultSet.getString("rank")));
                     member.setPvpState(Member.PvpState.values()[resultSet.getInt("pvpstate")]);
-                    String partnerId = resultSet.getString("partnerid");
-                    if (partnerId != null) {
-                        member.setDuelPartner(UUID.fromString(partnerId));
-                    }
                     members.add(member);
                 }
             }
@@ -290,7 +282,7 @@ public final class SqliteDataStorage implements DataStorage {
         Preconditions.checkNotNull(memberIterable, "memberIterable cannot be null");
         Preconditions.checkState(initialized, "must be initialized");
         CloseableRegistry registry = new CloseableRegistry();
-        String query = "REPLACE INTO tr_members (id, score, tribe, rank, pvpstate, partnerid) VALUES (?,?,?,?,?,?)";
+        String query = "REPLACE INTO tr_members (id, score, tribe, rank, pvpstate) VALUES (?,?,?,?,?)";
         try {
             Connection connection = registry.register(getConnection());
             PreparedStatement statement = registry.register(connection.prepareStatement(query));
@@ -304,11 +296,6 @@ public final class SqliteDataStorage implements DataStorage {
                 }
                 statement.setString(4, member.getRank() != null ? member.getRank().name() : Tribe.Rank.GUEST.name());
                 statement.setInt(5, member.getPvpState().ordinal());
-                if (member.getDuelPartner() == null) {
-                    statement.setNull(6, Types.VARCHAR);
-                } else {
-                    statement.setString(6, member.getDuelPartner().toString());
-                }
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
