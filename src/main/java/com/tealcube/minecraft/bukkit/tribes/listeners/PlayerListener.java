@@ -85,7 +85,7 @@ public class PlayerListener implements Listener {
             ScoreboardUtils.setPrefix(p,
                     (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
             ScoreboardUtils.setSuffix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
-            event.getPlayer().setHealth(0D);
+            //event.getPlayer().setHealth(0D);
             int scoreChange = (int) (member.getScore() * 0.05);
             tagger.setScore(tagger.getScore() + scoreChange);
             member.setScore(member.getScore() - scoreChange);
