@@ -15,6 +15,7 @@
 package com.tealcube.minecraft.bukkit.tribes.listeners;
 
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
+import com.tealcube.minecraft.bukkit.highnoon.events.DuelEndEvent;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Objects;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
@@ -193,6 +194,37 @@ public class PlayerListener implements Listener {
                 new String[][]{{"%amount%", changeScore + ""}});
         ScoreboardUtils.updateMightDisplay(damagedMember);
         ScoreboardUtils.updateMightDisplay(damagerMember);
+    }
+
+    @EventHandler
+    public void onDuelEnd(DuelEndEvent event) {
+        if (event.getDuel().isTie()) {
+            return;
+        }
+        Member winner = plugin.getMemberManager().getMember(event.getDuel().getWinner()).or(new Member(event.getDuel().getWinner()));
+        Member loser = plugin.getMemberManager().getMember(event.getDuel().getLoser()).or(new Member(event.getDuel().getLoser()));
+        int changeScore = loser.getScore() / 10;
+        winner.setScore(winner.getScore() + changeScore);
+        loser.setScore(loser.getScore() + changeScore);
+        if (!plugin.getMemberManager().hasMember(winner)) {
+            plugin.getMemberManager().addMember(winner);
+        }
+        if (!plugin.getMemberManager().hasMember(loser)) {
+            plugin.getMemberManager().addMember(loser);
+        }
+
+        Player wPlayer = Bukkit.getPlayer(winner.getUniqueId());
+        if (wPlayer != null) {
+            MessageUtils.sendMessage(wPlayer, "<green>You earned <white>%amount%<green> score for winning your duel.",
+                    new String[][]{{"%amount%", changeScore + ""}});
+        }
+        Player lPlayer = Bukkit.getPlayer(loser.getUniqueId());
+        if (lPlayer != null) {
+            MessageUtils.sendMessage(lPlayer, "<red>You lost <white>%amount%<red> score for losing your duel.",
+                    new String[][]{{"%amount%", changeScore + ""}});
+        }
+        ScoreboardUtils.updateMightDisplay(winner);
+        ScoreboardUtils.updateMightDisplay(loser);
     }
 
 }

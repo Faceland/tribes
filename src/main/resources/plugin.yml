@@ -1,7 +1,7 @@
 name: @NAME@
 version: @VERSION@
 main: com.tealcube.minecraft.bukkit.tribes.TribesPlugin
-depend: [Facecore, Q, Vault]
+depend: [Facecore, Q, HighNoon, Vault]
 
 commands:
   tribe:
