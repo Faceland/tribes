@@ -4,8 +4,8 @@ main: com.tealcube.minecraft.bukkit.tribes.TribesPlugin
 depend: [Facecore, Q, HighNoon, Vault]
 
 commands:
-  tribe:
-    alias: [tr]
+  guild:
+    alias: [g]
   pvp:
     alias: []
 
