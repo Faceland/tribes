@@ -38,9 +38,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class TribeCommand {
 
@@ -229,6 +227,7 @@ public class TribeCommand {
         tribe.setValidated(true);
         plugin.getTribeManager().removeTribe(tribe);
         plugin.getTribeManager().addTribe(tribe);
+        plugin.getDataStorage().saveTribes(Collections.singletonList(tribe));
         MessageUtils.sendMessage(sender, "<green>You validated the guild <white>%tribe%<green>!",
                 new String[][]{{"%tribe%", tribe.getName()}});
         MessageUtils.sendMessage(sender, "<green>You can now start inviting players with <white>/guild invite "
