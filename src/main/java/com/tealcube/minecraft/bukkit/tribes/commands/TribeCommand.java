@@ -95,7 +95,7 @@ public class TribeCommand {
         }
         MessageUtils.sendMessage(player, "<dark green>Might: <white>%score%", new String[][]{{"%score%", member
                 .getScore() + ""}});
-        MessageUtils.sendMessage(player, "<green><>====||====||====||====||====<>");
+        MessageUtils.sendMessage(player, "<green><>====||====||====||====||====||====<>");
     }
 
     @Command(identifier = "guild create", onlyPlayers = false, permissions = "tribes.command.create")
@@ -134,10 +134,9 @@ public class TribeCommand {
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);
         plugin.getTribeManager().addTribe(tribe);
-        MessageUtils.sendMessage(sender, "<green>You created a guild!");
-        MessageUtils.sendMessage(player, "<green>You have created a guild! Use <white>/guild<green> to check its "
-                                         + "status! Before you start inviting people, plase name your guild with "
-                                         + "<white>/guild name <name><green>!");
+        MessageUtils.sendMessage(sender, "<green>You created a guild! Now the next step is naming it!");
+        MessageUtils.sendMessage(player, "<green>Use <white>/guild<green> to check your guild's status");
+        MessageUtils.sendMessage(sender, "<green>Name your guild with <white>/guild name <name><green>!");
     }
 
     @Command(identifier = "guild claim", onlyPlayers = true, permissions = "tribes.command.claim")
@@ -230,10 +229,11 @@ public class TribeCommand {
         tribe.setValidated(true);
         plugin.getTribeManager().removeTribe(tribe);
         plugin.getTribeManager().addTribe(tribe);
-        MessageUtils.sendMessage(sender, "<green>You validated the tribe <white>%tribe%<green>!",
+        MessageUtils.sendMessage(sender, "<green>You validated the guild <white>%tribe%<green>!",
                 new String[][]{{"%tribe%", tribe.getName()}});
         MessageUtils.sendMessage(sender, "<green>You can now start inviting players with <white>/guild invite "
                                          + "<player><green>!");
+        MessageUtils.sendMessage(sender, "<green>Use <white>/guild claim<green> to claim a chunk as your territory!");
     }
 
     @Command(identifier = "guild name", onlyPlayers = true, permissions = "tribes.command.name")
