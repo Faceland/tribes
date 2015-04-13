@@ -243,7 +243,7 @@ public class TribeCommand {
             plugin.getMemberManager().addMember(member);
         }
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>You are not in a guild. What exactly are you trying to nename...?");
+            MessageUtils.sendMessage(sender, "<red>You are not in a guild. What exactly are you trying to name...?");
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
@@ -252,6 +252,10 @@ public class TribeCommand {
             return;
         }
         String checkName = name.length() > 16 ? name.substring(0, 15) : name;
+        if (checkName.isEmpty()) {
+            MessageUtils.sendMessage(sender, "<red>You must name your guild.");
+            return;
+        }
         if (plugin.getTribeManager().getTribeByName(checkName).isPresent()) {
             MessageUtils.sendMessage(sender, "<red>A guild with this name already exists.");
             return;
