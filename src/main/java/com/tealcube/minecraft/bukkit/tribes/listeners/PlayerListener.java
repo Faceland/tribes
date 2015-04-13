@@ -114,14 +114,15 @@ public class PlayerListener implements Listener {
             return;
         }
         if (toCell.getOwner() == null) {
-            MessageUtils.sendMessage(event.getPlayer(), "<gray>Entering unclaimed land");
+            MessageUtils.sendMessage(event.getPlayer(), "<gray>You have left guild territory.");
             return;
         }
         Optional<Tribe> tribeOptional = plugin.getTribeManager().getTribe(toCell.getOwner());
         if (!tribeOptional.isPresent()) {
             return;
         }
-        MessageUtils.sendMessage(event.getPlayer(), "<gray>Owner: <white>%owner%", new String[][]{{"%owner%",
+        MessageUtils.sendMessage(event.getPlayer(), "<gold>You have entered <white>%owner%<gold>'s territory!", new
+            String[][]{{"%owner%",
                 tribeOptional.get().getName()}});
     }
 
@@ -158,7 +159,7 @@ public class PlayerListener implements Listener {
             return;
         }
         if (damagedMember.getTribe().equals(damagerMember.getTribe())) {
-            MessageUtils.sendMessage(damager, "<red>You cannot damage a member of your tribe!");
+            MessageUtils.sendMessage(damager, "<red>You cannot damage a member of your guild!");
             event.setCancelled(true);
             event.setDamage(0);
         }
@@ -188,9 +189,9 @@ public class PlayerListener implements Listener {
         plugin.getMemberManager().removeMember(damagerMember);
         plugin.getMemberManager().addMember(damagedMember);
         plugin.getMemberManager().addMember(damagerMember);
-        MessageUtils.sendMessage(damaged, "<red>You lost <white>%amount%<red> score for dying.",
+        MessageUtils.sendMessage(damaged, "<red>- <white>%amount%<red> Might.",
                 new String[][]{{"%amount%", changeScore + ""}});
-        MessageUtils.sendMessage(damager, "<green>You gained <white>%amount%<green> score for a successful kill.",
+        MessageUtils.sendMessage(damager, "<green>+ <white>%amount%<green> Might!",
                 new String[][]{{"%amount%", changeScore + ""}});
         ScoreboardUtils.updateMightDisplay(damagedMember);
         ScoreboardUtils.updateMightDisplay(damagerMember);
@@ -215,12 +216,12 @@ public class PlayerListener implements Listener {
 
         Player wPlayer = Bukkit.getPlayer(winner.getUniqueId());
         if (wPlayer != null) {
-            MessageUtils.sendMessage(wPlayer, "<green>You earned <white>%amount%<green> score for winning your duel.",
+            MessageUtils.sendMessage(wPlayer, "<green>+ <white>%amount%<green> Might!",
                     new String[][]{{"%amount%", changeScore + ""}});
         }
         Player lPlayer = Bukkit.getPlayer(loser.getUniqueId());
         if (lPlayer != null) {
-            MessageUtils.sendMessage(lPlayer, "<red>You lost <white>%amount%<red> score for losing your duel.",
+            MessageUtils.sendMessage(lPlayer, "<red>- <white>%amount%<red> Might.",
                     new String[][]{{"%amount%", changeScore + ""}});
         }
         ScoreboardUtils.updateMightDisplay(winner);
