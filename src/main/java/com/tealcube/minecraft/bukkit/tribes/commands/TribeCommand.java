@@ -50,7 +50,7 @@ public class TribeCommand {
         this.plugin = plugin;
     }
 
-    @Command(identifier = "tribe", description = "base tribe command", onlyPlayers = false,
+    @Command(identifier = "guild", description = "base guild command", onlyPlayers = false,
             permissions = "tribes.command")
     public void baseCommand(CommandSender sender) {
         if (!(sender instanceof Player)) {
@@ -62,20 +62,19 @@ public class TribeCommand {
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
         }
-        MessageUtils.sendMessage(player, "<green><====||====||====||====>");
-        MessageUtils.sendMessage(player, "<white>%player%", new String[][]{{"%player%", player.getDisplayName()}});
+        MessageUtils.sendMessage(player, "<green><====||====|<white> Guild Status <green>|====||====>");
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(player, "<red>Not a member of any Tribe");
+            MessageUtils.sendMessage(player, "<white>You are not a member of a guild.");
         } else {
             Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
-            MessageUtils.sendMessage(player, "<white>%rank%<dark green> of <white>%tribe%", new String[][]{
+            MessageUtils.sendMessage(player, "<aqua>%rank% of %tribe%", new String[][]{
                     {"%rank%", WordUtils.capitalizeFully(member.getRank().name())},
-                    {"%tribe%", !tribe.isValidated() ? tribe.getName() : "a nonvalidated tribe"}
+                    {"%tribe%", !tribe.isValidated() ? tribe.getName() : "a non validated guild"}
             });
             int cap = tribe.getLevel().getChunks();
             int numOfCells = plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId()).size();
-            MessageUtils.sendMessage(player, "<gray>Your tribe has claimed <white>%amount%<gray>/<white>%cap%<gray> " +
-                    "cells", new String[][]{{"%amount%", numOfCells + ""}, {"%cap%", cap + ""}});
+            MessageUtils.sendMessage(player, "<gray>Claimed <white>%amount%<gray>/<white>%cap%<gray> " +
+                    "chunks", new String[][]{{"%amount%", numOfCells + ""}, {"%cap%", cap + ""}});
             for (Tribe.Permission permission : Tribe.Permission.values()) {
                 if (permission == Tribe.Permission.KICK_IMMUNE || !tribe.isValidated()) {
                     continue;
@@ -94,12 +93,12 @@ public class TribeCommand {
             }
             MessageUtils.sendMessage(player, "<green>Online Members: <white>%members%", new String[][]{{"%members%", onlineMembers.toString().replace("[", "").replace("]", "")}});
         }
-        MessageUtils.sendMessage(player, "<dark green>Score: <white>%score%", new String[][]{{"%score%", member
+        MessageUtils.sendMessage(player, "<dark green>Might: <white>%score%", new String[][]{{"%score%", member
                 .getScore() + ""}});
-        MessageUtils.sendMessage(player, "<green><====||====||====||====>");
+        MessageUtils.sendMessage(player, "<green><>====||====||====||====||====<>");
     }
 
-    @Command(identifier = "tribe create", onlyPlayers = false, permissions = "tribes.command.create")
+    @Command(identifier = "guild create", onlyPlayers = false, permissions = "tribes.command.create")
     public void createByConsoleSubcommand(CommandSender sender, @Arg(name = "player", def = "") String playerName) {
         Player player;
         if (playerName.equals("")) {
@@ -122,8 +121,8 @@ public class TribeCommand {
             plugin.getMemberManager().addMember(member);
         }
         if (member.getTribe() != null) {
-            MessageUtils.sendMessage(sender, "<red>You cannot create a tribe for someone if they're already in one.");
-            MessageUtils.sendMessage(player, "<red>A tribe cannot be created for you if you're already in one.");
+            MessageUtils.sendMessage(sender, "<red>You cannot create a guild for someone if they're already in one.");
+            MessageUtils.sendMessage(player, "<red>You are already in a guild!");
             return;
         }
         Tribe tribe = new Tribe(UUID.randomUUID());
@@ -135,40 +134,43 @@ public class TribeCommand {
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);
         plugin.getTribeManager().addTribe(tribe);
-        MessageUtils.sendMessage(sender, "<green>You created a tribe!");
-        MessageUtils.sendMessage(player, "<green>You are now the leader of a tribe!");
+        MessageUtils.sendMessage(sender, "<green>You created a guild!");
+        MessageUtils.sendMessage(player, "<green>You have created a guild! Use <white>/guild<green> to check its "
+                                         + "status! Before you start inviting people, plase name your guild with "
+                                         + "<white>/guild name <name><green>!");
     }
 
-    @Command(identifier = "tribe claim", onlyPlayers = true, permissions = "tribes.command.claim")
+    @Command(identifier = "guild claim", onlyPlayers = true, permissions = "tribes.command.claim")
     public void claimSubcommand(Player player) {
         Member member = plugin.getMemberManager().getMember(player.getUniqueId()).or(new Member(player.getUniqueId()));
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
         }
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(player, "<red>You cannot claim if you are not part of a tribe.");
+            MessageUtils.sendMessage(player, "<red>You cannot claim if you're not in a guild.");
             return;
         }
         Chunk chunk = player.getLocation().getChunk();
         Vec2 vec2 = Vec2.fromChunk(chunk);
         Cell cell = plugin.getCellManager().getCell(vec2).or(new Cell(vec2));
         if (cell.getOwner() != null) {
-            MessageUtils.sendMessage(player, "<red>You cannot claim a cell if it's already claimed.");
+            MessageUtils.sendMessage(player, "<red>This chunk has been claimed by another guild.");
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
         if (!tribe.isValidated()) {
-            MessageUtils.sendMessage(player, "<red>You cannot claim if your tribe is not validated.");
+            MessageUtils.sendMessage(player, "<red>You must validate your guild with <white>/guild validate<red> "
+                                             + "first.");
             return;
         }
         int cap = tribe.getLevel().getChunks();
         int numOfCells = plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId()).size();
         if (numOfCells >= cap) {
-            MessageUtils.sendMessage(player, "<red>You cannot claim another cell for your tribe.");
+            MessageUtils.sendMessage(player, "<red>You have reached the maximum number of claims for your guild size.");
             return;
         }
         if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
-            MessageUtils.sendMessage(player, "<red>You must be the leader of your tribe in order to claim.");
+            MessageUtils.sendMessage(player, "<red>Only guild leaders can claim land.");
             return;
         }
         if (numOfCells > 0) {
@@ -179,18 +181,18 @@ public class TribeCommand {
             if (!tribe.getUniqueId().equals(northCell.getOwner()) && !tribe.getUniqueId().equals(westCell.getOwner())
                     && !tribe.getUniqueId().equals(southCell.getOwner()) && !tribe.getUniqueId().equals(eastCell
                     .getOwner())) {
-                MessageUtils.sendMessage(player, "<red>The cell you're claiming must be adjacent to an existing claim" +
-                        ".");
+                MessageUtils.sendMessage(player, "<red>The chunk you're claiming must be adjacent to an existing "
+                                                 + "claim.");
                 return;
             }
         }
         cell.setOwner(tribe.getUniqueId());
         plugin.getCellManager().placeCell(vec2, cell);
-        MessageUtils.sendMessage(player, "<green>You claimed this cell for your tribe!");
+        MessageUtils.sendMessage(player, "<green>You claimed this chunk for your guild!");
     }
 
-    @Command(identifier = "tribe validate", onlyPlayers = false, permissions = "tribes.command.validate")
-    public void validateSubcommand(CommandSender sender, @Arg(name = "tribe", def = "") String tribeName) {
+    @Command(identifier = "guild validate", onlyPlayers = false, permissions = "tribes.command.validate")
+    public void validateSubcommand(CommandSender sender, @Arg(name = "guild", def = "") String tribeName) {
         Tribe tribe;
         if (tribeName.equals("")) {
             if (!(sender instanceof Player)) {
@@ -203,7 +205,7 @@ public class TribeCommand {
                     plugin.getMemberManager().addMember(member);
                 }
                 if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-                    MessageUtils.sendMessage(sender, "<red>You cannot validate if you are not part of a tribe.");
+                    MessageUtils.sendMessage(sender, "<red>You are not in a guild. You have nothing to validate.");
                     return;
                 }
                 tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
@@ -211,17 +213,18 @@ public class TribeCommand {
         } else {
             Optional<Tribe> tribeOptional = plugin.getTribeManager().getTribeByName(tribeName);
             if (!tribeOptional.isPresent()) {
-                MessageUtils.sendMessage(sender, "<red>You may not validate a nonexistent tribe.");
+                MessageUtils.sendMessage(sender, "<red>What are you trying to validate..!?");
                 return;
             }
             tribe = tribeOptional.get();
         }
         if (tribe.isValidated()) {
-            MessageUtils.sendMessage(sender, "<red>That tribe is already validated.");
+            MessageUtils.sendMessage(sender, "<red>This guild is already validated.");
             return;
         }
         if (tribe.getName() == null || tribe.getName().equals("")) {
-            MessageUtils.sendMessage(sender, "<red>You may not validate a tribe without a name.");
+            MessageUtils.sendMessage(sender, "<red>You must name your guild with<white> /guild name <name><red> "
+                                             + "before you validate it!");
             return;
         }
         tribe.setValidated(true);
@@ -229,36 +232,40 @@ public class TribeCommand {
         plugin.getTribeManager().addTribe(tribe);
         MessageUtils.sendMessage(sender, "<green>You validated the tribe <white>%tribe%<green>!",
                 new String[][]{{"%tribe%", tribe.getName()}});
+        MessageUtils.sendMessage(sender, "<green>You can now start inviting players with <white>/guild invite "
+                                         + "<player><green>!");
     }
 
-    @Command(identifier = "tribe name", onlyPlayers = true, permissions = "tribes.command.name")
+    @Command(identifier = "guild name", onlyPlayers = true, permissions = "tribes.command.name")
     public void nameSubcommand(Player sender, @Wildcard @Arg(name = "name") String name) {
         Member member = plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
         }
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>You cannot name your tribe if you are not part of a tribe.");
+            MessageUtils.sendMessage(sender, "<red>You are not in a guild. What exactly are you trying to nename...?");
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
         if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
-            MessageUtils.sendMessage(sender, "<red>You must be the leader of your tribe in order to name.");
+            MessageUtils.sendMessage(sender, "<red>You must be the leader of your guild in order to name it.");
             return;
         }
         String checkName = name.length() > 16 ? name.substring(0, 15) : name;
         if (plugin.getTribeManager().getTribeByName(checkName).isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>That name has already been taken.");
+            MessageUtils.sendMessage(sender, "<red>A guild with this name already exists.");
             return;
         }
         tribe.setName(checkName);
         plugin.getTribeManager().removeTribe(tribe);
         plugin.getTribeManager().addTribe(tribe);
-        MessageUtils.sendMessage(sender, "<green>You have named your tribe <white>%tribe%<green>!",
+        MessageUtils.sendMessage(sender, "<green>You have named your guild <white>%tribe%<green>!",
                 new String[][]{{"%tribe%", tribe.getName()}});
+        MessageUtils.sendMessage(sender, "<green>You can use <white>/guild name <name><green> to rename it, or<white>"
+                                         + " /guild validate<green> to confirm and finish your guild!");
     }
 
-    @Command(identifier = "tribe invite", onlyPlayers = true, permissions = "tribes.command.invite")
+    @Command(identifier = "guild invite", onlyPlayers = true, permissions = "tribes.command.invite")
     public void inviteSubcommand(final Player sender, @Arg(name = "target") final Player target) {
         Member senderMember =
                 plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
@@ -271,7 +278,7 @@ public class TribeCommand {
             plugin.getMemberManager().addMember(targetMember);
         }
         if (senderMember.getTribe() == null || !plugin.getTribeManager().getTribe(senderMember.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>You cannot invite to your tribe if you are not part of a tribe.");
+            MessageUtils.sendMessage(sender, "<red>Dude, you're not even in a guild what are you doing.");
             return;
         }
         final Tribe tribe = plugin.getTribeManager().getTribe(senderMember.getTribe()).get();
@@ -280,11 +287,11 @@ public class TribeCommand {
             return;
         }
         if (targetMember.getTribe() != null && plugin.getTribeManager().getTribe(targetMember.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>You cannot invite someone if they're already part of a tribe.");
+            MessageUtils.sendMessage(sender, "<red>This player is already in a guild!");
             return;
         }
         if (!senderMember.getRank().getPermissions().contains(Tribe.Permission.INVITE)) {
-            MessageUtils.sendMessage(sender, "<red>You don't have permission in your tribe to invite someone.");
+            MessageUtils.sendMessage(sender, "<red>You are not a high enough rank to invite others to the guild.");
             return;
         }
         List<Option> options = new ArrayList<>();
@@ -298,7 +305,7 @@ public class TribeCommand {
                 targetMember.setPvpState(Member.PvpState.ON);
                 plugin.getMemberManager().removeMember(targetMember);
                 plugin.getMemberManager().addMember(targetMember);
-                MessageUtils.sendMessage(sender, "<white>%player%<green> joined your tribe!",
+                MessageUtils.sendMessage(sender, "<white>%player%<green> joined your guild!",
                         new String[][]{{"%player%", target.getDisplayName()}});
                 MessageUtils.sendMessage(target, "<green>You joined <white>%tribe%<green>!",
                         new String[][]{{"%tribe%", tribe.getName()}});
@@ -327,7 +334,7 @@ public class TribeCommand {
                 new String[][]{{"%player%", target.getDisplayName()}});
     }
 
-    @Command(identifier = "tribe leave", onlyPlayers = true, permissions = "tribes.command.leave")
+    @Command(identifier = "guild leave", onlyPlayers = true, permissions = "tribes.command.leave")
     public void leaveSubcommand(Player sender) {
         Member member =
                 plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
@@ -335,13 +342,13 @@ public class TribeCommand {
             plugin.getMemberManager().addMember(member);
         }
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>You can't leave a tribe if you're not in one.");
+            MessageUtils.sendMessage(sender, "<red>You can't leave a guild if you're not in one, bruh.");
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
         if (plugin.getMemberManager().getMembersWithTribe(tribe.getUniqueId()).size() > 1 && member.getUniqueId()
                 .equals(tribe.getOwner())) {
-            MessageUtils.sendMessage(sender, "<red>You cannot leave your tribe unless you are the last member.");
+            MessageUtils.sendMessage(sender, "<red>You must kick all players from your guild before leaving yourself.");
             return;
         }
         member.setTribe(null);
@@ -351,13 +358,13 @@ public class TribeCommand {
         plugin.getMemberManager().addMember(member);
         plugin.getTribeManager().removeTribe(tribe);
         plugin.getTribeManager().addTribe(tribe);
-        MessageUtils.sendMessage(sender, "<green>You left your tribe.");
+        MessageUtils.sendMessage(sender, "<green>You left your guild.");
     }
 
-    @Command(identifier = "tribe top", onlyPlayers = false, permissions = "tribes.command.top")
+    @Command(identifier = "guild top", onlyPlayers = false, permissions = "tribes.command.top")
     public void topSubcommand(CommandSender sender) {
         List<Member> topMembers = plugin.getDataStorage().loadMembers();
-        MessageUtils.sendMessage(sender, "<green><====||==== PvP Rankings ====||====>");
+        MessageUtils.sendMessage(sender, "<green><====||==== <white>PvP Rankings <green>====||====>");
         for (int i = 0; i < Math.min(10, topMembers.size()); i++) {
             Member m = topMembers.get(i);
             MessageUtils.sendMessage(sender, "<gray>%num%. <white>%player%<gray> : <white>%%score%<gray> points",
@@ -366,7 +373,7 @@ public class TribeCommand {
         }
     }
 
-    @Command(identifier = "tribe banish", onlyPlayers = true, permissions = "tribes.command.banish")
+    @Command(identifier = "guild banish", onlyPlayers = true, permissions = "tribes.command.banish")
     public void banishSubcommand(Player sender, @Arg(name = "target") String name) {
         OfflinePlayer target = Bukkit.getOfflinePlayer(name);
         Member member =
@@ -394,27 +401,29 @@ public class TribeCommand {
         }
         targetMember.setTribe(null);
         tribe.setRank(targetMember.getUniqueId(), Tribe.Rank.GUEST);
-        MessageUtils.sendMessage(target.getPlayer(), "<red>You have been banished from your tribe.");
-        MessageUtils.sendMessage(sender, "<green>You banished <white>%target%<green> from your tribe.", new String[][]{{"%target%", target.getPlayer().getDisplayName()}});
+        MessageUtils.sendMessage(target.getPlayer(), "<red>You have been kicked from your guild.");
+        MessageUtils.sendMessage(sender, "<green>You kicked <white>%target%<green> from your guild.", new
+            String[][]{{"%target%", target.getPlayer().getDisplayName()}});
     }
 
-    @Command(identifier = "tribe upgrade", onlyPlayers = true, permissions = "tribes.command.upgrade")
+    @Command(identifier = "guild upgrade", onlyPlayers = true, permissions = "tribes.command.upgrade")
     public void upgradeSubcommand(Player sender) {
         Member member = plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
         }
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>You cannot upgrade your tribe if you are not part of a tribe.");
+            MessageUtils.sendMessage(sender, "<red>You need to be the leader of a guild to upgrade it. Also you "
+                                             + "should probably be IN a guild.");
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
         if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
-            MessageUtils.sendMessage(sender, "<red>You must be the leader of your tribe in order to upgrade.");
+            MessageUtils.sendMessage(sender, "<red>Only guild leaders can upgrade the guild.");
             return;
         }
         if (tribe.getLevel().ordinal() == Tribe.Level.values().length - 1) {
-            MessageUtils.sendMessage(sender, "<red>You cannot upgrade your tribe any further.");
+            MessageUtils.sendMessage(sender, "<red>You cannot upgrade your guild any further.");
             return;
         }
         double price = Tribe.Level.values()[tribe.getLevel().ordinal() + 1].getPrice();
@@ -425,6 +434,6 @@ public class TribeCommand {
         }
         plugin.getEconomy().withdrawPlayer(sender, price);
         tribe.setLevel(Tribe.Level.values()[tribe.getLevel().ordinal() + 1]);
-        MessageUtils.sendMessage(sender, "<green>You upgraded your tribe!");
+        MessageUtils.sendMessage(sender, "<green>You have upgraded your guild!");
     }
 }

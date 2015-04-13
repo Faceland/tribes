@@ -43,7 +43,7 @@ public class PvpCommand {
         }
         Member member = memberOptional.get();
         if (member.getTribe() != null) {
-            MessageUtils.sendMessage(sender, "<gray>Your PvP state is permanently <red>ON<gray>.");
+            MessageUtils.sendMessage(sender, "<yellow>You cannot disable PvP mode if you are in a guild.");
             return;
         }
         switch (member.getPvpState()) {
@@ -70,7 +70,7 @@ public class PvpCommand {
         }
         Member member = memberOptional.get();
         if (member.getTribe() != null) {
-            MessageUtils.sendMessage(sender, "<red>You cannot toggle PvP if you're in a tribe.");
+            MessageUtils.sendMessage(sender, "<gray>PvP mode is always enabled if you're in a guild!");
             return;
         }
         long time = plugin.getPvpManager().getData(sender.getUniqueId()).time();
@@ -98,7 +98,7 @@ public class PvpCommand {
         }
         Member member = memberOptional.get();
         if (member.getTribe() != null) {
-            MessageUtils.sendMessage(sender, "<red>You cannot toggle PvP if you're in a tribe.");
+            MessageUtils.sendMessage(sender, "<yellow>You cannot disable PvP mode if you are in a guild.");
             return;
         }
         long time = plugin.getPvpManager().getData(sender.getUniqueId()).time();
