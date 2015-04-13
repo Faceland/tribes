@@ -5,7 +5,7 @@ depend: [Facecore, Q, HighNoon, Vault]
 
 commands:
   guild:
-    alias: [g]
+    alias: []
   pvp:
     alias: []
 
