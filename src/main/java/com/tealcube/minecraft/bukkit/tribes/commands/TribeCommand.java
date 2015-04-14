@@ -231,7 +231,6 @@ public class TribeCommand {
             return;
         }
         tribe.setValidated(true);
-        plugin.getTribeManager().removeTribe(tribe);
         plugin.getTribeManager().addTribe(tribe);
         MessageUtils.sendMessage(sender, "<green>You validated the guild <white>%tribe%<green>!",
                 new String[][]{{"%tribe%", tribe.getName()}});

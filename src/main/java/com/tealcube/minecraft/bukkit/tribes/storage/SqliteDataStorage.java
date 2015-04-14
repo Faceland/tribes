@@ -319,6 +319,7 @@ public final class SqliteDataStorage implements DataStorage {
                 Tribe tribe = new Tribe(UUID.fromString(resultSet.getString("id")));
                 tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
                 tribe.setName(resultSet.getString("name"));
+                tribe.setLevel(Tribe.Level.values()[resultSet.getInt("level")]);
                 tribe.setValidated(true);
                 tribes.add(tribe);
             }
@@ -346,6 +347,7 @@ public final class SqliteDataStorage implements DataStorage {
                     Tribe tribe = new Tribe(UUID.fromString(resultSet.getString("id")));
                     tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
                     tribe.setName(resultSet.getString("name"));
+                    tribe.setLevel(Tribe.Level.values()[resultSet.getInt("level")]);
                     tribe.setValidated(true);
                     tribes.add(tribe);
                 }
@@ -367,13 +369,14 @@ public final class SqliteDataStorage implements DataStorage {
     public void saveTribes(Iterable<Tribe> tribeIterable) {
         Preconditions.checkNotNull(tribeIterable);
         Preconditions.checkState(initialized, "must be initialized");
-        String query = "REPLACE INTO tr_tribes (id, owner, name) VALUES (?,?,?)";
+        String query = "REPLACE INTO tr_tribes (id, owner, name, level) VALUES (?,?,?,?)";
         CloseableRegistry registry = new CloseableRegistry();
         try {
             Connection connection = registry.register(getConnection());
             PreparedStatement statement = registry.register(connection.prepareStatement(query));
             for (Tribe tribe : tribeIterable) {
                 if (!tribe.isValidated()) {
+                    plugin.debug("not saving tribe " + tribe.getName() + " due to not being validated");
                     continue;
                 }
                 statement.setString(1, tribe.getUniqueId().toString());
@@ -383,6 +386,7 @@ public final class SqliteDataStorage implements DataStorage {
                     statement.setString(2, tribe.getOwner().toString());
                 }
                 statement.setString(3, tribe.getName());
+                statement.setInt(4, tribe.getLevel().ordinal());
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
