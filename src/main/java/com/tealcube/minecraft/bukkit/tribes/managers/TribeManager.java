@@ -34,19 +34,16 @@ public class TribeManager {
 
     public void addTribe(Tribe tribe) {
         Preconditions.checkNotNull(tribe);
-        Preconditions.checkState(!tribeMap.containsKey(tribe.getUniqueId()));
         tribeMap.put(tribe.getUniqueId(), tribe);
     }
 
     public void removeTribe(Tribe tribe) {
         Preconditions.checkNotNull(tribe);
-        Preconditions.checkState(tribeMap.containsKey(tribe.getUniqueId()));
         tribeMap.remove(tribe.getUniqueId());
     }
 
     public void removeTribe(UUID uuid) {
         Preconditions.checkNotNull(uuid);
-        Preconditions.checkState(tribeMap.containsKey(uuid));
         tribeMap.remove(uuid);
     }
 

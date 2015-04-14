@@ -32,7 +32,6 @@ import com.tealcube.minecraft.bukkit.tribes.managers.MemberManager;
 import com.tealcube.minecraft.bukkit.tribes.managers.PvpManager;
 import com.tealcube.minecraft.bukkit.tribes.managers.TribeManager;
 import com.tealcube.minecraft.bukkit.tribes.storage.DataStorage;
-import com.tealcube.minecraft.bukkit.tribes.storage.MySQLDataStorage;
 import com.tealcube.minecraft.bukkit.tribes.storage.SqliteDataStorage;
 import info.faceland.q.QPlugin;
 import net.milkbowl.vault.economy.Economy;
@@ -83,11 +82,7 @@ public class TribesPlugin extends FacePlugin {
 
         settings = MasterConfiguration.loadFromFiles(configYAML, dbYAML);
 
-        if (settings.getString("db.type").equals("mysql")) {
-            dataStorage = new MySQLDataStorage(this);
-        } else {
-            dataStorage = new SqliteDataStorage(this);
-        }
+        dataStorage = new SqliteDataStorage(this);
         dataStorage.initialize();
 
         cellManager = new CellManager();

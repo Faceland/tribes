@@ -14,6 +14,7 @@
  */
 package com.tealcube.minecraft.bukkit.tribes.math;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -22,13 +23,13 @@ import org.bukkit.World;
 /**
  * Vec2 is a representation of a {@link org.bukkit.Chunk} without any data other than world, x, and z.
  */
-public final class Vec2 {
+public class Vec2 {
 
     private final World world;
     private final int x;
     private final int z;
 
-    private Vec2(World world, int x, int z) {
+    protected Vec2(World world, int x, int z) {
         Preconditions.checkNotNull(world, "world cannot be null");
         this.world = world;
         this.x = x;
@@ -105,19 +106,17 @@ public final class Vec2 {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Vec2)) {
-            return false;
-        }
-        Vec2 other = (Vec2) o;
-        return getWorld().equals(other.getWorld()) && getX() == other.getX() && getZ() == other.getZ();
+        if (this == o) return true;
+        if (!(o instanceof Vec2)) return false;
+        Vec2 vec2 = (Vec2) o;
+        return Objects.equal(getX(), vec2.getX()) &&
+                Objects.equal(getZ(), vec2.getZ()) &&
+                Objects.equal(getWorld(), vec2.getWorld());
     }
 
     @Override
     public int hashCode() {
-        int result = world.hashCode();
-        result = 31 * result + x;
-        result = 31 * result + z;
-        return result;
+        return Objects.hashCode(getWorld(), getX(), getZ());
     }
 
     @Override

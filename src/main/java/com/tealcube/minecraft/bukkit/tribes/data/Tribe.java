@@ -16,6 +16,8 @@ package com.tealcube.minecraft.bukkit.tribes.data;
 
 import com.google.common.base.Preconditions;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec3;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec3f;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,6 +36,7 @@ public final class Tribe {
     private Map<Vec2, Cell> claimedLandMap;
     private boolean validated;
     private Level level;
+    private Vec3f home;
 
     public Tribe(UUID uniqueId) {
         this.uniqueId = uniqueId;
@@ -118,6 +121,14 @@ public final class Tribe {
         this.level = level;
     }
 
+    public Vec3f getHome() {
+        return home;
+    }
+
+    public void setHome(Vec3f home) {
+        this.home = home;
+    }
+
     public enum Permission {
         BREAK,
         INTERACT,
@@ -134,7 +145,7 @@ public final class Tribe {
 
         private final List<Permission> permissions;
 
-        private Rank(Permission... permissions) {
+        Rank(Permission... permissions) {
             this.permissions = Arrays.asList(permissions);
         }
 

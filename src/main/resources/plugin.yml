@@ -26,3 +26,5 @@ permissions:
     default: true
   tribes.command.pvp:
     default: true
+  tribes.command.home:
+    default: true

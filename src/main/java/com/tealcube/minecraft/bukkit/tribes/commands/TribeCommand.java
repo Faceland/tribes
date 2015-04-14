@@ -26,17 +26,17 @@ import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec3;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec3f;
 import com.tealcube.minecraft.bukkit.tribes.utils.Formatter;
 import com.tealcube.minecraft.bukkit.tribes.utils.ScoreboardUtils;
 import info.faceland.q.actions.options.Option;
 import info.faceland.q.actions.questions.Question;
 import net.milkbowl.vault.chat.Chat;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.*;
 
@@ -119,6 +119,7 @@ public class TribeCommand {
                                          new String[][]{{"%currency%", plugin.getEconomy().format(price)}});
                 return;
             }
+            plugin.getEconomy().withdrawPlayer(player, price);
         }
         Member member = plugin.getMemberManager().getMember(player.getUniqueId()).or(new Member(player.getUniqueId()));
         if (!plugin.getMemberManager().hasMember(member)) {
@@ -132,6 +133,8 @@ public class TribeCommand {
         Tribe tribe = new Tribe(UUID.randomUUID());
         tribe.setRank(member.getUniqueId(), Tribe.Rank.LEADER);
         tribe.setOwner(member.getUniqueId());
+        tribe.setHome(Vec3f.fromLocation(player.getLocation()));
+        tribe.setLevel(Tribe.Level.TINY);
         member.setTribe(tribe.getUniqueId());
         member.setRank(Tribe.Rank.LEADER);
         member.setPvpState(Member.PvpState.ON);
@@ -194,6 +197,33 @@ public class TribeCommand {
         MessageUtils.sendMessage(player, "<green>You claimed this chunk for your guild!");
     }
 
+    @Command(identifier = "guild unclaim", onlyPlayers = true, permissions = "tribes.command.claim")
+    public void unclaimSubcommand(Player player) {
+        Member member = plugin.getMemberManager().getMember(player.getUniqueId()).or(new Member(player.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(player, "<red>You cannot unclaim if you're not in a guild.");
+            return;
+        }
+        Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+        if (!tribe.isValidated()) {
+            MessageUtils.sendMessage(player, "<red>You must validate your guild with <white>/guild validate<red> "
+                    + "first.");
+            return;
+        }
+        if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
+            MessageUtils.sendMessage(player, "<red>Only guild leaders can unclaim land.");
+            return;
+        }
+        for (Cell cell : plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId())) {
+            cell.setOwner(null);
+            plugin.getCellManager().placeCell(cell.getLocation(), cell);
+        }
+        MessageUtils.sendMessage(player, "<green>You unclaimed all of your guilds' land!");
+    }
+
     @Command(identifier = "guild validate", onlyPlayers = false, permissions = "tribes.command.validate")
     public void validateSubcommand(CommandSender sender, @Arg(name = "guild", def = "") String tribeName) {
         Tribe tribe;
@@ -231,12 +261,11 @@ public class TribeCommand {
             return;
         }
         tribe.setValidated(true);
-        plugin.getTribeManager().removeTribe(tribe);
         plugin.getTribeManager().addTribe(tribe);
         MessageUtils.sendMessage(sender, "<green>You validated the guild <white>%tribe%<green>!",
                 new String[][]{{"%tribe%", tribe.getName()}});
         MessageUtils.sendMessage(sender, "<green>You can now start inviting players with <white>/guild invite "
-                                         + "<player><green>!");
+                + "<player><green>!");
         MessageUtils.sendMessage(sender, "<green>Use <white>/guild claim<green> to claim a chunk as your territory!");
     }
 
@@ -253,6 +282,10 @@ public class TribeCommand {
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
         if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
             MessageUtils.sendMessage(sender, "<red>You must be the leader of your guild in order to name it.");
+            return;
+        }
+        if (tribe.isValidated()) {
+            MessageUtils.sendMessage(sender, "<red>You cannot rename your guild once it has been validated.");
             return;
         }
         String checkName = name.length() > 16 ? name.substring(0, 15) : name;
@@ -445,4 +478,44 @@ public class TribeCommand {
         tribe.setLevel(Tribe.Level.values()[tribe.getLevel().ordinal() + 1]);
         MessageUtils.sendMessage(sender, "<green>You have upgraded your guild!");
     }
+
+    @Command(identifier = "guild home", onlyPlayers = true, permissions = "tribes.command.home")
+    public void homeSubcommand(Player sender) {
+        Member member =
+                plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>You can't go home, bruh, you're too drunk.");
+            return;
+        }
+        Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+        Vec3f home = tribe.getHome();
+        sender.teleport(new Location(home.getWorld(), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch()),
+                PlayerTeleportEvent.TeleportCause.PLUGIN);
+    }
+
+    @Command(identifier = "guild sethome", onlyPlayers = true, permissions = "tribes.command.home")
+    public void setHomeSubcommand(Player sender) {
+        Member member =
+                plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>You can't go home, bruh, you're too drunk.");
+            return;
+        }
+        Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+        if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
+            MessageUtils.sendMessage(sender, "<red>You must be the leader of your guild in order to set its home, bruh.");
+            return;
+        }
+        Vec3f location = Vec3f.fromLocation(sender.getLocation());
+        tribe.setHome(location);
+        plugin.getTribeManager().addTribe(tribe);
+        MessageUtils.sendMessage(sender, "<green>You successfully set your guild's home.");
+    }
+
 }

@@ -16,28 +16,21 @@ package com.tealcube.minecraft.bukkit.tribes.storage;
 
 import com.tealcube.minecraft.bukkit.facecore.logging.PluginLogger;
 import com.tealcube.minecraft.bukkit.facecore.utilities.IOUtils;
+import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.kern.io.CloseableRegistry;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Preconditions;
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Splitter;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
 import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec3;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec3f;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.sql.*;
+import java.util.*;
 import java.util.logging.Level;
 
 public final class SqliteDataStorage implements DataStorage {
@@ -47,7 +40,7 @@ public final class SqliteDataStorage implements DataStorage {
     private static final String TR_MEMBERS_CREATE = "CREATE TABLE IF NOT EXISTS tr_members (id TEXT PRIMARY " +
             "KEY, score INTEGER NOT NULL, tribe TEXT, rank TEXT, pvpstate INTEGER NOT NULL, partnerid TEXT)";
     private static final String TR_TRIBES_CREATE = "CREATE TABLE IF NOT EXISTS tr_tribes (id TEXT PRIMARY " +
-            "KEY, owner TEXT NOT NULL, name TEXT NOT NULL UNIQUE, level INTEGER NOT NULL)";
+            "KEY, owner TEXT NOT NULL, name TEXT NOT NULL UNIQUE, level INTEGER NOT NULL, home TEXT NOT NULL)";
     private final PluginLogger pluginLogger;
     private boolean initialized;
     private TribesPlugin plugin;
@@ -197,7 +190,11 @@ public final class SqliteDataStorage implements DataStorage {
                 statement.setString(1, cell.getLocation().getWorld().getName());
                 statement.setInt(2, cell.getLocation().getX());
                 statement.setInt(3, cell.getLocation().getZ());
-                statement.setString(4, cell.getOwner().toString());
+                if (cell.getOwner() == null) {
+                    statement.setNull(4, Types.VARCHAR);
+                } else {
+                    statement.setString(4, cell.getOwner().toString());
+                }
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -319,6 +316,12 @@ public final class SqliteDataStorage implements DataStorage {
                 Tribe tribe = new Tribe(UUID.fromString(resultSet.getString("id")));
                 tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
                 tribe.setName(resultSet.getString("name"));
+                tribe.setLevel(Tribe.Level.values()[resultSet.getInt("level")]);
+                String home = resultSet.getString("home");
+                List<String> lHome = Splitter.on(":").omitEmptyStrings().trimResults().splitToList(home);
+                tribe.setHome(Vec3f.fromCoordinates(lHome.get(0), NumberUtils.toInt(lHome.get(1)),
+                        NumberUtils.toInt(lHome.get(2)), NumberUtils.toInt(lHome.get(3)),
+                        NumberUtils.toFloat(lHome.get(4)), NumberUtils.toFloat(lHome.get(5))));
                 tribe.setValidated(true);
                 tribes.add(tribe);
             }
@@ -346,6 +349,12 @@ public final class SqliteDataStorage implements DataStorage {
                     Tribe tribe = new Tribe(UUID.fromString(resultSet.getString("id")));
                     tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
                     tribe.setName(resultSet.getString("name"));
+                    tribe.setLevel(Tribe.Level.values()[resultSet.getInt("level")]);
+                    String home = resultSet.getString("home");
+                    List<String> lHome = Splitter.on(":").omitEmptyStrings().trimResults().splitToList(home);
+                    tribe.setHome(Vec3f.fromCoordinates(lHome.get(0), NumberUtils.toInt(lHome.get(1)),
+                            NumberUtils.toInt(lHome.get(2)), NumberUtils.toInt(lHome.get(3)),
+                            NumberUtils.toFloat(lHome.get(4)), NumberUtils.toFloat(lHome.get(5))));
                     tribe.setValidated(true);
                     tribes.add(tribe);
                 }
@@ -367,13 +376,14 @@ public final class SqliteDataStorage implements DataStorage {
     public void saveTribes(Iterable<Tribe> tribeIterable) {
         Preconditions.checkNotNull(tribeIterable);
         Preconditions.checkState(initialized, "must be initialized");
-        String query = "REPLACE INTO tr_tribes (id, owner, name) VALUES (?,?,?)";
+        String query = "REPLACE INTO tr_tribes (id, owner, name, level, home) VALUES (?,?,?,?,?)";
         CloseableRegistry registry = new CloseableRegistry();
         try {
             Connection connection = registry.register(getConnection());
             PreparedStatement statement = registry.register(connection.prepareStatement(query));
             for (Tribe tribe : tribeIterable) {
                 if (!tribe.isValidated()) {
+                    plugin.debug("not saving tribe " + tribe.getName() + " due to not being validated");
                     continue;
                 }
                 statement.setString(1, tribe.getUniqueId().toString());
@@ -383,6 +393,8 @@ public final class SqliteDataStorage implements DataStorage {
                     statement.setString(2, tribe.getOwner().toString());
                 }
                 statement.setString(3, tribe.getName());
+                statement.setInt(4, tribe.getLevel().ordinal());
+                statement.setString(5, tribe.getHome().toString());
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
