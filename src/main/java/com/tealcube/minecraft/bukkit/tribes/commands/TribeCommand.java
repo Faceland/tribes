@@ -207,17 +207,6 @@ public class TribeCommand {
             MessageUtils.sendMessage(player, "<red>You cannot unclaim if you're not in a guild.");
             return;
         }
-        Chunk chunk = player.getLocation().getChunk();
-        Vec2 vec2 = Vec2.fromChunk(chunk);
-        Cell cell = plugin.getCellManager().getCell(vec2).or(new Cell(vec2));
-        if (cell.getOwner() == null) {
-            MessageUtils.sendMessage(player, "<red>This chunk has not already been claimed.");
-            return;
-        }
-        if (!cell.getOwner().equals(member.getTribe())) {
-            MessageUtils.sendMessage(player, "<red>You can't unclaim other people's shit, bro.");
-            return;
-        }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
         if (!tribe.isValidated()) {
             MessageUtils.sendMessage(player, "<red>You must validate your guild with <white>/guild validate<red> "
@@ -228,9 +217,11 @@ public class TribeCommand {
             MessageUtils.sendMessage(player, "<red>Only guild leaders can unclaim land.");
             return;
         }
-        cell.setOwner(null);
-        plugin.getCellManager().placeCell(vec2, cell);
-        MessageUtils.sendMessage(player, "<green>You unclaimed this chunk for your guild!");
+        for (Cell cell : plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId())) {
+            cell.setOwner(null);
+            plugin.getCellManager().placeCell(cell.getLocation(), cell);
+        }
+        MessageUtils.sendMessage(player, "<green>You unclaimed all of your guilds' land!");
     }
 
     @Command(identifier = "guild validate", onlyPlayers = false, permissions = "tribes.command.validate")
