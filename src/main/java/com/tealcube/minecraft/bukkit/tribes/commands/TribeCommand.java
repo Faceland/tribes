@@ -91,9 +91,8 @@ public class TribeCommand {
             }
             MessageUtils.sendMessage(player, "<green>Online Members: <white>%members%", new String[][]{{"%members%", onlineMembers.toString().replace("[", "").replace("]", "")}});
         }
-        MessageUtils.sendMessage(player, "<dark green>Might: <white>%score%", new String[][]{{"%score%", member
-                .getScore() + ""}});
-        MessageUtils.sendMessage(player, "<green><>====||====||====||====||====||====<>");
+        MessageUtils.sendMessage(player, "<green><>====||====| <dark green>Might: <white>%score% |====||====<>", new
+            String[][]{{"%score%", member.getScore() + ""}});
     }
 
     @Command(identifier = "guild create", onlyPlayers = false, permissions = "tribes.command.create")
@@ -111,6 +110,13 @@ public class TribeCommand {
             player = Bukkit.getPlayer(playerName);
             if (player == null) {
                 MessageUtils.sendMessage(sender, "<red>That player is not online right now.");
+                return;
+            }
+            double price = 30000;
+            double balance = plugin.getEconomy().getBalance(player);
+            if (balance < price) {
+                MessageUtils.sendMessage(sender, "<red>You don't have enough bits! You need <white>%currency%<red>.",
+                                         new String[][]{{"%currency%", plugin.getEconomy().format(price)}});
                 return;
             }
         }
@@ -132,9 +138,9 @@ public class TribeCommand {
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);
         plugin.getTribeManager().addTribe(tribe);
-        MessageUtils.sendMessage(sender, "<green>You created a guild! Now the next step is naming it!");
+        MessageUtils.sendMessage(player, "<green>You created a guild! Now the next step is naming it!");
         MessageUtils.sendMessage(player, "<green>Use <white>/guild<green> to check your guild's status");
-        MessageUtils.sendMessage(sender, "<green>Name your guild with <white>/guild name <name><green>!");
+        MessageUtils.sendMessage(player, "<green>Name your guild with <white>/guild name <name><green>!");
     }
 
     @Command(identifier = "guild claim", onlyPlayers = true, permissions = "tribes.command.claim")
@@ -151,7 +157,7 @@ public class TribeCommand {
         Vec2 vec2 = Vec2.fromChunk(chunk);
         Cell cell = plugin.getCellManager().getCell(vec2).or(new Cell(vec2));
         if (cell.getOwner() != null) {
-            MessageUtils.sendMessage(player, "<red>This chunk has been claimed by another guild.");
+            MessageUtils.sendMessage(player, "<red>This chunk has already been claimed.");
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
@@ -262,9 +268,10 @@ public class TribeCommand {
         plugin.getTribeManager().removeTribe(tribe);
         plugin.getTribeManager().addTribe(tribe);
         MessageUtils.sendMessage(sender, "<green>You have named your guild <white>%tribe%<green>!",
-                new String[][]{{"%tribe%", tribe.getName()}});
-        MessageUtils.sendMessage(sender, "<green>You can use <white>/guild name <name><green> to rename it, or<white>"
-                                         + " /guild validate<green> to confirm and finish your guild!");
+                                 new String[][]{{"%tribe%", tribe.getName()}});
+        MessageUtils.sendMessage(sender, "<green>Use <white>/guild name <name><green> to rename your guild.");
+        MessageUtils.sendMessage(sender, "<green>Use <white>/guild validate<green> to confirm the name and finish your "
+                                         + "guild!");
     }
 
     @Command(identifier = "guild invite", onlyPlayers = true, permissions = "tribes.command.invite")
@@ -366,10 +373,10 @@ public class TribeCommand {
     @Command(identifier = "guild top", onlyPlayers = false, permissions = "tribes.command.top")
     public void topSubcommand(CommandSender sender) {
         List<Member> topMembers = plugin.getDataStorage().loadMembers();
-        MessageUtils.sendMessage(sender, "<green><====||==== <white>PvP Rankings <green>====||====>");
+        MessageUtils.sendMessage(sender, "<green><====||====| <white>PvP Rankings <green>|====||====>");
         for (int i = 0; i < Math.min(10, topMembers.size()); i++) {
             Member m = topMembers.get(i);
-            MessageUtils.sendMessage(sender, "<gray>%num%. <white>%player%<gray> : <white>%%score%<gray> points",
+            MessageUtils.sendMessage(sender, "<gray>%num%. <white>%player%<gray> : <white>%%score%<gray> Might",
                     new String[][]{{"%num%", (i + 1) + ""}, {"%player%", Bukkit.getOfflinePlayer(m.getUniqueId())
                             .getName()}, {"%score%", m.getScore() + ""}});
         }
