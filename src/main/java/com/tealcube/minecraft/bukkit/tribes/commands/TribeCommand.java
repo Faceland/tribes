@@ -115,7 +115,7 @@ public class TribeCommand {
             double price = 30000;
             double balance = plugin.getEconomy().getBalance(player);
             if (balance < price) {
-                MessageUtils.sendMessage(player, "<red>You don't have enough bits! You need <white>%currency%<red>.",
+                MessageUtils.sendMessage(player, "<red>You don't have enough Bits! You need <white>%currency%<red>.",
                                          new String[][]{{"%currency%", plugin.getEconomy().format(price)}});
                 return;
             }
