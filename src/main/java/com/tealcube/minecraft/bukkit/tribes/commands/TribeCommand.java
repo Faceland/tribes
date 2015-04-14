@@ -67,7 +67,7 @@ public class TribeCommand {
             Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
             MessageUtils.sendMessage(player, "<aqua>%rank% of %tribe%", new String[][]{
                     {"%rank%", WordUtils.capitalizeFully(member.getRank().name())},
-                    {"%tribe%", !tribe.isValidated() ? tribe.getName() : "a non validated guild"}
+                    {"%tribe%", tribe.isValidated() ? tribe.getName() : "a non validated guild"}
             });
             int cap = tribe.getLevel().getChunks();
             int numOfCells = plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId()).size();
@@ -227,7 +227,6 @@ public class TribeCommand {
         tribe.setValidated(true);
         plugin.getTribeManager().removeTribe(tribe);
         plugin.getTribeManager().addTribe(tribe);
-        plugin.getDataStorage().saveTribes(Collections.singletonList(tribe));
         MessageUtils.sendMessage(sender, "<green>You validated the guild <white>%tribe%<green>!",
                 new String[][]{{"%tribe%", tribe.getName()}});
         MessageUtils.sendMessage(sender, "<green>You can now start inviting players with <white>/guild invite "
