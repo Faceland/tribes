@@ -91,7 +91,7 @@ public class TribeCommand {
             }
             MessageUtils.sendMessage(player, "<green>Online Members: <white>%members%", new String[][]{{"%members%", onlineMembers.toString().replace("[", "").replace("]", "")}});
         }
-        MessageUtils.sendMessage(player, "<green><>====||====| <dark green>Might: <white>%score% |====||====<>", new
+        MessageUtils.sendMessage(player, "<green>>====||====| <white>Might: %score% <green>|====||====>", new
             String[][]{{"%score%", member.getScore() + ""}});
     }
 
@@ -115,7 +115,7 @@ public class TribeCommand {
             double price = 30000;
             double balance = plugin.getEconomy().getBalance(player);
             if (balance < price) {
-                MessageUtils.sendMessage(sender, "<red>You don't have enough bits! You need <white>%currency%<red>.",
+                MessageUtils.sendMessage(player, "<red>You don't have enough bits! You need <white>%currency%<red>.",
                                          new String[][]{{"%currency%", plugin.getEconomy().format(price)}});
                 return;
             }
