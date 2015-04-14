@@ -190,7 +190,11 @@ public final class SqliteDataStorage implements DataStorage {
                 statement.setString(1, cell.getLocation().getWorld().getName());
                 statement.setInt(2, cell.getLocation().getX());
                 statement.setInt(3, cell.getLocation().getZ());
-                statement.setString(4, cell.getOwner().toString());
+                if (cell.getOwner() == null) {
+                    statement.setNull(4, Types.VARCHAR);
+                } else {
+                    statement.setString(4, cell.getOwner().toString());
+                }
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
