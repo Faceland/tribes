@@ -16,28 +16,20 @@ package com.tealcube.minecraft.bukkit.tribes.storage;
 
 import com.tealcube.minecraft.bukkit.facecore.logging.PluginLogger;
 import com.tealcube.minecraft.bukkit.facecore.utilities.IOUtils;
+import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.kern.io.CloseableRegistry;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Preconditions;
+import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Splitter;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
 import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec3;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.sql.*;
+import java.util.*;
 import java.util.logging.Level;
 
 public final class SqliteDataStorage implements DataStorage {
@@ -47,7 +39,7 @@ public final class SqliteDataStorage implements DataStorage {
     private static final String TR_MEMBERS_CREATE = "CREATE TABLE IF NOT EXISTS tr_members (id TEXT PRIMARY " +
             "KEY, score INTEGER NOT NULL, tribe TEXT, rank TEXT, pvpstate INTEGER NOT NULL, partnerid TEXT)";
     private static final String TR_TRIBES_CREATE = "CREATE TABLE IF NOT EXISTS tr_tribes (id TEXT PRIMARY " +
-            "KEY, owner TEXT NOT NULL, name TEXT NOT NULL UNIQUE, level INTEGER NOT NULL)";
+            "KEY, owner TEXT NOT NULL, name TEXT NOT NULL UNIQUE, level INTEGER NOT NULL, home TEXT NOT NULL)";
     private final PluginLogger pluginLogger;
     private boolean initialized;
     private TribesPlugin plugin;
@@ -320,6 +312,10 @@ public final class SqliteDataStorage implements DataStorage {
                 tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
                 tribe.setName(resultSet.getString("name"));
                 tribe.setLevel(Tribe.Level.values()[resultSet.getInt("level")]);
+                String home = resultSet.getString("home");
+                List<String> lHome = Splitter.on(":").omitEmptyStrings().trimResults().splitToList(home);
+                tribe.setHome(Vec3.fromCoordinates(lHome.get(0), NumberUtils.toInt(lHome.get(1)),
+                        NumberUtils.toInt(lHome.get(2)), NumberUtils.toInt(lHome.get(3))));
                 tribe.setValidated(true);
                 tribes.add(tribe);
             }
@@ -348,6 +344,10 @@ public final class SqliteDataStorage implements DataStorage {
                     tribe.setOwner(UUID.fromString(resultSet.getString("owner")));
                     tribe.setName(resultSet.getString("name"));
                     tribe.setLevel(Tribe.Level.values()[resultSet.getInt("level")]);
+                    String home = resultSet.getString("home");
+                    List<String> lHome = Splitter.on(":").omitEmptyStrings().trimResults().splitToList(home);
+                    tribe.setHome(Vec3.fromCoordinates(lHome.get(0), NumberUtils.toInt(lHome.get(1)),
+                            NumberUtils.toInt(lHome.get(2)), NumberUtils.toInt(lHome.get(3))));
                     tribe.setValidated(true);
                     tribes.add(tribe);
                 }
@@ -369,7 +369,7 @@ public final class SqliteDataStorage implements DataStorage {
     public void saveTribes(Iterable<Tribe> tribeIterable) {
         Preconditions.checkNotNull(tribeIterable);
         Preconditions.checkState(initialized, "must be initialized");
-        String query = "REPLACE INTO tr_tribes (id, owner, name, level) VALUES (?,?,?,?)";
+        String query = "REPLACE INTO tr_tribes (id, owner, name, level, home) VALUES (?,?,?,?,?)";
         CloseableRegistry registry = new CloseableRegistry();
         try {
             Connection connection = registry.register(getConnection());
@@ -387,6 +387,7 @@ public final class SqliteDataStorage implements DataStorage {
                 }
                 statement.setString(3, tribe.getName());
                 statement.setInt(4, tribe.getLevel().ordinal());
+                statement.setString(5, tribe.getHome().toString());
                 statement.executeUpdate();
             }
         } catch (SQLException e) {

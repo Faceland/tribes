@@ -16,6 +16,7 @@ package com.tealcube.minecraft.bukkit.tribes.data;
 
 import com.google.common.base.Preconditions;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec3;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,6 +35,7 @@ public final class Tribe {
     private Map<Vec2, Cell> claimedLandMap;
     private boolean validated;
     private Level level;
+    private Vec3 home;
 
     public Tribe(UUID uniqueId) {
         this.uniqueId = uniqueId;
@@ -116,6 +118,14 @@ public final class Tribe {
 
     public void setLevel(Level level) {
         this.level = level;
+    }
+
+    public Vec3 getHome() {
+        return home;
+    }
+
+    public void setHome(Vec3 home) {
+        this.home = home;
     }
 
     public enum Permission {
