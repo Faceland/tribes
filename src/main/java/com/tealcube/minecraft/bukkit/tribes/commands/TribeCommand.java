@@ -91,7 +91,7 @@ public class TribeCommand {
             }
             MessageUtils.sendMessage(player, "<green>Online Members: <white>%members%", new String[][]{{"%members%", onlineMembers.toString().replace("[", "").replace("]", "")}});
         }
-        MessageUtils.sendMessage(player, "<green>>====||====| <white>Might: %score% <green>|====||====>", new
+        MessageUtils.sendMessage(player, "<green><====||====| <white>Might: %score% <green>|====||====>", new
             String[][]{{"%score%", member.getScore() + ""}});
     }
 
