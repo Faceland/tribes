@@ -118,6 +118,7 @@ public class TribeCommand {
                                          new String[][]{{"%currency%", plugin.getEconomy().format(price)}});
                 return;
             }
+            plugin.getEconomy().withdrawPlayer(player, price);
         }
         Member member = plugin.getMemberManager().getMember(player.getUniqueId()).or(new Member(player.getUniqueId()));
         if (!plugin.getMemberManager().hasMember(member)) {
@@ -289,6 +290,10 @@ public class TribeCommand {
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
         if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
             MessageUtils.sendMessage(sender, "<red>You must be the leader of your guild in order to name it.");
+            return;
+        }
+        if (tribe.isValidated()) {
+            MessageUtils.sendMessage(sender, "<red>You cannot rename your guild once it has been validated.");
             return;
         }
         String checkName = name.length() > 16 ? name.substring(0, 15) : name;
