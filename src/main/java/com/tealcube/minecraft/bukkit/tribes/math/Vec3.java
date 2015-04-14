@@ -24,7 +24,7 @@ public class Vec3 extends Vec2 {
 
     private final int y;
 
-    private Vec3(World world, int x, int y, int z) {
+    protected Vec3(World world, int x, int y, int z) {
         super(world, x, z);
         this.y = y;
     }

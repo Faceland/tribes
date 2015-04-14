@@ -27,6 +27,7 @@ import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec3;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec3f;
 import com.tealcube.minecraft.bukkit.tribes.utils.Formatter;
 import com.tealcube.minecraft.bukkit.tribes.utils.ScoreboardUtils;
 import info.faceland.q.actions.options.Option;
@@ -132,7 +133,7 @@ public class TribeCommand {
         Tribe tribe = new Tribe(UUID.randomUUID());
         tribe.setRank(member.getUniqueId(), Tribe.Rank.LEADER);
         tribe.setOwner(member.getUniqueId());
-        tribe.setHome(Vec3.fromLocation(player.getLocation()));
+        tribe.setHome(Vec3f.fromLocation(player.getLocation()));
         tribe.setLevel(Tribe.Level.TINY);
         member.setTribe(tribe.getUniqueId());
         member.setRank(Tribe.Rank.LEADER);
@@ -499,8 +500,8 @@ public class TribeCommand {
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
-        Vec3 home = tribe.getHome();
-        sender.teleport(new Location(home.getWorld(), home.getX(), home.getY(), home.getZ()),
+        Vec3f home = tribe.getHome();
+        sender.teleport(new Location(home.getWorld(), home.getX(), home.getY(), home.getZ(), home.getYaw(), home.getPitch()),
                 PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
@@ -520,7 +521,7 @@ public class TribeCommand {
             MessageUtils.sendMessage(sender, "<red>You must be the leader of your guild in order to set its home, bruh.");
             return;
         }
-        Vec3 location = Vec3.fromLocation(sender.getLocation());
+        Vec3f location = Vec3f.fromLocation(sender.getLocation());
         tribe.setHome(location);
         plugin.getTribeManager().addTribe(tribe);
         MessageUtils.sendMessage(sender, "<green>You successfully set your guild's home.");

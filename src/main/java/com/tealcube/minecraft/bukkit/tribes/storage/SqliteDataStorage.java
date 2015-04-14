@@ -26,6 +26,7 @@ import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec3;
+import com.tealcube.minecraft.bukkit.tribes.math.Vec3f;
 
 import java.io.File;
 import java.sql.*;
@@ -314,8 +315,9 @@ public final class SqliteDataStorage implements DataStorage {
                 tribe.setLevel(Tribe.Level.values()[resultSet.getInt("level")]);
                 String home = resultSet.getString("home");
                 List<String> lHome = Splitter.on(":").omitEmptyStrings().trimResults().splitToList(home);
-                tribe.setHome(Vec3.fromCoordinates(lHome.get(0), NumberUtils.toInt(lHome.get(1)),
-                        NumberUtils.toInt(lHome.get(2)), NumberUtils.toInt(lHome.get(3))));
+                tribe.setHome(Vec3f.fromCoordinates(lHome.get(0), NumberUtils.toInt(lHome.get(1)),
+                        NumberUtils.toInt(lHome.get(2)), NumberUtils.toInt(lHome.get(3)),
+                        NumberUtils.toFloat(lHome.get(4)), NumberUtils.toFloat(lHome.get(5))));
                 tribe.setValidated(true);
                 tribes.add(tribe);
             }
@@ -346,8 +348,9 @@ public final class SqliteDataStorage implements DataStorage {
                     tribe.setLevel(Tribe.Level.values()[resultSet.getInt("level")]);
                     String home = resultSet.getString("home");
                     List<String> lHome = Splitter.on(":").omitEmptyStrings().trimResults().splitToList(home);
-                    tribe.setHome(Vec3.fromCoordinates(lHome.get(0), NumberUtils.toInt(lHome.get(1)),
-                            NumberUtils.toInt(lHome.get(2)), NumberUtils.toInt(lHome.get(3))));
+                    tribe.setHome(Vec3f.fromCoordinates(lHome.get(0), NumberUtils.toInt(lHome.get(1)),
+                            NumberUtils.toInt(lHome.get(2)), NumberUtils.toInt(lHome.get(3)),
+                            NumberUtils.toFloat(lHome.get(4)), NumberUtils.toFloat(lHome.get(5))));
                     tribe.setValidated(true);
                     tribes.add(tribe);
                 }
