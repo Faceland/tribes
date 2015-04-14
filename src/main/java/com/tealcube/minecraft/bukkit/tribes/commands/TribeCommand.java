@@ -195,6 +195,42 @@ public class TribeCommand {
         MessageUtils.sendMessage(player, "<green>You claimed this chunk for your guild!");
     }
 
+    @Command(identifier = "guild unclaim", onlyPlayers = true, permissions = "tribes.command.claim")
+    public void unclaimSubcommand(Player player) {
+        Member member = plugin.getMemberManager().getMember(player.getUniqueId()).or(new Member(player.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(player, "<red>You cannot unclaim if you're not in a guild.");
+            return;
+        }
+        Chunk chunk = player.getLocation().getChunk();
+        Vec2 vec2 = Vec2.fromChunk(chunk);
+        Cell cell = plugin.getCellManager().getCell(vec2).or(new Cell(vec2));
+        if (cell.getOwner() == null) {
+            MessageUtils.sendMessage(player, "<red>This chunk has not already been claimed.");
+            return;
+        }
+        if (!cell.getOwner().equals(member.getTribe())) {
+            MessageUtils.sendMessage(player, "<red>You can't unclaim other people's shit, bro.");
+            return;
+        }
+        Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+        if (!tribe.isValidated()) {
+            MessageUtils.sendMessage(player, "<red>You must validate your guild with <white>/guild validate<red> "
+                    + "first.");
+            return;
+        }
+        if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
+            MessageUtils.sendMessage(player, "<red>Only guild leaders can unclaim land.");
+            return;
+        }
+        cell.setOwner(null);
+        plugin.getCellManager().placeCell(vec2, cell);
+        MessageUtils.sendMessage(player, "<green>You unclaimed this chunk for your guild!");
+    }
+
     @Command(identifier = "guild validate", onlyPlayers = false, permissions = "tribes.command.validate")
     public void validateSubcommand(CommandSender sender, @Arg(name = "guild", def = "") String tribeName) {
         Tribe tribe;
