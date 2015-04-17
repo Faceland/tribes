@@ -56,8 +56,6 @@ public class GCommand {
                         new String[][]{{"%name%", sender.getDisplayName()}, {"%message%", message}});
             }
         }
-        MessageUtils.sendMessage(sender, "<green>[G] %name%: %message%",
-                new String[][]{{"%name%", sender.getDisplayName()}, {"%message%", message}});
         MessageUtils.sendMessage(Bukkit.getConsoleSender(), "%name% -> %tribe%: %message%",
                 new String[][]{{"%name%", sender.getDisplayName()}, {"%tribe%", tribe.getName()},
                         {"%message%", message}});
