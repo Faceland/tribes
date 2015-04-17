@@ -40,8 +40,11 @@ public class CellManager {
 
     public void placeCell(Vec2 vec2, Cell cell) {
         Preconditions.checkNotNull(vec2, "vec2 cannot be null");
-        Preconditions.checkNotNull(cell, "cell cannot be null");
-        cellMap.put(vec2, cell);
+        if (cell == null) {
+            cellMap.remove(vec2);
+        } else {
+            cellMap.put(vec2, cell);
+        }
     }
 
     public Set<Cell> getCells() {

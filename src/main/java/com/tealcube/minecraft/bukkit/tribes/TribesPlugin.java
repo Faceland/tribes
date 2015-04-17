@@ -35,6 +35,8 @@ import com.tealcube.minecraft.bukkit.tribes.managers.PvpManager;
 import com.tealcube.minecraft.bukkit.tribes.managers.TribeManager;
 import com.tealcube.minecraft.bukkit.tribes.storage.DataStorage;
 import com.tealcube.minecraft.bukkit.tribes.storage.SqliteDataStorage;
+import com.tealcube.minecraft.bukkit.tribes.tasks.DataCleanTask;
+import com.tealcube.minecraft.bukkit.tribes.tasks.DataSaveTask;
 import info.faceland.q.QPlugin;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.event.HandlerList;
@@ -110,21 +112,17 @@ public class TribesPlugin extends FacePlugin {
             economy = economyProvider.getProvider();
         }
 
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-            @Override
-            public void run() {
-                debug("saving and loading data");
-                saveData();
-                loadData();
-            }
-        }, 20L * 600, 20L * 600);
+        new DataSaveTask(this).runTaskTimer(this, 0L, 20L * 600);
+        new DataCleanTask(this).runTaskTimer(this, 0L, 20L * 600);
     }
 
     @Override
     public void disable() {
         HandlerList.unregisterAll(this);
         getServer().getScheduler().cancelTasks(this);
-        saveData();
+        getDataStorage().saveTribes(getTribeManager().getTribes());
+        getDataStorage().saveCells(getCellManager().getCells());
+        getDataStorage().saveMembers(getMemberManager().getMembers());
         dataStorage.shutdown();
     }
 
@@ -168,12 +166,6 @@ public class TribesPlugin extends FacePlugin {
                 member.setTribe(null);
             }
         }
-    }
-
-    private void saveData() {
-        dataStorage.saveCells(cellManager.getCells());
-        dataStorage.saveMembers(memberManager.getMembers());
-        dataStorage.saveTribes(tribeManager.getTribes());
     }
 
     public TribeManager getTribeManager() {
