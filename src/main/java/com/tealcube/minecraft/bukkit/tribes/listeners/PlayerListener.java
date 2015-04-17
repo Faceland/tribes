@@ -212,7 +212,7 @@ public class PlayerListener implements Listener {
         Member loser = plugin.getMemberManager().getMember(event.getDuel().getLoser()).or(new Member(event.getDuel().getLoser()));
         int changeScore = loser.getScore() / 10;
         winner.setScore(winner.getScore() + changeScore);
-        loser.setScore(loser.getScore() + changeScore);
+        loser.setScore(loser.getScore() - changeScore);
         if (!plugin.getMemberManager().hasMember(winner)) {
             plugin.getMemberManager().addMember(winner);
         }
