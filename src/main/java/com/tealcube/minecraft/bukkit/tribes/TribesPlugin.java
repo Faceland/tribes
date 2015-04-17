@@ -22,6 +22,7 @@ import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartYamlCon
 import com.tealcube.minecraft.bukkit.highnoon.HighNoonPlugin;
 import com.tealcube.minecraft.bukkit.kern.methodcommand.CommandHandler;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
+import com.tealcube.minecraft.bukkit.tribes.commands.GCommand;
 import com.tealcube.minecraft.bukkit.tribes.commands.PvpCommand;
 import com.tealcube.minecraft.bukkit.tribes.commands.TribeCommand;
 import com.tealcube.minecraft.bukkit.tribes.data.Cell;
@@ -97,6 +98,7 @@ public class TribesPlugin extends FacePlugin {
         CommandHandler commandHandler = new CommandHandler(this);
         commandHandler.registerCommands(new TribeCommand(this));
         commandHandler.registerCommands(new PvpCommand(this));
+        commandHandler.registerCommands(new GCommand(this));
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
