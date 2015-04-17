@@ -399,7 +399,14 @@ public class TribeCommand {
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);
         plugin.getTribeManager().removeTribe(tribe);
-        plugin.getTribeManager().addTribe(tribe);
+        if (plugin.getMemberManager().getMembersWithTribe(tribe.getUniqueId()).size() == 0) {
+            for (Cell cell : plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId())) {
+                cell.setOwner(null);
+                plugin.getCellManager().placeCell(cell.getLocation(), cell);
+            }
+        } else {
+            plugin.getTribeManager().addTribe(tribe);
+        }
         MessageUtils.sendMessage(sender, "<green>You left your guild.");
     }
 
