@@ -19,6 +19,7 @@ import com.tealcube.minecraft.bukkit.facecore.plugin.FacePlugin;
 import com.tealcube.minecraft.bukkit.facecore.shade.config.MasterConfiguration;
 import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartConfiguration;
 import com.tealcube.minecraft.bukkit.facecore.shade.config.VersionedSmartYamlConfiguration;
+import com.tealcube.minecraft.bukkit.highnoon.HighNoonPlugin;
 import com.tealcube.minecraft.bukkit.kern.methodcommand.CommandHandler;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import com.tealcube.minecraft.bukkit.tribes.commands.PvpCommand;
@@ -51,6 +52,7 @@ public class TribesPlugin extends FacePlugin {
     private PluginLogger debugPrinter;
     private MasterConfiguration settings;
     private QPlugin qPlugin;
+    private HighNoonPlugin highNoonPlugin;
     private Economy economy;
 
     public static TribesPlugin getInstance() {
@@ -99,6 +101,7 @@ public class TribesPlugin extends FacePlugin {
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
         qPlugin = (QPlugin) getServer().getPluginManager().getPlugin("Q");
+        highNoonPlugin = (HighNoonPlugin) getServer().getPluginManager().getPlugin("HighNoon");
 
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
         if (economyProvider != null) {
@@ -198,4 +201,9 @@ public class TribesPlugin extends FacePlugin {
     public Economy getEconomy() {
         return economy;
     }
+
+    public HighNoonPlugin getHighNoonPlugin() {
+        return highNoonPlugin;
+    }
+
 }

@@ -15,7 +15,9 @@
 package com.tealcube.minecraft.bukkit.tribes.listeners;
 
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
+import com.tealcube.minecraft.bukkit.highnoon.data.Duelist;
 import com.tealcube.minecraft.bukkit.highnoon.events.DuelEndEvent;
+import com.tealcube.minecraft.bukkit.highnoon.managers.DuelistManager;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Objects;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
@@ -148,6 +150,10 @@ public class PlayerListener implements Listener {
                 .getUniqueId()));
         if (!plugin.getMemberManager().hasMember(damagerMember)) {
             plugin.getMemberManager().addMember(damagerMember);
+        }
+        Duelist duelist = DuelistManager.getDuelist(damagerMember.getUniqueId());
+        if (duelist.getTarget() != null && duelist.getTarget().equals(damagedMember.getUniqueId())) {
+            return;
         }
         if (damagedMember.getPvpState() == Member.PvpState.OFF || damagerMember.getPvpState() == Member.PvpState.OFF) {
             MessageUtils.sendMessage(damager, "<red>You cannot PvP unless both parties are in PvP mode.");
