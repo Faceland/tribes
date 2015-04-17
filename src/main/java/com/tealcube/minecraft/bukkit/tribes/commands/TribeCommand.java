@@ -409,13 +409,13 @@ public class TribeCommand {
         MessageUtils.sendMessage(sender, "<green><====||====| <white>PvP Rankings <green>|====||====>");
         for (int i = 0; i < Math.min(10, topMembers.size()); i++) {
             Member m = topMembers.get(i);
-            MessageUtils.sendMessage(sender, "<gray>%num%. <white>%player%<gray> : <white>%%score%<gray> Might",
+            MessageUtils.sendMessage(sender, "<gray>%num%. <white>%player%<gray> : <white>%score%<gray> Might",
                     new String[][]{{"%num%", (i + 1) + ""}, {"%player%", Bukkit.getOfflinePlayer(m.getUniqueId())
                             .getName()}, {"%score%", m.getScore() + ""}});
         }
     }
 
-    @Command(identifier = "guild banish", onlyPlayers = true, permissions = "tribes.command.banish")
+    @Command(identifier = "guild kick", onlyPlayers = true, permissions = "tribes.command.kick")
     public void banishSubcommand(Player sender, @Arg(name = "target") String name) {
         OfflinePlayer target = Bukkit.getOfflinePlayer(name);
         Member member =
@@ -424,21 +424,21 @@ public class TribeCommand {
             plugin.getMemberManager().addMember(member);
         }
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>You can't banish from a tribe if you're not in one.");
+            MessageUtils.sendMessage(sender, "<red>You can't kick from a guild if you're not in one.");
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
         if (!member.getRank().getPermissions().contains(Tribe.Permission.KICK)) {
-            MessageUtils.sendMessage(sender, "<red>You don't have permission to banish.");
+            MessageUtils.sendMessage(sender, "<red>You don't have permission to kick.");
             return;
         }
         Member targetMember = plugin.getMemberManager().getMember(target.getUniqueId()).or(new Member(target.getUniqueId()));
         if (!member.getTribe().equals(targetMember.getUniqueId())) {
-            MessageUtils.sendMessage(sender, "<red>You can't banish someone who isn't in your tribe..");
+            MessageUtils.sendMessage(sender, "<red>You can't kick someone who isn't in your guild..");
             return;
         }
         if (targetMember.getRank().getPermissions().contains(Tribe.Permission.KICK_IMMUNE)) {
-            MessageUtils.sendMessage(sender, "<red>You cannot banish that member.");
+            MessageUtils.sendMessage(sender, "<red>You cannot kick that member.");
             return;
         }
         targetMember.setTribe(null);
@@ -487,7 +487,7 @@ public class TribeCommand {
             plugin.getMemberManager().addMember(member);
         }
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>You can't go home, bruh, you're too drunk.");
+            MessageUtils.sendMessage(sender, "<red>Where exactly are you trying to return to?");
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
@@ -504,7 +504,7 @@ public class TribeCommand {
             plugin.getMemberManager().addMember(member);
         }
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(sender, "<red>You can't go home, bruh, you're too drunk.");
+            MessageUtils.sendMessage(sender, "<red>Guild home set. Except it wasn't. Because you're not even in one.");
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
