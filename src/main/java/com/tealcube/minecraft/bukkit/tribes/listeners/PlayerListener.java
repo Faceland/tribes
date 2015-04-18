@@ -198,7 +198,7 @@ public class PlayerListener implements Listener {
             if (cell.getOwner() == null) {
                 return;
             }
-            if (damagedMember.getTribe().equals(cell.getOwner())) {
+            if (damagerMember.getTribe().equals(cell.getOwner())) {
                 MessageUtils.sendMessage(damager, "<red>You cannot fight on guild land.");
                 event.setCancelled(true);
                 event.setDamage(0);
