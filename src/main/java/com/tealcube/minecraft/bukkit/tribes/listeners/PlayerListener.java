@@ -161,14 +161,50 @@ public class PlayerListener implements Listener {
             event.setDamage(0);
             return;
         }
-        if (damagedMember.getTribe() == null || damagerMember.getTribe() == null) {
-            return;
+        if (damagedMember.getTribe() != null) {
+            if (damagedMember.getTribe().equals(damagerMember.getTribe())) {
+                MessageUtils.sendMessage(damager, "<red>You cannot damage a member of your guild!");
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            }
+            Optional<Cell> cellOptional = plugin.getCellManager().getCell(Vec2.fromChunk(damaged.getLocation().getChunk()));
+            if (!cellOptional.isPresent()) {
+                return;
+            }
+            Cell cell = cellOptional.get();
+            if (cell.getOwner() == null) {
+                return;
+            }
+            if (damagedMember.getTribe().equals(cell.getOwner())) {
+                MessageUtils.sendMessage(damager, "<red>You cannot fight on guild land.");
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            }
         }
-        if (damagedMember.getTribe().equals(damagerMember.getTribe())) {
-            MessageUtils.sendMessage(damager, "<red>You cannot damage a member of your guild!");
-            event.setCancelled(true);
-            event.setDamage(0);
+        if (damagerMember.getTribe() != null) {
+            if (damagerMember.getTribe().equals(damagedMember.getTribe())) {
+                MessageUtils.sendMessage(damager, "<red>You cannot damage a member of your guild!");
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            }
+            Optional<Cell> cellOptional = plugin.getCellManager().getCell(Vec2.fromChunk(damager.getLocation().getChunk()));
+            if (!cellOptional.isPresent()) {
+                return;
+            }
+            Cell cell = cellOptional.get();
+            if (cell.getOwner() == null) {
+                return;
+            }
+            if (damagedMember.getTribe().equals(cell.getOwner())) {
+                MessageUtils.sendMessage(damager, "<red>You cannot fight on guild land.");
+                event.setCancelled(true);
+                event.setDamage(0);
+            }
         }
+
     }
 
     @EventHandler
