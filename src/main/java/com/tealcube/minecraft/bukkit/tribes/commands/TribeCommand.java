@@ -369,7 +369,7 @@ public class TribeCommand {
         }, "Reject the invitation"));
         Question question = new Question(target.getUniqueId(), TextUtils.color(TextUtils.args(
                 "<green>You have been invited to join <white>%tribe%<green> by <white>%player%<green>!",
-                new String[][]{{}})), options);
+                new String[][]{{"%tribe%", tribe.getName()}, {"%player%", sender.getDisplayName()}})), options);
         plugin.getQPlugin().getQuestionManager().appendQuestion(question);
         List<String> messages = Formatter.format(question);
         for (String m : messages) {
