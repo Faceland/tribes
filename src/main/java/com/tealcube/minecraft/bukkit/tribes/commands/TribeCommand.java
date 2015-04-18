@@ -141,6 +141,9 @@ public class TribeCommand {
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);
         plugin.getTribeManager().addTribe(tribe);
+        ScoreboardUtils.updateMightDisplay(member);
+        ScoreboardUtils.setPrefix(player, ChatColor.RED + String.valueOf('\u2726') + ChatColor.WHITE);
+        ScoreboardUtils.setSuffix(player, ChatColor.RED + String.valueOf('\u2726'));
         MessageUtils.sendMessage(player, "<green>You created a guild! Now the next step is naming it!");
         MessageUtils.sendMessage(player, "<green>Use <white>/guild<green> to check your guild's status");
         MessageUtils.sendMessage(player, "<green>Name your guild with <white>/guild name <name><green>!");
