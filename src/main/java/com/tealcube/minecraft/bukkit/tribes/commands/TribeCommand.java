@@ -447,7 +447,7 @@ public class TribeCommand {
             MessageUtils.sendMessage(sender, "<red>You can't kick someone who isn't in your guild..");
             return;
         }
-        if (targetMember.getRank().getPermissions().contains(Tribe.Permission.KICK_IMMUNE)) {
+        if (targetMember.getRank().getPermissions().contains(Tribe.Permission.KICK_IMMUNE) && member.getRank() != Tribe.Rank.LEADER) {
             MessageUtils.sendMessage(sender, "<red>You cannot kick that member.");
             return;
         }
@@ -526,6 +526,80 @@ public class TribeCommand {
         tribe.setHome(location);
         plugin.getTribeManager().addTribe(tribe);
         MessageUtils.sendMessage(sender, "<green>You successfully set your guild's home.");
+    }
+
+    @Command(identifier = "guild promote", onlyPlayers = true, permissions = "tribes.command.promote")
+    public void promoteSubcommand(Player sender, @Arg(name = "target") Player target) {
+        Member senderMember = plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(senderMember)) {
+            plugin.getMemberManager().addMember(senderMember);
+        }
+        if (senderMember.getTribe() == null || !plugin.getTribeManager().getTribe(senderMember.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>Target promoted. Except they weren't. Because you're not even in a guild.");
+            return;
+        }
+        Member targetMember = plugin.getMemberManager().getMember(target.getUniqueId()).or(new Member(target.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(targetMember)) {
+            plugin.getMemberManager().addMember(targetMember);
+        }
+        if (targetMember.getTribe() == null || !plugin.getTribeManager().getTribe(targetMember.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>Target promoted. Except they weren't. Because they're not even in a guild.");
+            return;
+        }
+        if (!Objects.equals(senderMember.getTribe(), targetMember.getTribe())) {
+            MessageUtils.sendMessage(sender, "<red>Target promoted. Except they weren't. Because you're not in the same guild.");
+            return;
+        }
+        if (!senderMember.getRank().getPermissions().contains(Tribe.Permission.PROMOTE)) {
+            MessageUtils.sendMessage(sender, "<red>Target promoted. Except they weren't. Because you can't promote.");
+            return;
+        }
+        if (targetMember.getRank() == Tribe.Rank.LEADER) {
+            MessageUtils.sendMessage(sender, "<red>Target promoted. Except they weren't. Because you can't promote a leader.");
+            return;
+        }
+        targetMember.setRank(Tribe.Rank.values()[targetMember.getRank().ordinal() + 1]);
+        plugin.getMemberManager().removeMember(targetMember);
+        plugin.getMemberManager().addMember(targetMember);
+        MessageUtils.sendMessage(sender, "<green>Target promoted.");
+        MessageUtils.sendMessage(target, "<green>You were promoted in your guild.");
+    }
+
+    @Command(identifier = "guild demote", onlyPlayers = true, permissions = "tribes.command.promote")
+    public void demoteSubcommand(Player sender, @Arg(name = "target") Player target) {
+        Member senderMember = plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(senderMember)) {
+            plugin.getMemberManager().addMember(senderMember);
+        }
+        if (senderMember.getTribe() == null || !plugin.getTribeManager().getTribe(senderMember.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>Target demoted. Except they weren't. Because you're not even in a guild.");
+            return;
+        }
+        Member targetMember = plugin.getMemberManager().getMember(target.getUniqueId()).or(new Member(target.getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(targetMember)) {
+            plugin.getMemberManager().addMember(targetMember);
+        }
+        if (targetMember.getTribe() == null || !plugin.getTribeManager().getTribe(targetMember.getTribe()).isPresent()) {
+            MessageUtils.sendMessage(sender, "<red>Target demoted. Except they weren't. Because they're not even in a guild.");
+            return;
+        }
+        if (!Objects.equals(senderMember.getTribe(), targetMember.getTribe())) {
+            MessageUtils.sendMessage(sender, "<red>Target demoted. Except they weren't. Because you're not in the same guild.");
+            return;
+        }
+        if (!senderMember.getRank().getPermissions().contains(Tribe.Permission.PROMOTE)) {
+            MessageUtils.sendMessage(sender, "<red>Target demoted. Except they weren't. Because you can't demote.");
+            return;
+        }
+        if (targetMember.getRank() == Tribe.Rank.GUEST) {
+            MessageUtils.sendMessage(sender, "<red>Target demoted. Except they weren't. Because you can't demote a guest.");
+            return;
+        }
+        targetMember.setRank(Tribe.Rank.values()[targetMember.getRank().ordinal() - 1]);
+        plugin.getMemberManager().removeMember(targetMember);
+        plugin.getMemberManager().addMember(targetMember);
+        MessageUtils.sendMessage(sender, "<green>Target promoted.");
+        MessageUtils.sendMessage(target, "<red>You were demoted in your guild.");
     }
 
 }

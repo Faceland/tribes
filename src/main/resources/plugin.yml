@@ -30,3 +30,5 @@ permissions:
     default: true
   tribes.command.home:
     default: true
+  tribes.command.promote:
+    default: true

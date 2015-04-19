@@ -134,12 +134,13 @@ public final class Tribe {
         INTERACT,
         KICK,
         INVITE,
-        KICK_IMMUNE
+        KICK_IMMUNE,
+        PROMOTE
     }
 
     public enum Rank {
         LEADER(Permission.values()),
-        OFFICER(Permission.BREAK, Permission.INTERACT, Permission.KICK, Permission.INVITE),
+        OFFICER(Permission.BREAK, Permission.INTERACT, Permission.KICK, Permission.INVITE, Permission.KICK_IMMUNE, Permission.PROMOTE),
         MEMBER(Permission.BREAK, Permission.INTERACT),
         GUEST();
 
