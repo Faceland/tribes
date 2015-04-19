@@ -291,7 +291,12 @@ public class TribeCommand {
             MessageUtils.sendMessage(sender, "<red>You cannot rename your guild once it has been validated.");
             return;
         }
-        String checkName = name.length() > 16 ? name.substring(0, 15) : name;
+        String strippedName = ChatColor.stripColor(TextUtils.color(name));
+        if (strippedName == null) {
+            MessageUtils.sendMessage(sender, "<red>You suck.");
+            return;
+        }
+        String checkName = strippedName.length() > 16 ? strippedName.substring(0, 15) : strippedName;
         if (checkName.isEmpty()) {
             MessageUtils.sendMessage(sender, "<red>You must name your guild.");
             return;
