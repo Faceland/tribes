@@ -14,11 +14,13 @@
  */
 package com.tealcube.minecraft.bukkit.tribes.tasks;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
 import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
+import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Set;
@@ -48,6 +50,9 @@ public class DataCleanTask extends BukkitRunnable {
         // removing tribes if they don't have any members
         Set<Tribe> tribes = plugin.getTribeManager().getTribes();
         for (Tribe t : tribes) {
+            if (t.getName() != null) {
+                t.setName(ChatColor.stripColor(TextUtils.color(t.getName())));
+            }
             if (t.getMembers().isEmpty() || plugin.getMemberManager().getMembersWithTribe(t.getUniqueId()).isEmpty()) {
                 plugin.getTribeManager().removeTribe(t);
             }
