@@ -563,7 +563,7 @@ public class TribeCommand {
             MessageUtils.sendMessage(sender, "<red>Target promoted. Except they weren't. Because you can't promote a leader.");
             return;
         }
-        targetMember.setRank(Tribe.Rank.values()[targetMember.getRank().ordinal() + 1]);
+        targetMember.setRank(Tribe.Rank.values()[targetMember.getRank().ordinal() - 1]);
         plugin.getMemberManager().removeMember(targetMember);
         plugin.getMemberManager().addMember(targetMember);
         MessageUtils.sendMessage(sender, "<green>Target promoted.");
@@ -600,7 +600,7 @@ public class TribeCommand {
             MessageUtils.sendMessage(sender, "<red>Target demoted. Except they weren't. Because you can't demote a guest.");
             return;
         }
-        targetMember.setRank(Tribe.Rank.values()[targetMember.getRank().ordinal() - 1]);
+        targetMember.setRank(Tribe.Rank.values()[targetMember.getRank().ordinal() + 1]);
         plugin.getMemberManager().removeMember(targetMember);
         plugin.getMemberManager().addMember(targetMember);
         MessageUtils.sendMessage(sender, "<green>Target promoted.");
