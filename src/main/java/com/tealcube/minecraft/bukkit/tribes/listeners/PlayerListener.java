@@ -35,8 +35,11 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -124,7 +127,7 @@ public class PlayerListener implements Listener {
             return;
         }
         MessageUtils.sendMessage(event.getPlayer(), "<gold>You have entered <white>%owner%<gold>'s territory!", new
-            String[][]{{"%owner%",
+                String[][]{{"%owner%",
                 tribeOptional.get().getName()}});
     }
 
@@ -268,6 +271,83 @@ public class PlayerListener implements Listener {
         }
         ScoreboardUtils.updateMightDisplay(winner);
         ScoreboardUtils.updateMightDisplay(loser);
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        Vec2 vec = Vec2.fromChunk(event.getBlockPlaced().getChunk());
+        Cell cell = plugin.getCellManager().getCell(vec).or(new Cell(vec));
+        Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (cell.getOwner() == null) {
+            return;
+        }
+        if (!Objects.equal(cell.getOwner(), member.getTribe())) {
+            event.setCancelled(true);
+            event.setBuild(false);
+            return;
+        }
+        if (member.getRank().getPermissions().contains(Tribe.Permission.BREAK)) {
+            return;
+        }
+        MessageUtils.sendMessage(event.getPlayer(), "<red>You cannot place here.");
+        event.setBuild(false);
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        Vec2 vec = Vec2.fromChunk(event.getBlock().getChunk());
+        Cell cell = plugin.getCellManager().getCell(vec).or(new Cell(vec));
+        Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (cell.getOwner() == null) {
+            return;
+        }
+        if (!Objects.equal(cell.getOwner(), member.getTribe())) {
+            event.setCancelled(true);
+            return;
+        }
+        if (member.getRank().getPermissions().contains(Tribe.Permission.BREAK)) {
+            return;
+        }
+        MessageUtils.sendMessage(event.getPlayer(), "<red>You cannot break here.");
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockPlace(PlayerInteractEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        Vec2 vec = Vec2.fromChunk(event.getClickedBlock().getChunk());
+        Cell cell = plugin.getCellManager().getCell(vec).or(new Cell(vec));
+        Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
+        if (!plugin.getMemberManager().hasMember(member)) {
+            plugin.getMemberManager().addMember(member);
+        }
+        if (cell.getOwner() == null) {
+            return;
+        }
+        if (!Objects.equal(cell.getOwner(), member.getTribe())) {
+            event.setCancelled(true);
+            return;
+        }
+        if (member.getRank().getPermissions().contains(Tribe.Permission.BREAK)) {
+            return;
+        }
+        MessageUtils.sendMessage(event.getPlayer(), "<red>You cannot interact here.");
+        event.setCancelled(true);
     }
 
 }
