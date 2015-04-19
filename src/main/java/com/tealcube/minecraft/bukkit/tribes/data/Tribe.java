@@ -140,8 +140,10 @@ public final class Tribe {
 
     public enum Rank {
         LEADER(Permission.values()),
-        OFFICER(Permission.BREAK, Permission.INTERACT, Permission.KICK, Permission.INVITE, Permission.KICK_IMMUNE, Permission.PROMOTE),
-        MEMBER(Permission.BREAK, Permission.INTERACT),
+        CAPTAIN(Permission.INTERACT, Permission.INVITE, Permission.BREAK, Permission.KICK, Permission.KICK_IMMUNE, Permission.PROMOTE),
+        OFFICER(Permission.INTERACT, Permission.INVITE, Permission.BREAK, Permission.KICK),
+        MEMBER(Permission.INTERACT, Permission.INVITE),
+        RECRUIT(Permission.INTERACT),
         GUEST();
 
         private final List<Permission> permissions;

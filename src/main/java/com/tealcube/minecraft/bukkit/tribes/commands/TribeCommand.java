@@ -566,7 +566,7 @@ public class TribeCommand {
         targetMember.setRank(Tribe.Rank.values()[targetMember.getRank().ordinal() - 1]);
         plugin.getMemberManager().removeMember(targetMember);
         plugin.getMemberManager().addMember(targetMember);
-        MessageUtils.sendMessage(sender, "<green>Target promoted.");
+        MessageUtils.sendMessage(sender, "<green>Guild member was successfully promoted.");
         MessageUtils.sendMessage(target, "<green>You were promoted in your guild.");
     }
 
@@ -603,7 +603,7 @@ public class TribeCommand {
         targetMember.setRank(Tribe.Rank.values()[targetMember.getRank().ordinal() + 1]);
         plugin.getMemberManager().removeMember(targetMember);
         plugin.getMemberManager().addMember(targetMember);
-        MessageUtils.sendMessage(sender, "<green>Target promoted.");
+        MessageUtils.sendMessage(sender, "<green>Guild member successfully demoted.");
         MessageUtils.sendMessage(target, "<red>You were demoted in your guild.");
     }
 
