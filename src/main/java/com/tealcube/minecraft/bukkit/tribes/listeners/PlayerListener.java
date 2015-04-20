@@ -166,7 +166,7 @@ public class PlayerListener implements Listener {
         }
         if (damagedMember.getTribe() != null) {
             if (damagedMember.getTribe().equals(damagerMember.getTribe())) {
-                MessageUtils.sendMessage(damager, "<red>You cannot damage a member of your guild!");
+                MessageUtils.sendMessage(damager, "<yellow>You can't hurt your guild members.");
                 event.setCancelled(true);
                 event.setDamage(0);
                 return;
@@ -180,7 +180,7 @@ public class PlayerListener implements Listener {
                 return;
             }
             if (damagedMember.getTribe().equals(cell.getOwner())) {
-                MessageUtils.sendMessage(damager, "<red>You cannot fight on guild land.");
+                MessageUtils.sendMessage(damager, "<red>You can't damage a player on their home turf!");
                 event.setCancelled(true);
                 event.setDamage(0);
                 return;
@@ -188,7 +188,7 @@ public class PlayerListener implements Listener {
         }
         if (damagerMember.getTribe() != null) {
             if (damagerMember.getTribe().equals(damagedMember.getTribe())) {
-                MessageUtils.sendMessage(damager, "<red>You cannot damage a member of your guild!");
+                MessageUtils.sendMessage(damager, "<yellow>You can't hurt your guild members.");
                 event.setCancelled(true);
                 event.setDamage(0);
                 return;
@@ -202,7 +202,7 @@ public class PlayerListener implements Listener {
                 return;
             }
             if (damagerMember.getTribe().equals(cell.getOwner())) {
-                MessageUtils.sendMessage(damager, "<red>You cannot fight on guild land.");
+                MessageUtils.sendMessage(damager, "<red>You can't damage a player on their home turf!");
                 event.setCancelled(true);
                 event.setDamage(0);
             }
