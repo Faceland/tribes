@@ -26,19 +26,20 @@ import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
-import com.tealcube.minecraft.bukkit.tribes.math.Vec3;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec3f;
 import com.tealcube.minecraft.bukkit.tribes.utils.Formatter;
 import com.tealcube.minecraft.bukkit.tribes.utils.ScoreboardUtils;
 import info.faceland.q.actions.options.Option;
 import info.faceland.q.actions.questions.Question;
-import net.milkbowl.vault.chat.Chat;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 public class TribeCommand {
 
@@ -92,7 +93,7 @@ public class TribeCommand {
             MessageUtils.sendMessage(player, "<green>Online Members: <white>%members%", new String[][]{{"%members%", onlineMembers.toString().replace("[", "").replace("]", "")}});
         }
         MessageUtils.sendMessage(player, "<green><====||====| <white>Might: %score% <green>|====||====>", new
-            String[][]{{"%score%", member.getScore() + ""}});
+                String[][]{{"%score%", member.getScore() + ""}});
     }
 
     @Command(identifier = "guild create", onlyPlayers = false, permissions = "tribes.command.create")
@@ -116,7 +117,7 @@ public class TribeCommand {
             double balance = plugin.getEconomy().getBalance(player);
             if (balance < price) {
                 MessageUtils.sendMessage(player, "<red>You don't have enough Bits! You need <white>%currency%<red>.",
-                                         new String[][]{{"%currency%", plugin.getEconomy().format(price)}});
+                        new String[][]{{"%currency%", plugin.getEconomy().format(price)}});
                 return;
             }
             plugin.getEconomy().withdrawPlayer(player, price);
@@ -169,7 +170,7 @@ public class TribeCommand {
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
         if (!tribe.isValidated()) {
             MessageUtils.sendMessage(player, "<red>You must validate your guild with <white>/guild validate<red> "
-                                             + "first.");
+                    + "first.");
             return;
         }
         int cap = tribe.getLevel().getChunks();
@@ -191,7 +192,7 @@ public class TribeCommand {
                     && !tribe.getUniqueId().equals(southCell.getOwner()) && !tribe.getUniqueId().equals(eastCell
                     .getOwner())) {
                 MessageUtils.sendMessage(player, "<red>The chunk you're claiming must be adjacent to an existing "
-                                                 + "claim.");
+                        + "claim.");
                 return;
             }
         }
@@ -260,7 +261,7 @@ public class TribeCommand {
         }
         if (tribe.getName() == null || tribe.getName().equals("")) {
             MessageUtils.sendMessage(sender, "<red>You must name your guild with<white> /guild name <name><red> "
-                                             + "before you validate it!");
+                    + "before you validate it!");
             return;
         }
         tribe.setValidated(true);
@@ -309,10 +310,10 @@ public class TribeCommand {
         plugin.getTribeManager().removeTribe(tribe);
         plugin.getTribeManager().addTribe(tribe);
         MessageUtils.sendMessage(sender, "<green>You have named your guild <white>%tribe%<green>!",
-                                 new String[][]{{"%tribe%", tribe.getName()}});
+                new String[][]{{"%tribe%", tribe.getName()}});
         MessageUtils.sendMessage(sender, "<green>Use <white>/guild name <name><green> to rename your guild.");
         MessageUtils.sendMessage(sender, "<green>Use <white>/guild validate<green> to confirm the name and finish your "
-                                         + "guild!");
+                + "guild!");
     }
 
     @Command(identifier = "guild invite", onlyPlayers = true, permissions = "tribes.command.invite")
@@ -460,7 +461,7 @@ public class TribeCommand {
         tribe.setRank(targetMember.getUniqueId(), Tribe.Rank.GUEST);
         MessageUtils.sendMessage(target.getPlayer(), "<red>You have been kicked from your guild.");
         MessageUtils.sendMessage(sender, "<green>You kicked <white>%target%<green> from your guild.", new
-            String[][]{{"%target%", target.getPlayer().getDisplayName()}});
+                String[][]{{"%target%", target.getPlayer().getDisplayName()}});
     }
 
     @Command(identifier = "guild upgrade", onlyPlayers = true, permissions = "tribes.command.upgrade")
@@ -471,7 +472,7 @@ public class TribeCommand {
         }
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
             MessageUtils.sendMessage(sender, "<red>You need to be the leader of a guild to upgrade it. Also you "
-                                             + "should probably be IN a guild.");
+                    + "should probably be IN a guild.");
             return;
         }
         Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
@@ -566,7 +567,20 @@ public class TribeCommand {
         targetMember.setRank(Tribe.Rank.values()[targetMember.getRank().ordinal() - 1]);
         plugin.getMemberManager().removeMember(targetMember);
         plugin.getMemberManager().addMember(targetMember);
-        MessageUtils.sendMessage(sender, "<green>Target promoted.");
+        MessageUtils.sendMessage(sender, "<white>%name%<green> promoted to <white>%rank%<green>.",
+                new String[][]{{"%name%", target.getDisplayName()}, {"%rank%", targetMember.getRank().name()}});
+        for (Tribe.Permission permission : Tribe.Permission.values()) {
+            if (permission == Tribe.Permission.KICK_IMMUNE) {
+                continue;
+            }
+            if (targetMember.getRank().getPermissions().contains(permission)) {
+                MessageUtils.sendMessage(sender, "<white>%name% <green>CAN<gray> %perm%",
+                        new String[][]{{"%name%", target.getDisplayName()}, {"%perm%", permission.name().toLowerCase()}});
+            } else {
+                MessageUtils.sendMessage(sender, "<white>%name% <red>CAN'T<gray> %perm%",
+                        new String[][]{{"%name%", target.getDisplayName()}, {"%perm%", permission.name().toLowerCase()}});
+            }
+        }
         MessageUtils.sendMessage(target, "<green>You were promoted in your guild.");
     }
 
@@ -603,7 +617,20 @@ public class TribeCommand {
         targetMember.setRank(Tribe.Rank.values()[targetMember.getRank().ordinal() + 1]);
         plugin.getMemberManager().removeMember(targetMember);
         plugin.getMemberManager().addMember(targetMember);
-        MessageUtils.sendMessage(sender, "<green>Target promoted.");
+        MessageUtils.sendMessage(sender, "<white>%name%<green> promoted to <white>%rank%<green>.",
+                new String[][]{{"%name%", target.getDisplayName()}, {"%rank%", targetMember.getRank().name()}});
+        for (Tribe.Permission permission : Tribe.Permission.values()) {
+            if (permission == Tribe.Permission.KICK_IMMUNE) {
+                continue;
+            }
+            if (targetMember.getRank().getPermissions().contains(permission)) {
+                MessageUtils.sendMessage(sender, "<white>%name% <green>CAN<gray> %perm%",
+                        new String[][]{{"%name%", target.getDisplayName()}, {"%perm%", permission.name().toLowerCase()}});
+            } else {
+                MessageUtils.sendMessage(sender, "<white>%name% <red>CAN'T<gray> %perm%",
+                        new String[][]{{"%name%", target.getDisplayName()}, {"%perm%", permission.name().toLowerCase()}});
+            }
+        }
         MessageUtils.sendMessage(target, "<red>You were demoted in your guild.");
     }
 
