@@ -1,5 +1,5 @@
-name: @NAME@
-version: @VERSION@
+name: Tribes
+version: ${project.version}
 main: com.tealcube.minecraft.bukkit.tribes.TribesPlugin
 depend: [Facecore, Q, HighNoon, Vault]
 
