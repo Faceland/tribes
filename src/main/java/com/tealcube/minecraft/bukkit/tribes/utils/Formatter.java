@@ -22,7 +22,7 @@
  */
 package com.tealcube.minecraft.bukkit.tribes.utils;
 
-import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
+import com.tealcube.minecraft.bukkit.TextUtils;
 import info.faceland.q.actions.options.Option;
 import info.faceland.q.actions.questions.AbstractQuestion;
 

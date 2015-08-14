@@ -23,7 +23,7 @@
 package com.tealcube.minecraft.bukkit.tribes.commands;
 
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
-import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
+import com.tealcube.minecraft.bukkit.shade.google.common.base.Optional;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.utils.ScoreboardUtils;

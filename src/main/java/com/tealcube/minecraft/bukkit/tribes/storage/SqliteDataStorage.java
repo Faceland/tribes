@@ -24,16 +24,15 @@ package com.tealcube.minecraft.bukkit.tribes.storage;
 
 import com.tealcube.minecraft.bukkit.facecore.logging.PluginLogger;
 import com.tealcube.minecraft.bukkit.facecore.utilities.IOUtils;
-import com.tealcube.minecraft.bukkit.kern.apache.commons.lang3.math.NumberUtils;
 import com.tealcube.minecraft.bukkit.kern.io.CloseableRegistry;
-import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Preconditions;
-import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Splitter;
+import com.tealcube.minecraft.bukkit.shade.apache.commons.lang3.math.NumberUtils;
+import com.tealcube.minecraft.bukkit.shade.google.common.base.Preconditions;
+import com.tealcube.minecraft.bukkit.shade.google.common.base.Splitter;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
 import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 import com.tealcube.minecraft.bukkit.tribes.data.Member;
 import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
-import com.tealcube.minecraft.bukkit.tribes.math.Vec3;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec3f;
 
 import java.io.File;

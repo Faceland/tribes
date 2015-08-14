@@ -22,8 +22,8 @@
  */
 package com.tealcube.minecraft.bukkit.tribes.managers;
 
-import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Optional;
-import com.tealcube.minecraft.bukkit.kern.shade.google.common.base.Preconditions;
+import com.tealcube.minecraft.bukkit.shade.google.common.base.Optional;
+import com.tealcube.minecraft.bukkit.shade.google.common.base.Preconditions;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
 import com.tealcube.minecraft.bukkit.tribes.data.Cell;
 
