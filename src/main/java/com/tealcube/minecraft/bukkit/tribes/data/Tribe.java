@@ -176,10 +176,10 @@ public final class Tribe {
 
     public enum Level {
         TINY(4, 4, 0),
-        SMALL(8, 8, 60000),
-        MEDIUM(14, 14, 120000),
-        LARGE(22, 22, 240000),
-        HUGE(32, 32, 480000);
+        SMALL(8, 8, 10000),
+        MEDIUM(14, 14, 30000),
+        LARGE(22, 22, 120000),
+        HUGE(32, 32, 600000);
 
         private final int chunks;
         private final int members;

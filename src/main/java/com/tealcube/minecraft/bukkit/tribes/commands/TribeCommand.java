@@ -121,7 +121,7 @@ public class TribeCommand {
                 MessageUtils.sendMessage(sender, "<red>That player is not online right now.");
                 return;
             }
-            double price = 30000;
+            int price = plugin.getSettings().getInt("config.guild-creation-price", 5000);
             double balance = plugin.getEconomy().getBalance(player);
             if (balance < price) {
                 MessageUtils.sendMessage(player, "<red>You don't have enough Bits! You need <white>%currency%<red>.",
@@ -458,7 +458,7 @@ public class TribeCommand {
         }
         Member targetMember = plugin.getMemberManager().getMember(target.getUniqueId()).or(new Member(target.getUniqueId()));
         if (!member.getTribe().equals(targetMember.getUniqueId())) {
-            MessageUtils.sendMessage(sender, "<red>You can't kick someone who isn't in your guild..");
+            MessageUtils.sendMessage(sender, "<red>You can't kick someone who isn't in your guild!");
             return;
         }
         if (targetMember.getRank().getPermissions().contains(Tribe.Permission.KICK_IMMUNE) && member.getRank() != Tribe.Rank.LEADER) {

@@ -1,3 +1,4 @@
 version: "0.0.2"
 cells-per-member: 1
 time-since-tagged-in-seconds: 5
+guild-creation-price: 5000
