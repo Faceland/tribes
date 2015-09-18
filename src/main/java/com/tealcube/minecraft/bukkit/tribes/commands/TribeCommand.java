@@ -94,8 +94,9 @@ public class TribeCommand {
             }
             List<String> onlineMembers = new ArrayList<>();
             for (UUID uuid : tribe.getMembers()) {
-                if (Bukkit.getPlayer(uuid).isOnline()) {
-                    onlineMembers.add(Bukkit.getPlayer(uuid).getDisplayName());
+                Player p = Bukkit.getPlayer(uuid);
+                if (p != null && p.isOnline()) {
+                    onlineMembers.add(p.getDisplayName());
                 }
             }
             MessageUtils.sendMessage(player, "<green>Online Members: <white>%members%", new String[][]{{"%members%", onlineMembers.toString().replace("[", "").replace("]", "")}});
