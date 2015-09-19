@@ -458,7 +458,7 @@ public class TribeCommand {
             return;
         }
         Member targetMember = plugin.getMemberManager().getMember(target.getUniqueId()).or(new Member(target.getUniqueId()));
-        if (!member.getTribe().equals(targetMember.getUniqueId())) {
+        if (!member.getTribe().equals(targetMember.getTribe())) {
             MessageUtils.sendMessage(sender, "<red>You can't kick someone who isn't in your guild!");
             return;
         }
