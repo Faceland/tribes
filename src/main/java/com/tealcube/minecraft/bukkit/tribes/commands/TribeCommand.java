@@ -69,9 +69,9 @@ public class TribeCommand {
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
         }
-        MessageUtils.sendMessage(player, "<green><====||====|<white> Guild Status <green>|====||====>");
+        MessageUtils.sendMessage(player, "&2============&f Guild Status &2============");
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(player, "<white>You are not a member of a guild.");
+            MessageUtils.sendMessage(player, "&bYou are not in a guild!");
         } else {
             Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
             MessageUtils.sendMessage(player, "<aqua>%rank% of %tribe%", new String[][]{
@@ -92,17 +92,22 @@ public class TribeCommand {
                     MessageUtils.sendMessage(player, "<gray>You <red>CAN'T<gray> " + permission.name().toLowerCase());
                 }
             }
-            List<String> onlineMembers = new ArrayList<>();
+            List<String> members = new ArrayList<>();
             for (UUID uuid : tribe.getMembers()) {
                 Player p = Bukkit.getPlayer(uuid);
-                if (p != null && p.isOnline()) {
-                    onlineMembers.add(p.getDisplayName());
+                if (p == null) {
+                    continue;
+                }
+                if (p.isOnline()) {
+                    members.add(ChatColor.GREEN + p.getDisplayName());
+                } else {
+                    members.add(ChatColor.GRAY + p.getDisplayName());
                 }
             }
-            MessageUtils.sendMessage(player, "<green>Online Members: <white>%members%", new String[][]{{"%members%", onlineMembers.toString().replace("[", "").replace("]", "")}});
+            MessageUtils.sendMessage(player, "&fMembers: " + members);
         }
-        MessageUtils.sendMessage(player, "<green><====||====| <white>Might: %score% <green>|====||====>", new
-                String[][]{{"%score%", member.getScore() + ""}});
+        MessageUtils.sendMessage(player, "&fMight: " + member.getScore());
+        MessageUtils.sendMessage(player, "&2===============================");
     }
 
     @Command(identifier = "guild create", onlyPlayers = false, permissions = "tribes.command.create")
@@ -569,8 +574,9 @@ public class TribeCommand {
             MessageUtils.sendMessage(sender, "<red>Target promoted. Except they weren't. Because you can't promote.");
             return;
         }
-        if (targetMember.getRank() == Tribe.Rank.LEADER) {
-            MessageUtils.sendMessage(sender, "<red>Target promoted. Except they weren't. Because you can't promote a leader.");
+        if (targetMember.getRank() == Tribe.Rank.CAPTAIN) {
+            MessageUtils.sendMessage(sender, "<red>Target promoted. Except they weren't. Because they can't go any " +
+                    "higher!");
             return;
         }
         targetMember.setRank(Tribe.Rank.values()[targetMember.getRank().ordinal() - 1]);
