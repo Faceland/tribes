@@ -69,45 +69,45 @@ public class TribeCommand {
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
         }
-        MessageUtils.sendMessage(player, "&2============&f Guild Status &2============");
+        MessageUtils.sendMessage(player, "&2&lX===========&f&l Guild Status &2&l===========X");
         if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
             MessageUtils.sendMessage(player, "&bYou are not in a guild!");
         } else {
             Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
-            MessageUtils.sendMessage(player, "<aqua>%rank% of %tribe%", new String[][]{
+            MessageUtils.sendMessage(player, "&b&l%rank% of %tribe%", new String[][]{
                     {"%rank%", WordUtils.capitalizeFully(member.getRank().name())},
                     {"%tribe%", tribe.isValidated() ? tribe.getName() : "a non validated guild"}
             });
             int cap = tribe.getLevel().getChunks();
             int numOfCells = plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId()).size();
-            MessageUtils.sendMessage(player, "<gray>Claimed <white>%amount%<gray>/<white>%cap%<gray> " +
-                    "chunks", new String[][]{{"%amount%", numOfCells + ""}, {"%cap%", cap + ""}});
+            MessageUtils.sendMessage(player, "&e&lClaimed &f&l%amount%&e&l/&f&l%cap%&e&l " + "chunks",
+                    new String[][]{{"%amount%", numOfCells + ""}, {"%cap%", cap + ""}});
             for (Tribe.Permission permission : Tribe.Permission.values()) {
                 if (permission == Tribe.Permission.KICK_IMMUNE || !tribe.isValidated()) {
                     continue;
                 }
                 if (member.getRank().getPermissions().contains(permission)) {
-                    MessageUtils.sendMessage(player, "<gray>You <green>CAN<gray> " + permission.name().toLowerCase());
+                    MessageUtils.sendMessage(player, "&7&lYou &a&lCAN&7&l " + permission.name().toLowerCase());
                 } else {
-                    MessageUtils.sendMessage(player, "<gray>You <red>CAN'T<gray> " + permission.name().toLowerCase());
+                    MessageUtils.sendMessage(player, "&7&lYou &c&lCAN'T&7&l " + permission.name().toLowerCase());
                 }
             }
-            List<String> members = new ArrayList<>();
+            String members = "";
             for (UUID uuid : tribe.getMembers()) {
                 Player p = Bukkit.getPlayer(uuid);
                 if (p == null) {
                     continue;
                 }
                 if (p.isOnline()) {
-                    members.add(ChatColor.GREEN + p.getDisplayName());
+                    members += ChatColor.GREEN + p.getDisplayName() + " ";
                 } else {
-                    members.add(ChatColor.GRAY + p.getDisplayName());
+                    members += ChatColor.GRAY + p.getDisplayName() + " ";
                 }
             }
-            MessageUtils.sendMessage(player, "&fMembers: " + members);
+            MessageUtils.sendMessage(player, "&f&lMembers: " + members);
         }
-        MessageUtils.sendMessage(player, "&fMight: " + member.getScore());
-        MessageUtils.sendMessage(player, "&2===============================");
+        MessageUtils.sendMessage(player, "&f&lMight:&r " + member.getScore());
+        MessageUtils.sendMessage(player, "&2&lX=================================X");
     }
 
     @Command(identifier = "guild create", onlyPlayers = false, permissions = "tribes.command.create")
