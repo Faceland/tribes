@@ -351,7 +351,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (member.getRank().getPermissions().contains(Tribe.Permission.BREAK)) {
+        if (member.getRank().getPermissions().contains(Tribe.Permission.INTERACT)) {
             return;
         }
         MessageUtils.sendMessage(event.getPlayer(), "<red>You cannot interact here.");
