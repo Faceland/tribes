@@ -87,8 +87,9 @@ public class PvpCommand {
             return;
         }
         member.setPvpState(Member.PvpState.ON);
-        ScoreboardUtils.setPrefix(sender, ChatColor.RED + String.valueOf('\u2726') + ChatColor.WHITE);
-        ScoreboardUtils.setSuffix(sender, ChatColor.RED + String.valueOf('\u2726'));
+        ScoreboardUtils.setPrefix(sender, plugin.getSettings().getString("perm-prefix." + plugin.getPerm()
+                .getPrimaryGroup(sender), "") + "<white>");
+        ScoreboardUtils.setSuffix(sender, ChatColor.RED + String.valueOf('\u2756'));
         MessageUtils.sendMessage(sender, "<green>You toggled PvP on.");
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);
@@ -115,8 +116,9 @@ public class PvpCommand {
             return;
         }
         member.setPvpState(Member.PvpState.OFF);
-        ScoreboardUtils.setPrefix(sender, ChatColor.WHITE + String.valueOf('\u2726') + ChatColor.WHITE);
-        ScoreboardUtils.setSuffix(sender, ChatColor.WHITE + String.valueOf('\u2726'));
+        ScoreboardUtils.setPrefix(sender, plugin.getSettings().getString("perm-prefix." + plugin.getPerm()
+                .getPrimaryGroup(sender), "") + "<white>");
+        ScoreboardUtils.setSuffix(sender, ChatColor.WHITE + String.valueOf('\u2756'));
         MessageUtils.sendMessage(sender, "<green>You toggled PvP off.");
         plugin.getMemberManager().removeMember(member);
         plugin.getMemberManager().addMember(member);

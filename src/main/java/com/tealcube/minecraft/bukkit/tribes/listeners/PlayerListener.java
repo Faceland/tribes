@@ -69,47 +69,54 @@ public class PlayerListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                ScoreboardUtils.setPrefix(event.getPlayer(),
-                        (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
+                ScoreboardUtils.setPrefix(event.getPlayer(), plugin.getSettings().getString("perm-prefix." + plugin
+                        .getPerm().getPrimaryGroup(event.getPlayer()), "") + "<white>");
                 ScoreboardUtils.setSuffix(event.getPlayer(),
-                        (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
+                        (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String
+                                .valueOf('\u2756'));
                 ScoreboardUtils.updateMightDisplay(member);
             }
         }, 20L);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
-        if (!plugin.getMemberManager().hasMember(member)) {
-            plugin.getMemberManager().addMember(member);
-        }
-        PvpManager.PvpData data = plugin.getPvpManager().getData(member.getUniqueId());
-        member.setPvpState(member.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
-        ScoreboardUtils.setPrefix(event.getPlayer(),
-                (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
-        ScoreboardUtils.setSuffix(event.getPlayer(),
-                (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
-        if (data.time() != 0 && System.currentTimeMillis() - data.time() < 5000 && data.tagger() != null) {
-            Member tagger = plugin.getMemberManager().getMember(data.tagger()).or(new Member(data.tagger()));
-            if (!plugin.getMemberManager().hasMember(tagger)) {
-                plugin.getMemberManager().addMember(tagger);
-            }
-            Player p = Bukkit.getPlayer(tagger.getUniqueId());
-            ScoreboardUtils.setPrefix(p,
-                    (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726') + ChatColor.WHITE);
-            ScoreboardUtils.setSuffix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2726'));
-            //event.getPlayer().setHealth(0D);
-            int scoreChange = (int) (member.getScore() * 0.05);
-            tagger.setScore(tagger.getScore() + scoreChange);
-            member.setScore(member.getScore() - scoreChange);
-            MessageUtils.sendMessage(Bukkit.getPlayer(tagger.getUniqueId()), "<gray>Your score is now <white>%amount%<gray>.",
-                    new String[][]{{"%amount%", "" + tagger.getScore()}});
-            ScoreboardUtils.updateMightDisplay(tagger);
-            ScoreboardUtils.updateMightDisplay(member);
-            plugin.getPvpManager().clearTime(member.getUniqueId());
-        }
-    }
+    //@EventHandler(priority = EventPriority.MONITOR)
+    //public void onPlayerQuit(PlayerQuitEvent event) {
+    //    Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event
+    //            .getPlayer().getUniqueId()));
+    //    if (!plugin.getMemberManager().hasMember(member)) {
+    //        plugin.getMemberManager().addMember(member);
+    //    }
+    //    PvpManager.PvpData data = plugin.getPvpManager().getData(member.getUniqueId());
+    //    member.setPvpState(member.getTribe() != null ? Member.PvpState.ON : Member.PvpState.OFF);
+    //    ScoreboardUtils.setPrefix(event.getPlayer(),
+    //            (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf
+    //            ('\u2726') + ChatColor.WHITE);
+    //    ScoreboardUtils.setSuffix(event.getPlayer(),
+    //            (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf
+    //            ('\u2726'));
+    //    if (data.time() != 0 && System.currentTimeMillis() - data.time() < 5000 && data.tagger() != null) {
+    //        Member tagger = plugin.getMemberManager().getMember(data.tagger()).or(new Member(data.tagger()));
+    //        if (!plugin.getMemberManager().hasMember(tagger)) {
+    //            plugin.getMemberManager().addMember(tagger);
+    //        }
+    //        Player p = Bukkit.getPlayer(tagger.getUniqueId());
+    //        ScoreboardUtils.setPrefix(p,
+    //                (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf
+    //                ('\u2726') + ChatColor.WHITE);
+    //        ScoreboardUtils.setSuffix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor
+    //                .WHITE) + String.valueOf('\u2726'));
+    //        //event.getPlayer().setHealth(0D);
+    //        int scoreChange = (int) (member.getScore() * 0.05);
+    //        tagger.setScore(tagger.getScore() + scoreChange);
+    //        member.setScore(member.getScore() - scoreChange);
+    //        MessageUtils.sendMessage(Bukkit.getPlayer(tagger.getUniqueId()), "<gray>Your score is now " +
+    //                        "<white>%amount%<gray>.",
+    //                new String[][]{{"%amount%", "" + tagger.getScore()}});
+    //        ScoreboardUtils.updateMightDisplay(tagger);
+    //        ScoreboardUtils.updateMightDisplay(member);
+    //        plugin.getPvpManager().clearTime(member.getUniqueId());
+    //    }
+    //}
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {

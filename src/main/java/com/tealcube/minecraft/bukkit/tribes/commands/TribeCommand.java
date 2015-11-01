@@ -36,6 +36,9 @@ import com.tealcube.minecraft.bukkit.tribes.utils.Formatter;
 import com.tealcube.minecraft.bukkit.tribes.utils.ScoreboardUtils;
 import info.faceland.q.actions.options.Option;
 import info.faceland.q.actions.questions.Question;
+
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -157,8 +160,9 @@ public class TribeCommand {
         plugin.getMemberManager().addMember(member);
         plugin.getTribeManager().addTribe(tribe);
         ScoreboardUtils.updateMightDisplay(member);
-        ScoreboardUtils.setPrefix(player, ChatColor.RED + String.valueOf('\u2726') + ChatColor.WHITE);
-        ScoreboardUtils.setSuffix(player, ChatColor.RED + String.valueOf('\u2726'));
+        ScoreboardUtils.setPrefix(player, plugin.getSettings().getString("perm-prefix." + plugin.getPerm()
+                .getPrimaryGroup(player), "") + "<white>");
+        ScoreboardUtils.setSuffix(player, ChatColor.RED + String.valueOf('\u2756'));
         MessageUtils.sendMessage(player, "<green>You created a guild! Now the next step is naming it!");
         MessageUtils.sendMessage(player, "<green>Use <white>/guild<green> to check your guild's status");
         MessageUtils.sendMessage(player, "<green>Name your guild with <white>/guild name <name><green>!");
@@ -374,8 +378,9 @@ public class TribeCommand {
                         new String[][]{{"%player%", target.getDisplayName()}});
                 MessageUtils.sendMessage(target, "<green>You joined <white>%tribe%<green>!",
                         new String[][]{{"%tribe%", tribe.getName()}});
-                ScoreboardUtils.setPrefix(target, ChatColor.RED + String.valueOf('\u2726') + ChatColor.WHITE);
-                ScoreboardUtils.setSuffix(target, ChatColor.RED + String.valueOf('\u2726'));
+                ScoreboardUtils.setPrefix(target, plugin.getSettings().getString("perm-prefix." + plugin.getPerm()
+                        .getPrimaryGroup(target), "") + "<white>");
+                ScoreboardUtils.setSuffix(target, ChatColor.RED + String.valueOf('\u2756'));
             }
         }, "Accept the invitation"));
         options.add(new Option("deny", new Runnable() {

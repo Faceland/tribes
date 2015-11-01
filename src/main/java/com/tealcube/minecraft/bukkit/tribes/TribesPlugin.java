@@ -46,6 +46,8 @@ import com.tealcube.minecraft.bukkit.tribes.tasks.DataCleanTask;
 import com.tealcube.minecraft.bukkit.tribes.tasks.DataSaveTask;
 import info.faceland.q.QPlugin;
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
+
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import se.ranzdo.bukkit.methodcommand.CommandHandler;
@@ -65,6 +67,7 @@ public class TribesPlugin extends FacePlugin {
     private QPlugin qPlugin;
     private HighNoonPlugin highNoonPlugin;
     private Economy economy;
+    private Permission perm;
 
     public static TribesPlugin getInstance() {
         return INSTANCE;
@@ -115,9 +118,16 @@ public class TribesPlugin extends FacePlugin {
         qPlugin = (QPlugin) getServer().getPluginManager().getPlugin("Q");
         highNoonPlugin = (HighNoonPlugin) getServer().getPluginManager().getPlugin("HighNoon");
 
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net
+                .milkbowl.vault.economy.Economy.class);
         if (economyProvider != null) {
             economy = economyProvider.getProvider();
+        }
+
+        RegisteredServiceProvider<Permission> permProvider = getServer().getServicesManager().getRegistration(net
+                .milkbowl.vault.permission.Permission.class);
+        if (permProvider != null) {
+            perm = permProvider.getProvider();
         }
 
         new DataSaveTask(this).runTaskTimer(this, 0L, 20L * 600);
@@ -202,6 +212,10 @@ public class TribesPlugin extends FacePlugin {
 
     public Economy getEconomy() {
         return economy;
+    }
+
+    public Permission getPerm() {
+        return perm;
     }
 
     public HighNoonPlugin getHighNoonPlugin() {
