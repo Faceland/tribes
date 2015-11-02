@@ -182,12 +182,12 @@ public final class Tribe {
         HUGE(32, 32, 600000);
 
         private final int chunks;
-        private final int members;
+        private final int maxMembers;
         private final double price;
 
-        Level(int chunks, int members, double price) {
+        Level(int chunks, int maxMembers, double price) {
             this.chunks = chunks;
-            this.members = members;
+            this.maxMembers = maxMembers;
             this.price = price;
         }
 
@@ -195,9 +195,7 @@ public final class Tribe {
             return chunks;
         }
 
-        public int getMembers() {
-            return members;
-        }
+        public int getMaxMembers() { return maxMembers; }
 
         public double getPrice() {
             return price;

@@ -62,21 +62,19 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        final Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
+        final Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event
+                .getPlayer().getUniqueId()));
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            @Override
-            public void run() {
-                ScoreboardUtils.setPrefix(event.getPlayer(), plugin.getSettings().getString("perm-prefix." + plugin
-                        .getPerm().getPrimaryGroup(event.getPlayer()), "") + "<white>");
-                ScoreboardUtils.setSuffix(event.getPlayer(),
-                        (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String
-                                .valueOf('\u2756'));
-                ScoreboardUtils.updateMightDisplay(member);
-            }
-        }, 20L);
+        String color = plugin.getSettings().getString("perm-color.Owner");
+        plugin.getLogger().info("1: " + color + "color");
+        plugin.getLogger().info("2: " + plugin.getPerm().getPrimaryGroup(event.getPlayer()));
+        plugin.getLogger().info("3: " + "perm-color." + plugin.getPerm().getPrimaryGroup(event.getPlayer()));
+        plugin.getLogger().info("4: " + event.getPlayer());
+        ScoreboardUtils.setPrefix(event.getPlayer(), color + String.valueOf('\u2756') + ChatColor.WHITE);
+        ScoreboardUtils.setSuffix(event.getPlayer(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2756'));
+        ScoreboardUtils.updateMightDisplay(member);
     }
 
     //@EventHandler(priority = EventPriority.MONITOR)

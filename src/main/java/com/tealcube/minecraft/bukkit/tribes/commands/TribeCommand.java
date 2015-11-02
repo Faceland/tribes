@@ -97,14 +97,14 @@ public class TribeCommand {
             }
             String members = "";
             for (UUID uuid : tribe.getMembers()) {
-                Player p = Bukkit.getPlayer(uuid);
+                OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
                 if (p == null) {
                     continue;
                 }
                 if (p.isOnline()) {
-                    members += ChatColor.GREEN + p.getDisplayName() + " ";
+                    members = members + ChatColor.GREEN + p.getName() + " ";
                 } else {
-                    members += ChatColor.GRAY + p.getDisplayName() + " ";
+                    members = members + ChatColor.GRAY + p.getName() + " ";
                 }
             }
             MessageUtils.sendMessage(player, "&f&lMembers: " + members);
@@ -351,7 +351,7 @@ public class TribeCommand {
             return;
         }
         final Tribe tribe = plugin.getTribeManager().getTribe(senderMember.getTribe()).get();
-        if (tribe.getMembers().size() >= tribe.getLevel().getMembers()) {
+        if (tribe.getMembers().size() >= tribe.getLevel().getMaxMembers()) {
             MessageUtils.sendMessage(sender, "<red>You have already reached your member limit.");
             return;
         }

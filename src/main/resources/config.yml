@@ -2,10 +2,10 @@ version: "0.0.2"
 cells-per-member: 1
 time-since-tagged-in-seconds: 5
 guild-creation-price: 5000
-perm-prefix:
-  Owner: '&5[Owner] '
-  Administrator: '&4[Admin] '
-  Moderator: '&6[Mod] '
-  Cmod: '&2[Cmod] '
-  Donator: '&e[Donator] '
-  Veteran: '&9[Veteran] '
+perm-color:
+  Owner: '§5'
+  Administrator: '§4'
+  Moderator: '§6'
+  Cmod: '§b'
+  Donator: '§e'
+  Veteran: '§9'
