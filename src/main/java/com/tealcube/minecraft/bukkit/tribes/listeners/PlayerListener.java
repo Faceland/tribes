@@ -22,6 +22,7 @@
  */
 package com.tealcube.minecraft.bukkit.tribes.listeners;
 
+import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import com.tealcube.minecraft.bukkit.highnoon.data.Duelist;
 import com.tealcube.minecraft.bukkit.highnoon.events.DuelEndEvent;
@@ -67,13 +68,11 @@ public class PlayerListener implements Listener {
         if (!plugin.getMemberManager().hasMember(member)) {
             plugin.getMemberManager().addMember(member);
         }
-        String color = plugin.getSettings().getString("perm-color.Owner");
-        plugin.getLogger().info("1: " + color + "color");
-        plugin.getLogger().info("2: " + plugin.getPerm().getPrimaryGroup(event.getPlayer()));
-        plugin.getLogger().info("3: " + "perm-color." + plugin.getPerm().getPrimaryGroup(event.getPlayer()));
-        plugin.getLogger().info("4: " + event.getPlayer());
-        ScoreboardUtils.setPrefix(event.getPlayer(), color + String.valueOf('\u2756') + ChatColor.WHITE);
-        ScoreboardUtils.setSuffix(event.getPlayer(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor.WHITE) + String.valueOf('\u2756'));
+        String prefix = plugin.getSettings().getString("config.perm-color." + plugin.getPerm().getPrimaryGroup(event
+                .getPlayer()));
+        ScoreboardUtils.setPrefix(event.getPlayer(), TextUtils.color(prefix) + String.valueOf('\u2756') + ChatColor.WHITE);
+        ScoreboardUtils.setSuffix(event.getPlayer(), (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED :
+                ChatColor.WHITE) + String.valueOf('\u2756'));
         ScoreboardUtils.updateMightDisplay(member);
     }
 
@@ -103,7 +102,7 @@ public class PlayerListener implements Listener {
     //                ('\u2726') + ChatColor.WHITE);
     //        ScoreboardUtils.setSuffix(p, (member.getPvpState() == Member.PvpState.ON ? ChatColor.RED : ChatColor
     //                .WHITE) + String.valueOf('\u2726'));
-    //        //event.getPlayer().setHealth(0D);
+    //        event.getPlayer().setHealth(0D);
     //        int scoreChange = (int) (member.getScore() * 0.05);
     //        tagger.setScore(tagger.getScore() + scoreChange);
     //        member.setScore(member.getScore() - scoreChange);
@@ -176,28 +175,6 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             event.setDamage(0);
             return;
-        }
-        if (damagedMember.getTribe() != null) {
-            if (damagedMember.getTribe().equals(damagerMember.getTribe())) {
-                MessageUtils.sendMessage(damager, "<yellow>You can't hurt your guild members.");
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
-            }
-            Optional<Cell> cellOptional = plugin.getCellManager().getCell(Vec2.fromChunk(damaged.getLocation().getChunk()));
-            if (!cellOptional.isPresent()) {
-                return;
-            }
-            Cell cell = cellOptional.get();
-            if (cell.getOwner() == null) {
-                return;
-            }
-            if (damagedMember.getTribe().equals(cell.getOwner())) {
-                MessageUtils.sendMessage(damager, "<red>You can't damage a player on their home turf!");
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
-            }
         }
         if (damagerMember.getTribe() != null) {
             if (damagerMember.getTribe().equals(damagedMember.getTribe())) {

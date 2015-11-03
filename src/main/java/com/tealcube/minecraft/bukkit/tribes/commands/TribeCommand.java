@@ -160,8 +160,6 @@ public class TribeCommand {
         plugin.getMemberManager().addMember(member);
         plugin.getTribeManager().addTribe(tribe);
         ScoreboardUtils.updateMightDisplay(member);
-        ScoreboardUtils.setPrefix(player, plugin.getSettings().getString("perm-prefix." + plugin.getPerm()
-                .getPrimaryGroup(player), "") + "<white>");
         ScoreboardUtils.setSuffix(player, ChatColor.RED + String.valueOf('\u2756'));
         MessageUtils.sendMessage(player, "<green>You created a guild! Now the next step is naming it!");
         MessageUtils.sendMessage(player, "<green>Use <white>/guild<green> to check your guild's status");
@@ -377,9 +375,7 @@ public class TribeCommand {
                 MessageUtils.sendMessage(sender, "<white>%player%<green> joined your guild!",
                         new String[][]{{"%player%", target.getDisplayName()}});
                 MessageUtils.sendMessage(target, "<green>You joined <white>%tribe%<green>!",
-                        new String[][]{{"%tribe%", tribe.getName()}});
-                ScoreboardUtils.setPrefix(target, plugin.getSettings().getString("perm-prefix." + plugin.getPerm()
-                        .getPrimaryGroup(target), "") + "<white>");
+                        new String[][]{{"%tribe%", tribe.getName()}});;
                 ScoreboardUtils.setSuffix(target, ChatColor.RED + String.valueOf('\u2756'));
             }
         }, "Accept the invitation"));
