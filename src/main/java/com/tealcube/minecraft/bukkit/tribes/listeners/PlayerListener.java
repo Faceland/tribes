@@ -145,14 +145,19 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player) ||
-                !(event.getDamager() instanceof Player || (event.getDamager() instanceof Projectile && ((Projectile) event
-                        .getDamager()).getShooter() instanceof Player))) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        if (!(event.getDamager() instanceof Player || (event.getDamager() instanceof Projectile && ((Projectile)
+                event.getDamager()).getShooter() instanceof Player))) {
             return;
         }
         Player damaged = (Player) event.getEntity();
         Player damager = (event.getDamager() instanceof Projectile ? (Player) ((Projectile) event.getDamager()).getShooter()
                 : (Player) event.getDamager());
+        if (damager.hasPermission("tribes.override")) {
+            return;
+        }
         Member damagedMember = plugin.getMemberManager().getMember(damaged.getUniqueId()).or(new Member(damaged
                 .getUniqueId()));
         PvpManager.PvpData oldData = plugin.getPvpManager().getData(damaged.getUniqueId());
@@ -268,6 +273,9 @@ public class PlayerListener implements Listener {
         if (event.isCancelled()) {
             return;
         }
+        if (event.getPlayer().hasPermission("tribes.override")) {
+            return;
+        }
         Vec2 vec = Vec2.fromChunk(event.getBlockPlaced().getChunk());
         Cell cell = plugin.getCellManager().getCell(vec).or(new Cell(vec));
         Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
@@ -295,6 +303,9 @@ public class PlayerListener implements Listener {
         if (event.isCancelled()) {
             return;
         }
+        if (event.getPlayer().hasPermission("tribes.override")) {
+            return;
+        }
         Vec2 vec = Vec2.fromChunk(event.getBlock().getChunk());
         Cell cell = plugin.getCellManager().getCell(vec).or(new Cell(vec));
         Member member = plugin.getMemberManager().getMember(event.getPlayer().getUniqueId()).or(new Member(event.getPlayer().getUniqueId()));
@@ -318,6 +329,9 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onBlockPlace(PlayerInteractEvent event) {
         if (event.isCancelled()) {
+            return;
+        }
+        if (event.getPlayer().hasPermission("tribes.override")) {
             return;
         }
         Vec2 vec = Vec2.fromChunk(event.getClickedBlock().getChunk());
