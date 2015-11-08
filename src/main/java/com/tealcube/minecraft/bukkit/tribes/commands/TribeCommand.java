@@ -243,8 +243,8 @@ public class TribeCommand {
             MessageUtils.sendMessage(sender, "<green>You unclaimed all of your guilds' land!");
         } else {
             if (sender.hasPermission("tribles.unclaim.other")) {
-                Member member = plugin.getMemberManager().getMember(Bukkit.getPlayer(target).getUniqueId()).or(new
-                        Member(Bukkit.getPlayer(target).getUniqueId()));
+                Member member = plugin.getMemberManager().getMember(Bukkit.getOfflinePlayer(target).getUniqueId()).or(new
+                        Member(Bukkit.getOfflinePlayer(target).getUniqueId()));
                 if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
                     MessageUtils.sendMessage(sender, "<red>This player does not own a guild");
                     return;
