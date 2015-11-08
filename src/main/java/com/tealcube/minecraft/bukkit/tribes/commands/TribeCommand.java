@@ -218,30 +218,58 @@ public class TribeCommand {
     }
 
     @Command(identifier = "guild unclaim", onlyPlayers = true, permissions = "tribes.command.claim")
-    public void unclaimSubcommand(Player player) {
-        Member member = plugin.getMemberManager().getMember(player.getUniqueId()).or(new Member(player.getUniqueId()));
-        if (!plugin.getMemberManager().hasMember(member)) {
-            plugin.getMemberManager().addMember(member);
+    public void unclaimSubcommand(final Player sender, @Arg(name = "target") final Player target) {
+        if (target == null) {
+            Member member = plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
+            if (!plugin.getMemberManager().hasMember(member)) {
+                plugin.getMemberManager().addMember(member);
+            }
+            if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+                MessageUtils.sendMessage(sender, "<red>You cannot unclaim if you're not in a guild.");
+                return;
+            }
+            Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+            if (!tribe.isValidated()) {
+                MessageUtils.sendMessage(sender, "<red>You must validate your guild with <white>/guild validate<red> "
+                        + "first.");
+                return;
+            }
+            if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
+                MessageUtils.sendMessage(sender, "<red>Only guild leaders can unclaim land.");
+                return;
+            }
+            for (Cell cell : plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId())) {
+                cell.setOwner(null);
+                plugin.getCellManager().placeCell(cell.getLocation(), cell);
+            }
+            MessageUtils.sendMessage(sender, "<green>You unclaimed all of your guilds' land!");
+        } else {
+            if (sender.hasPermission("tribles.unclaim.other")) {
+                Member member = plugin.getMemberManager().getMember(target.getUniqueId()).or(new Member(target
+                        .getUniqueId()));
+                if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
+                    MessageUtils.sendMessage(sender, "<red>This player does not own a guild");
+                    return;
+                }
+                Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
+                if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
+                    MessageUtils.sendMessage(sender, "<red>You can only unclaim the land of guild leaders!");
+                    return;
+                }
+                if (tribe.getOwnedCells().size() == 0) {
+                    MessageUtils.sendMessage(sender, "<red>This player's guild doesn't own any land!");
+                    return;
+                }
+                for (Cell cell : plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId())) {
+                    cell.setOwner(null);
+                    plugin.getCellManager().placeCell(cell.getLocation(), cell);
+                }
+                MessageUtils.sendMessage(sender, "<green>You unclaimed all of " + target.getName() + "'s guild's " +
+                        "claimed land!");
+            } else {
+                MessageUtils.sendMessage(sender, "<red>You do not have permission to unclaim other player's land!");
+            }
         }
-        if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
-            MessageUtils.sendMessage(player, "<red>You cannot unclaim if you're not in a guild.");
-            return;
-        }
-        Tribe tribe = plugin.getTribeManager().getTribe(member.getTribe()).get();
-        if (!tribe.isValidated()) {
-            MessageUtils.sendMessage(player, "<red>You must validate your guild with <white>/guild validate<red> "
-                    + "first.");
-            return;
-        }
-        if (member.getRank() != Tribe.Rank.LEADER || tribe.getRank(member.getUniqueId()) != Tribe.Rank.LEADER) {
-            MessageUtils.sendMessage(player, "<red>Only guild leaders can unclaim land.");
-            return;
-        }
-        for (Cell cell : plugin.getCellManager().getCellsWithOwner(tribe.getUniqueId())) {
-            cell.setOwner(null);
-            plugin.getCellManager().placeCell(cell.getLocation(), cell);
-        }
-        MessageUtils.sendMessage(player, "<green>You unclaimed all of your guilds' land!");
     }
 
     @Command(identifier = "guild validate", onlyPlayers = false, permissions = "tribes.command.validate")
