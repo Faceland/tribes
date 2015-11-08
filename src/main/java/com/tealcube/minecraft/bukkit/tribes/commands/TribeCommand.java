@@ -216,8 +216,8 @@ public class TribeCommand {
     }
 
     @Command(identifier = "guild unclaim", onlyPlayers = true, permissions = "tribes.command.claim")
-    public void unclaimSubcommand(final Player sender, @Arg(name = "target") final Player target) {
-        if (target == null) {
+    public void unclaimSubcommand(final Player sender, @Arg(name = "target", def = "") final String target) {
+        if (target.equals("")) {
             Member member = plugin.getMemberManager().getMember(sender.getUniqueId()).or(new Member(sender.getUniqueId()));
             if (!plugin.getMemberManager().hasMember(member)) {
                 plugin.getMemberManager().addMember(member);
@@ -243,8 +243,8 @@ public class TribeCommand {
             MessageUtils.sendMessage(sender, "<green>You unclaimed all of your guilds' land!");
         } else {
             if (sender.hasPermission("tribles.unclaim.other")) {
-                Member member = plugin.getMemberManager().getMember(target.getUniqueId()).or(new Member(target
-                        .getUniqueId()));
+                Member member = plugin.getMemberManager().getMember(Bukkit.getPlayer(target).getUniqueId()).or(new
+                        Member(Bukkit.getPlayer(target).getUniqueId()));
                 if (member.getTribe() == null || !plugin.getTribeManager().getTribe(member.getTribe()).isPresent()) {
                     MessageUtils.sendMessage(sender, "<red>This player does not own a guild");
                     return;
@@ -262,7 +262,7 @@ public class TribeCommand {
                     cell.setOwner(null);
                     plugin.getCellManager().placeCell(cell.getLocation(), cell);
                 }
-                MessageUtils.sendMessage(sender, "<green>You unclaimed all of " + target.getName() + "'s guild's " +
+                MessageUtils.sendMessage(sender, "<green>You unclaimed all of " + target + "'s guild's " +
                         "claimed land!");
             } else {
                 MessageUtils.sendMessage(sender, "<red>You do not have permission to unclaim other player's land!");
@@ -500,9 +500,11 @@ public class TribeCommand {
         }
         targetMember.setTribe(null);
         tribe.setRank(targetMember.getUniqueId(), Tribe.Rank.GUEST);
-        MessageUtils.sendMessage(target.getPlayer(), "<red>You have been kicked from your guild.");
+        if (target.isOnline()) {
+            MessageUtils.sendMessage(target.getPlayer(), "<red>You have been kicked from your guild.");
+        }
         MessageUtils.sendMessage(sender, "<green>You kicked <white>%target%<green> from your guild.", new
-                String[][]{{"%target%", target.getPlayer().getDisplayName()}});
+                String[][]{{"%target%", target.getName()}});
     }
 
     @Command(identifier = "guild upgrade", onlyPlayers = true, permissions = "tribes.command.upgrade")
