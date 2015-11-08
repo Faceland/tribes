@@ -96,15 +96,13 @@ public class TribeCommand {
                 }
             }
             String members = "";
+            OfflinePlayer p;
             for (UUID uuid : tribe.getMembers()) {
-                OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
-                if (p == null) {
-                    continue;
-                }
+                p = Bukkit.getOfflinePlayer(uuid);
                 if (p.isOnline()) {
-                    members = members + ChatColor.GREEN + p.getName() + " ";
+                    members += ChatColor.GREEN + p.getName() + " ";
                 } else {
-                    members = members + ChatColor.GRAY + p.getName() + " ";
+                    members += ChatColor.GRAY + p.getName() + " ";
                 }
             }
             MessageUtils.sendMessage(player, "&f&lMembers: " + members);
