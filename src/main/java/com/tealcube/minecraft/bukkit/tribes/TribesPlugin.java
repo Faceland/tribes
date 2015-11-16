@@ -27,7 +27,6 @@ import com.tealcube.minecraft.bukkit.config.VersionedConfiguration;
 import com.tealcube.minecraft.bukkit.config.VersionedSmartYamlConfiguration;
 import com.tealcube.minecraft.bukkit.facecore.logging.PluginLogger;
 import com.tealcube.minecraft.bukkit.facecore.plugin.FacePlugin;
-import com.tealcube.minecraft.bukkit.highnoon.HighNoonPlugin;
 import com.tealcube.minecraft.bukkit.shade.google.common.base.Optional;
 import com.tealcube.minecraft.bukkit.tribes.commands.GCommand;
 import com.tealcube.minecraft.bukkit.tribes.commands.PvpCommand;
