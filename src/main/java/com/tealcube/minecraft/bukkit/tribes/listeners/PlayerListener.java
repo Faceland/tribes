@@ -174,10 +174,6 @@ public class PlayerListener implements Listener {
         if (!plugin.getMemberManager().hasMember(damagerMember)) {
             plugin.getMemberManager().addMember(damagerMember);
         }
-        Duelist duelist = DuelistManager.getDuelist(damagerMember.getUniqueId());
-        if (duelist.getTarget() != null && duelist.getTarget().equals(damagedMember.getUniqueId())) {
-            return;
-        }
         if (damagedMember.getPvpState() == Member.PvpState.OFF || damagerMember.getPvpState() == Member.PvpState.OFF) {
             MessageUtils.sendMessage(damager, "<red>You cannot PvP unless both parties are in PvP mode.");
             event.setCancelled(true);
@@ -199,7 +195,7 @@ public class PlayerListener implements Listener {
             if (cell.getOwner() == null) {
                 return;
             }
-            if (damagerMember.getTribe().equals(cell.getOwner())) {
+            if (damagedMember.getTribe().equals(cell.getOwner())) {
                 MessageUtils.sendMessage(damager, "<red>You can't damage a player on their home turf!");
                 event.setCancelled(true);
                 event.setDamage(0);
@@ -232,10 +228,8 @@ public class PlayerListener implements Listener {
         plugin.getMemberManager().removeMember(damagerMember);
         plugin.getMemberManager().addMember(damagedMember);
         plugin.getMemberManager().addMember(damagerMember);
-        MessageUtils.sendMessage(damaged, "<red>- <white>%amount%<red> Might.",
-                new String[][]{{"%amount%", changeScore + ""}});
-        MessageUtils.sendMessage(damager, "<green>+ <white>%amount%<green> Might!",
-                new String[][]{{"%amount%", changeScore + ""}});
+        MessageUtils.sendMessage(damaged, "<red>- <white>" + changeScore + "<red> Might.");
+        MessageUtils.sendMessage(damager, "<green>+ <white>" + changeScore + "<green> Might.");
         ScoreboardUtils.updateMightDisplay(damagedMember);
         ScoreboardUtils.updateMightDisplay(damagerMember);
     }
