@@ -53,6 +53,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import be.maximvdw.titlemotd.ui.Title;
+
 public class PlayerListener implements Listener {
 
     private final TribesPlugin plugin;
@@ -119,8 +121,7 @@ public class PlayerListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         Location from = event.getFrom();
         Location to = event.getTo();
-        if (from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY() && from.getBlockZ() == to
-                .getBlockZ() && from.getWorld().equals(to.getWorld())) {
+        if (from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY()) {
             return;
         }
         Vec2 toVec = Vec2.fromChunk(to.getChunk());
@@ -131,16 +132,18 @@ public class PlayerListener implements Listener {
             return;
         }
         if (toCell.getOwner() == null) {
-            MessageUtils.sendMessage(event.getPlayer(), "<gray>You have left guild territory.");
+            Title title = new Title("", "<gray>Unclaimed Territory", 1, 1, 1);
+            title.setTimingsToSeconds();
+            title.send(event.getPlayer());
             return;
         }
         Optional<Tribe> tribeOptional = plugin.getTribeManager().getTribe(toCell.getOwner());
         if (!tribeOptional.isPresent()) {
             return;
         }
-        MessageUtils.sendMessage(event.getPlayer(), "<gold>You have entered <white>%owner%<gold>'s territory!", new
-                String[][]{{"%owner%",
-                tribeOptional.get().getName()}});
+        Title title = new Title("", "<gold>" + tribeOptional.get().getName(), 1, 1, 1);
+        title.setTimingsToSeconds();
+        title.send(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -235,37 +238,6 @@ public class PlayerListener implements Listener {
                 new String[][]{{"%amount%", changeScore + ""}});
         ScoreboardUtils.updateMightDisplay(damagedMember);
         ScoreboardUtils.updateMightDisplay(damagerMember);
-    }
-
-    @EventHandler
-    public void onDuelEnd(DuelEndEvent event) {
-        if (event.getDuel().isTie()) {
-            return;
-        }
-        Member winner = plugin.getMemberManager().getMember(event.getDuel().getWinner()).or(new Member(event.getDuel().getWinner()));
-        Member loser = plugin.getMemberManager().getMember(event.getDuel().getLoser()).or(new Member(event.getDuel().getLoser()));
-        int changeScore = loser.getScore() / 20;
-        winner.setScore(winner.getScore() + changeScore);
-        loser.setScore(loser.getScore() - changeScore);
-        if (!plugin.getMemberManager().hasMember(winner)) {
-            plugin.getMemberManager().addMember(winner);
-        }
-        if (!plugin.getMemberManager().hasMember(loser)) {
-            plugin.getMemberManager().addMember(loser);
-        }
-
-        Player wPlayer = Bukkit.getPlayer(winner.getUniqueId());
-        if (wPlayer != null) {
-            MessageUtils.sendMessage(wPlayer, "<green>+ <white>%amount%<green> Might!",
-                    new String[][]{{"%amount%", changeScore + ""}});
-        }
-        Player lPlayer = Bukkit.getPlayer(loser.getUniqueId());
-        if (lPlayer != null) {
-            MessageUtils.sendMessage(lPlayer, "<red>- <white>%amount%<red> Might.",
-                    new String[][]{{"%amount%", changeScore + ""}});
-        }
-        ScoreboardUtils.updateMightDisplay(winner);
-        ScoreboardUtils.updateMightDisplay(loser);
     }
 
     @EventHandler
