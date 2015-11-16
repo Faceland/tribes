@@ -187,21 +187,21 @@ public class PlayerListener implements Listener {
                 event.setDamage(0);
                 return;
             }
-            Optional<Cell> cellOptional = plugin.getCellManager().getCell(Vec2.fromChunk(damager.getLocation().getChunk()));
-            if (!cellOptional.isPresent()) {
-                return;
-            }
-            Cell cell = cellOptional.get();
-            if (cell.getOwner() == null) {
-                return;
-            }
-            if (damagedMember.getTribe().equals(cell.getOwner())) {
-                MessageUtils.sendMessage(damager, "<red>You can't damage a player on their home turf!");
-                event.setCancelled(true);
-                event.setDamage(0);
-            }
         }
-
+        Optional<Cell> cellOptional = plugin.getCellManager().getCell(Vec2.fromChunk(damaged.getLocation()
+                .getChunk()));
+        if (!cellOptional.isPresent()) {
+            return;
+        }
+        Cell cell = cellOptional.get();
+        if (cell.getOwner() == null) {
+            return;
+        }
+        if (Objects.equal(cell.getOwner(), damagedMember.getTribe())) {
+            MessageUtils.sendMessage(damager, "<red>You can't damage a player on their home turf!");
+            event.setCancelled(true);
+            event.setDamage(0);
+        }
     }
 
     @EventHandler
@@ -283,6 +283,7 @@ public class PlayerListener implements Listener {
         }
         if (!Objects.equal(cell.getOwner(), member.getTribe())) {
             event.setCancelled(true);
+            MessageUtils.sendMessage(event.getPlayer(), "<red>This area belongs to a guild.");
             return;
         }
         if (member.getRank().getPermissions().contains(Tribe.Permission.BREAK)) {
@@ -310,6 +311,7 @@ public class PlayerListener implements Listener {
             return;
         }
         if (!Objects.equal(cell.getOwner(), member.getTribe())) {
+            MessageUtils.sendMessage(event.getPlayer(), "<red>This area belongs to a guild.");
             event.setCancelled(true);
             return;
         }
