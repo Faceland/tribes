@@ -24,9 +24,6 @@ package com.tealcube.minecraft.bukkit.tribes.listeners;
 
 import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
-import com.tealcube.minecraft.bukkit.highnoon.data.Duelist;
-import com.tealcube.minecraft.bukkit.highnoon.events.DuelEndEvent;
-import com.tealcube.minecraft.bukkit.highnoon.managers.DuelistManager;
 import com.tealcube.minecraft.bukkit.shade.google.common.base.Objects;
 import com.tealcube.minecraft.bukkit.shade.google.common.base.Optional;
 import com.tealcube.minecraft.bukkit.tribes.TribesPlugin;
@@ -36,7 +33,6 @@ import com.tealcube.minecraft.bukkit.tribes.data.Tribe;
 import com.tealcube.minecraft.bukkit.tribes.managers.PvpManager;
 import com.tealcube.minecraft.bukkit.tribes.math.Vec2;
 import com.tealcube.minecraft.bukkit.tribes.utils.ScoreboardUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -51,7 +47,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import be.maximvdw.titlemotd.ui.Title;
 
@@ -132,7 +127,7 @@ public class PlayerListener implements Listener {
             return;
         }
         if (toCell.getOwner() == null) {
-            Title title = new Title("", "<gray>Unclaimed Territory", 1, 1, 1);
+            Title title = new Title("<white>", "<gray>Unclaimed Territory", 1, 1, 1);
             title.setTimingsToSeconds();
             title.send(event.getPlayer());
             return;
@@ -141,7 +136,7 @@ public class PlayerListener implements Listener {
         if (!tribeOptional.isPresent()) {
             return;
         }
-        Title title = new Title("", "<gold>" + tribeOptional.get().getName(), 1, 1, 1);
+        Title title = new Title("<white>", "<gold>" + tribeOptional.get().getName(), 1, 1, 1);
         title.setTimingsToSeconds();
         title.send(event.getPlayer());
     }

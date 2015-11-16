@@ -65,7 +65,6 @@ public class TribesPlugin extends FacePlugin {
     private PluginLogger debugPrinter;
     private MasterConfiguration settings;
     private QPlugin qPlugin;
-    private HighNoonPlugin highNoonPlugin;
     private Economy economy;
     private Permission perm;
 
@@ -116,7 +115,6 @@ public class TribesPlugin extends FacePlugin {
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
         qPlugin = (QPlugin) getServer().getPluginManager().getPlugin("Q");
-        highNoonPlugin = (HighNoonPlugin) getServer().getPluginManager().getPlugin("HighNoon");
 
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net
                 .milkbowl.vault.economy.Economy.class);
@@ -216,10 +214,6 @@ public class TribesPlugin extends FacePlugin {
 
     public Permission getPerm() {
         return perm;
-    }
-
-    public HighNoonPlugin getHighNoonPlugin() {
-        return highNoonPlugin;
     }
 
 }

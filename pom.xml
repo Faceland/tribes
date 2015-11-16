@@ -76,11 +76,6 @@
             <version>1.0.1</version>
         </dependency>
         <dependency>
-            <groupId>com.tealcube.minecraft.bukkit</groupId>
-            <artifactId>highnoon</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.5</version>
