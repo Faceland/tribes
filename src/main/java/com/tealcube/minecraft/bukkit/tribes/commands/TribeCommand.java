@@ -254,7 +254,7 @@ public class TribeCommand {
                     MessageUtils.sendMessage(sender, "<red>You can only unclaim the land of guild leaders!");
                     return;
                 }
-                if (tribe.getOwnedCells().size() == 0) {
+                if (tribe.getOwnedCells().isEmpty()) {
                     MessageUtils.sendMessage(sender, "<red>This player's guild doesn't own any land!");
                     return;
                 }
